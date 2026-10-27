@@ -1583,7 +1583,8 @@ const PDF = (() => {
         const t = it.transform, h = Math.hypot(t[2], t[3]) || it.height || 10;
         const [x, y] = L.Util.applyTransform([t[4], t[5]], vp.transform);
         if(it.str){
-          if(cur && (Math.abs(y - cur.y) > h*0.5 || x < cur.xe - h*2)){ lines.push(cur); cur = null; }
+          // a new line when the baseline moves, the text jumps back, or there's a wide gap (the gutter between columns)
+          if(cur && (Math.abs(y - cur.y) > h*0.5 || x < cur.xe - h*2 || x - cur.xe > h*1.5)){ lines.push(cur); cur = null; }
           if(!cur) cur = {text:'', x, y, xe:x, h};
           if(cur.text && !/\s$/.test(cur.text) && !/^\s/.test(it.str) && x - cur.xe > h*0.15) cur.text += ' ';
           cur.text += it.str; cur.xe = Math.max(cur.xe, x + (it.width||0)); cur.h = Math.max(cur.h, h);
@@ -1591,12 +1592,48 @@ const PDF = (() => {
         if(it.hasEOL && cur){ lines.push(cur); cur = null; }
       }
       if(cur) lines.push(cur);
-      pages.push({lines: lines.filter(l => l.text.trim()), w:vp.width, h:vp.height});
+      pages.push({lines: columnOrder(lines.filter(l => l.text.trim()), vp.width), w:vp.width, h:vp.height});
       pg.cleanup();
       if(progress) progress(n, pdf.numPages);
       if(n % 6 === 0) await new Promise(r => setTimeout(r));
     }
     return pages;
+  }
+
+  /* columns: find the gutters on a page from where its narrower lines sit, then read each column top to bottom.
+     Lines that cross a gutter (titles, abstracts, wide figures' captions) divide the page into bands, read in turn. */
+  function columnOrder(lines, pw){
+    if(lines.length < 12) return lines;
+    const left = Math.min(...lines.map(l => l.x)), right = Math.max(...lines.map(l => l.xe)), tw = right - left;
+    if(tw <= 0) return lines;
+    const narrow = lines.filter(l => l.xe - l.x < tw * 0.55);
+    if(narrow.length < lines.length * 0.6 || narrow.length < 10) return lines;
+    const B = 200, cover = new Uint16Array(B), bin = x => Math.max(0, Math.min(B - 1, Math.floor((x - left) / tw * B)));
+    for(const l of narrow) for(let b = bin(l.x); b <= bin(l.xe - 0.01); b++) cover[b]++;
+    // runs of (nearly) empty bins away from the edges are gutters
+    const few = Math.max(2, Math.round(narrow.length * 0.04));
+    const gutters = []; let run = -1;
+    for(let b = 0; b <= B; b++){
+      const empty = b < B && cover[b] <= few;   // a title or page number may sit across the gutter
+      if(empty && run < 0) run = b;
+      if(!empty && run >= 0){ const a = run, z = b - 1; run = -1;
+        if(a > B * 0.15 && z < B * 0.85 && z - a + 1 >= 2) gutters.push(left + (a + z + 1) / 2 / B * tw); }
+    }
+    if(!gutters.length || gutters.length > 3) return lines;
+    const edges = [left - 1, ...gutters, right + 1], tol = tw * 0.01;
+    const colOf = l => { for(let c = 0; c < edges.length - 1; c++) if(l.x >= edges[c] - tol && l.xe <= edges[c + 1] + tol) return c; return -1; };
+    const counts = new Array(edges.length - 1).fill(0); for(const l of narrow){ const c = colOf(l); if(c >= 0) counts[c]++; }
+    if(counts.some(n => n < Math.max(4, narrow.length * 0.12))) return lines;   // not really columns
+    const cols = edges.slice(0, -1).map((e, c) => { const ls = lines.filter(l => colOf(l) === c); return {l:Math.min(...ls.map(l => l.x)), r:Math.max(...ls.map(l => l.xe))}; });
+    const out = [], byY = [...lines].sort((a, b) => a.y - b.y || a.x - b.x); let band = [];
+    const flush = () => { for(let c = 0; c < cols.length; c++) for(const l of band) if(l.col === c) out.push(l); band = []; };
+    for(const l of byY){
+      const c = colOf(l);
+      if(c < 0){ flush(); out.push(l); }
+      else { l.col = c; l.cl = cols[c].l; l.cr = cols[c].r; band.push(l); }
+    }
+    flush();
+    return out;
   }
 
   const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1623,10 +1660,12 @@ const PDF = (() => {
     for(let i=0;i<keep.length;i++){
       const l = keep[i], prev = keep[i-1]; let brk = !cur;
       if(cur && prev){
-        const m = marg(prev.pg), short = prev.xe < m.right - (m.right - m.left)*0.12;
+        const pm = marg(prev.pg), m = prev.cr ? {left:prev.cl, right:prev.cr} : pm, short = prev.xe < m.right - (m.right - m.left)*0.12;
+        const nextCol = l.pg === prev.pg && l.col != null && prev.col != null && l.col !== prev.col;
         if(isBig(l) !== isBig(prev) || (isBig(l) && Math.abs(l.h - prev.h) > H*0.2)) brk = true;
+        else if(nextCol){ if(short || isBig(l)) brk = true; }   // carried on at the top of the next column
         else if(l.pg === prev.pg){
-          const gap = l.y - prev.y, indent = l.x - marg(l.pg).left > H*0.9;
+          const gap = l.y - prev.y, indent = l.x - (l.cl ?? marg(l.pg).left) > H*0.9;
           if(gap > G*1.5 || gap < -H) brk = true;
           else if(short && ends(prev.text)) brk = true;
           else if(indent && ends(prev.text)) brk = true;
@@ -4725,7 +4764,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 451c6c6</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 1681fee</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

@@ -426,7 +426,33 @@ html.ax-hc .nudge{border:2px solid var(--fg)}
 .keys{font-size:13px;color:var(--muted);line-height:1.8}
 kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--fg)}
 .toc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.toctabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:0 0 4px}
+.toctabs{display:flex;gap:4px;padding:0 0 4px}
+.toctabs button{flex:1}
+.toctabs button[hidden]{display:none}
+::highlight(vs-hl-y){background-color:rgb(255 214 0 / .42)}
+::highlight(vs-hl-g){background-color:rgb(80 200 110 / .38)}
+::highlight(vs-hl-b){background-color:rgb(80 160 255 / .36)}
+::highlight(vs-hl-p){background-color:rgb(255 105 170 / .36)}
+::highlight(vs-hl-note){text-decoration:underline 2px rgb(214 120 0);text-underline-offset:4px}
+.selbar{position:absolute;z-index:7;display:flex;align-items:center;gap:4px;padding:5px 6px;border-radius:999px;background:var(--surface);color:var(--fg);border:1px solid var(--line);box-shadow:0 8px 26px rgb(0 0 0 / .28);font:600 13px var(--f-ui)}
+.selbar[hidden]{display:none}
+.selbar .hlc{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.selbar .hlc[data-c="y"]{background:#ffd84a}.selbar .hlc[data-c="g"]{background:#6fd08a}.selbar .hlc[data-c="b"]{background:#7cb8ff}.selbar .hlc[data-c="p"]{background:#ff8fc0}
+.selbar .hlc[aria-pressed="true"]{border-color:var(--fg)}
+.selbar .selsep{width:1px;height:20px;background:var(--line);margin:0 2px}
+.selbar .seltxt{border:0;background:none;color:inherit;font:inherit;padding:6px 8px;border-radius:999px;cursor:pointer}
+.selbar .seltxt:hover,.selbar .hlc:hover{background:var(--accent-soft)}
+.notesbox[hidden]{display:none}
+.notesbox{display:flex;flex-direction:column;gap:12px}
+.noteslist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.noteslist button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:none;color:inherit;border-radius:10px;padding:10px 12px 10px 14px;cursor:pointer;font:14px/1.4 var(--f-ui);border-left-width:5px}
+.noteslist button:hover{background:var(--accent-soft)}
+.noteslist .q{font-family:var(--f-read);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.noteslist .n{margin-top:6px;font-weight:600}
+.noteslist .m{margin-top:4px;font-size:12px;color:var(--muted)}
+.notesheet{width:min(520px,100%)}
+.notequote{margin:0;padding:8px 12px;border-left:4px solid #ffd84a;font-family:var(--f-read);max-height:9em;overflow:auto;background:var(--accent-soft);border-radius:6px}
+#noteText{width:100%;box-sizing:border-box;font:16px/1.5 var(--f-ui);padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);resize:vertical}
 .toctabs button{font-weight:600}
 .thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;padding-bottom:20px}
 .thumbs[hidden]{display:none}
@@ -592,6 +618,11 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <div id="sweepCover" class="sweep-cover" hidden></div>
     <div id="sweepNext" class="sweep-next" hidden><div class="sweep-clip"><div class="page lens-content sweep-content" aria-hidden="true"></div></div></div>
     <div id="guide" class="guide band"></div>
+  <div id="selBar" class="selbar" hidden role="toolbar" aria-label="Highlight">
+    <button class="hlc" data-c="y" aria-label="Yellow highlight" title="Yellow"></button><button class="hlc" data-c="g" aria-label="Green highlight" title="Green"></button><button class="hlc" data-c="b" aria-label="Blue highlight" title="Blue"></button><button class="hlc" data-c="p" aria-label="Pink highlight" title="Pink"></button>
+    <span class="selsep"></span>
+    <button class="seltxt" id="selNote">Note</button><button class="seltxt" id="selCopy">Copy</button><button class="seltxt" id="selDel" hidden>Delete</button>
+  </div>
   <form id="findBar" class="findbar" hidden role="search" autocomplete="off">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></svg>
     <input id="findIn" type="search" placeholder="Search this book" aria-label="Search this book" enterkeyhint="search" spellcheck="false">
@@ -685,9 +716,14 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="row"><input id="goPageIn" type="text" inputmode="text" enterkeyhint="go" spellcheck="false" aria-describedby="goPageHint"><button class="btn primary" type="submit">Go</button></div>
       <p class="hint" id="goPageHint" role="status"></p>
     </form>
-    <div id="tocTabs" class="seg toctabs" hidden role="tablist"><button data-t="toc" aria-pressed="true">Contents</button><button data-t="thumbs" aria-pressed="false">Pages</button></div>
+    <div id="tocTabs" class="seg toctabs" role="tablist"><button data-t="toc" aria-pressed="true">Contents</button><button data-t="thumbs" aria-pressed="false" id="tabThumbs" hidden>Pages</button><button data-t="notes" aria-pressed="false">Notes</button></div>
     <ul id="toc" class="toc"></ul>
     <div id="thumbs" class="thumbs" hidden></div>
+    <div id="notesBox" class="notesbox" hidden>
+      <ul id="notesList" class="noteslist"></ul>
+      <p class="hint" id="notesEmpty">No highlights yet. Select some text, then pick a colour to highlight it or Note to add a note.</p>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" id="notesExport">Export notes</button></div>
+    </div>
   </aside>
 
   <aside id="setPanel" class="panel right" hidden aria-label="Display settings">
@@ -826,6 +862,15 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   </div>
 </div>
 
+<div id="noteDlg" class="modal" hidden>
+  <div class="sheet notesheet" role="dialog" aria-modal="true" aria-labelledby="noteH">
+    <header class="sh-head"><h2 id="noteH">Note</h2></header>
+    <blockquote id="noteQuote" class="notequote"></blockquote>
+    <label for="noteText" class="lbl">Your note</label>
+    <textarea id="noteText" rows="5" placeholder="Write a note about this passage"></textarea>
+    <footer class="sh-foot"><button class="btn" id="noteDel">Delete highlight</button><button class="btn" id="noteCancel">Cancel</button><button class="btn primary" id="noteSave">Save</button></footer>
+  </div>
+</div>
 <div id="pinfo" class="modal side" hidden>
   <div class="sheet" role="dialog" aria-modal="false" aria-labelledby="pinfoH">
     <header class="sh-head"><h2 id="pinfoH">Document details</h2><button class="btn" id="pinfoClose">Done</button></header>
@@ -2022,7 +2067,7 @@ function renderResults(){
 /* ---------- Back button: every open book, panel and window adds a history step, so Back closes it ---------- */
 const layers = [];
 function pushLayer(name){ try{ history.pushState({bookroll:true, depth:layers.length + 1}, ''); layers.push(name); }catch(e){} }
-function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, pinfo:closePinfoNow}[name] || (() => {}))(); }
+function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, pinfo:closePinfoNow, note:closeNoteNow}[name] || (() => {}))(); }
 // close a layer from a button: step history back to just below it, and popstate does the closing
 function popLayer(name){ const i = layers.lastIndexOf(name); if(i < 0){ closeLayerNow(name); return; } history.go(-(layers.length - i)); }
 addEventListener('popstate', e => { const d = e.state && e.state.bookroll ? e.state.depth : 0; while(layers.length > d) closeLayerNow(layers.pop()); });
@@ -2180,7 +2225,7 @@ async function buildBackup(withBooks, pw, onStep){
     if(withBooks){ const f = await dbGetFile(b.id); if(f){ zip.file('books/' + b.id, f); m.hasFile = true; } }
     metas.push(m);
   }
-  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes}));
+  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes, notes:notesAll}));
   let out = await zip.generateAsync({type:'uint8array', compression:'STORE'});
   if(pw){
     const z = new JSZip();
@@ -2281,6 +2326,7 @@ async function restore(zip){
     if(rp) setProgressRec(nb.id, rp);
   }
   if(lib.pdfModes) for(const [k,v] of Object.entries(lib.pdfModes)) if(!pdfModes[k]) pdfModes[k] = v;
+  if(lib.notes){ for(const [k, v] of Object.entries(lib.notes)){ const have = notesAll[k] ||= []; for(const n of v || []) if(n && n.id && !have.some(x => x.id === n.id)) have.push(n); } LS.set('notes', notesAll); }
   LS.set('pdfmode', pdfModes);
   if(wasEmpty && lib.settings){ Object.assign(S, lib.settings); applySettings(); }
   render();
@@ -2819,7 +2865,7 @@ function render(){
 function card(b){
   const p = progress[b.id]?.p || 0, st = status(b);
   const rm = !b.sample && el('button',{class:'ghost', text:'Remove'});
-  if(rm){ let t; rm.onclick = async ()=>{ if(rm.classList.contains('confirm')){ clearTimeout(t); await dbDel(b.id); books = books.filter(x=>x.id!==b.id); delete progress[b.id]; LS.set('progress',progress); render(); toast(`Removed “${b.title}”.`); }
+  if(rm){ let t; rm.onclick = async ()=>{ if(rm.classList.contains('confirm')){ clearTimeout(t); await dbDel(b.id); books = books.filter(x=>x.id!==b.id); delete progress[b.id]; LS.set('progress',progress); if(notesAll[b.id]){ delete notesAll[b.id]; LS.set('notes', notesAll); } render(); toast(`Removed “${b.title}”.`); }
     else { rm.classList.add('confirm'); rm.textContent='Confirm'; t=setTimeout(()=>{ rm.classList.remove('confirm'); rm.textContent='Remove'; }, 3000); } }; }
   const shelf = !b.sample && el('input',{class:'shelf', list:'shelfList', placeholder:'Add to shelf', 'aria-label':`Shelf for ${b.title}`, value:b.shelf||''});
   if(shelf) shelf.addEventListener('change', async ()=>{ b.shelf = shelf.value.trim(); b.upd = Date.now(); await dbPutMeta(b); render(); });
@@ -3245,7 +3291,7 @@ async function openBook(b){
   const pr = progress[b.id] || {}, p = pr.p || 0;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     if(pdfDoc && pr.pg && pr.mode && pr.mode !== pdfMode) goTo('sec0-pg'+pr.pg); else setFrac(p);
-    gridSnap(); ready = true; updateStatus(); lastAnchor = null; noteAnchor();
+    gridSnap(); ready = true; updateStatus(); lastAnchor = null; noteAnchor(); notesTm = null; notesPaint();
     // images can shift the layout as they load; re-apply the saved spot once they settle
     const imgs = [...page.querySelectorAll('img')].filter(i=>!i.complete);
     if(imgs.length && p > 0) Promise.all(imgs.map(i=>new Promise(r=>{ i.onload=i.onerror=r; }))).then(()=>{ if(cur && !playing && Math.abs(frac()-p) < 0.02) setFrac(p); });
@@ -3294,6 +3340,7 @@ async function showPdf(mode){
   if(!tocItems.length && mode === 'pages') tocItems = Array.from({length:Math.min(pdfDoc.numPages, 3000)}, (_,i) => ({label:`Page ${pageName(i+1)}`, target:'sec0-pg'+(i+1), sec:0, depth:0, page:i+1}));
   applySettings(false);
   if(find.q) setTimeout(() => findRun(find.q), 300);   // search again in the new view
+  notesTm = null; setTimeout(notesPaint, 350);
 }
 let pdfSizes = null, pdfQueue = [], pdfBusy = false, pdfNear = null, pdfFar = null;
 async function renderPdfPages(){
@@ -3348,7 +3395,7 @@ async function pumpPages(){
       try{ const ll = await pdfLinkLayer(pg, vpc); if(ll) layers.push(ll); }catch(e){}
       const inner = document.createElement('div'); inner.className = 'pgin'; inner.append(...layers);
       if(tb){ const hf = w * v1.height / v1.width; inner.style.cssText = `left:${-tb[0] * w}px;top:${-tb[1] * hf}px;width:${w}px;height:${hf}px`; }
-      if(doc === pdfDoc && d.isConnected){ d.replaceChildren(inner); d.dataset.r = dw + (dark ? 'd' : '') + (rot !== pg.rotate ? 'r' + pdfRot : '') + (tb ? 't' : ''); if(find.q) findPaint(); }
+      if(doc === pdfDoc && d.isConnected){ d.replaceChildren(inner); d.dataset.r = dw + (dark ? 'd' : '') + (rot !== pg.rotate ? 'r' + pdfRot : '') + (tb ? 't' : ''); if(find.q) findPaint(); if(cur && notesAll[cur.id]) notesPaint(); }
     }catch(e){}
   }
   pdfBusy = false;
@@ -3497,6 +3544,193 @@ $('#findClose').onclick = findClose;
 $('#findBtn').onclick = () => $('#findBar').hidden ? findOpen() : findClose();
 $('#railFind').onclick = () => findOpen();
 
+/* ---------- highlights and notes (saved per book; found again from the quoted text and the words around it) ---------- */
+const NOTE_COLS = {y:'yellow', g:'green', b:'blue', p:'pink'};
+let notesAll = LS.get('notes', {}), notesAnch = [], notesTm = null, selMode = null;
+const bookNotes = () => cur ? (notesAll[cur.id] ||= []) : [];
+function notesSave(){ if(cur && notesAll[cur.id] && !notesAll[cur.id].length) delete notesAll[cur.id]; LS.set('notes', notesAll); }
+function tmAt(tm, i){ const n = tm.nodes; let lo = 0, hi = n.length - 1; while(lo < hi){ const m = (lo + hi + 1) >> 1; if(n[m][1] <= i) lo = m; else hi = m - 1; } return n[lo]; }
+function rangeAt(tm, s, e){
+  if(!tm.nodes.length || e <= s) return null;
+  const [a, ao] = tmAt(tm, s), [b, bo] = tmAt(tm, e - 1), r = document.createRange();
+  try{ r.setStart(a, Math.min(a.data.length, s - ao)); r.setEnd(b, Math.min(b.data.length, e - bo)); return r; }catch(err){ return null; }
+}
+// where a point in the document falls in a text map
+function tmOffset(tm, node, off){
+  if(node.nodeType === 3){ const k = tm.nodes.findIndex(x => x[0] === node); if(k >= 0) return tm.nodes[k][1] + Math.min(off, node.data.length); }
+  const pt = document.createRange(); try{ pt.setStart(node, off); }catch(e){ return 0; }
+  let lo = 0, hi = tm.nodes.length; while(lo < hi){ const m = (lo + hi) >> 1; if(pt.comparePoint(tm.nodes[m][0], 0) < 0) lo = m + 1; else hi = m; }
+  return lo < tm.nodes.length ? tm.nodes[lo][1] : tm.str.length;
+}
+const wsNorm = t => t.replace(/\s+/g, ' ');
+function noteRange(nt, tm){
+  const words = nt.q.trim().split(/\s+/); if(!words[0]) return null;
+  const re = new RegExp(words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+'), 'g');
+  const npre = wsNorm(nt.pre || ''), npost = wsNorm(nt.post || ''); let best = null, bs = -Infinity, m;
+  // a PDF note shown in reflowed text: the stretch of text belonging to its page
+  let span = null;
+  if(nt.pg && pdfDoc && !pageMode()){
+    const a = page.querySelector('#sec0-pg' + nt.pg), z = page.querySelector('#sec0-pg' + (nt.pg + 1));
+    if(a) span = [tmOffset(tm, a, 0), z ? tmOffset(tm, z, 0) : tm.str.length];
+  }
+  while((m = re.exec(tm.str))){
+    if(!m[0]){ re.lastIndex++; continue; }
+    const pre = wsNorm(tm.str.slice(Math.max(0, m.index - 48), m.index)), post = wsNorm(tm.str.slice(m.index + m[0].length, m.index + m[0].length + 48));
+    let sc = 0; for(let k = 1; k <= Math.min(pre.length, npre.length) && pre[pre.length - k] === npre[npre.length - k]; k++) sc++;
+    for(let k = 0; k < Math.min(post.length, npost.length) && post[k] === npost[k]; k++) sc++;
+    if(nt.f != null && !pageMode()) sc -= Math.abs(m.index / Math.max(1, tm.str.length) - nt.f) * 60;
+    if(span && (m.index < span[0] || m.index >= span[1])) sc -= 1000;
+    if(sc > bs){ bs = sc; best = [m.index, m.index + m[0].length]; }
+  }
+  return best && rangeAt(tm, best[0], best[1]);
+}
+function notesPaint(){
+  try{
+    const by = {y:[], g:[], b:[], p:[]}, noted = []; notesAnch = [];
+    const list = cur ? (notesAll[cur.id] || []) : [];
+    const add = (nt, r) => { if(!r) return; by[nt.c in by ? nt.c : 'y'].push(r); if(nt.n) noted.push(r); notesAnch.push([nt, r]); };
+    if(list.length){
+      if(pageMode()){
+        for(const tl of page.querySelectorAll('.pdfpg .textLayer')){
+          const n = +tl.closest('.pdfpg').dataset.n, ns = list.filter(x => x.pg === n); if(!ns.length) continue;
+          const tm = textMap(tl); for(const nt of ns) add(nt, noteRange(nt, tm));
+        }
+      } else {
+        if(!notesTm || !notesTm.nodes.length || !notesTm.nodes[0][0].isConnected) notesTm = textMap(page);
+        for(const nt of list) add(nt, noteRange(nt, notesTm));
+      }
+    }
+    for(const c in by) CSS.highlights.set('vs-hl-' + c, new Highlight(...by[c]));
+    CSS.highlights.set('vs-hl-note', new Highlight(...noted));
+  }catch(e){}
+  if(!$('#notesBox').hidden) notesList();
+}
+function notesClear(){ notesAnch = []; notesTm = null; try{ for(const c of ['y','g','b','p','note']) CSS.highlights.delete('vs-hl-' + c); }catch(e){} selHide(); }
+// the selection as a note-to-be: its text, the words either side, and where it is
+function selNote(){
+  const sel = getSelection(); if(!sel.rangeCount || sel.isCollapsed || !cur) return null;
+  const r = sel.getRangeAt(0); if(!page.contains(r.commonAncestorContainer) && !page.contains(r.startContainer)) return null;
+  let root = page, pg = 0;
+  if(pageMode()){
+    const sc = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement;
+    root = sc && sc.closest('.textLayer'); if(!root) return null;
+    pg = +root.closest('.pdfpg').dataset.n;
+  }
+  const tm = root === page ? (notesTm && notesTm.nodes.length && notesTm.nodes[0][0].isConnected ? notesTm : (notesTm = textMap(page))) : textMap(root);
+  let a = tmOffset(tm, r.startContainer, r.startOffset), b = root.contains(r.endContainer) ? tmOffset(tm, r.endContainer, r.endOffset) : tm.str.length;
+  while(a < b && /\s/.test(tm.str[a])) a++; while(b > a && /\s/.test(tm.str[b - 1])) b--;
+  if(b <= a) return null;
+  if(b - a > 4000) b = a + 4000;
+  if(pdfDoc && !pageMode()){   // reflowed PDF: the page this passage is on
+    const anchors = [...page.querySelectorAll('[id^="sec0-pg"]')]; pg = 1;
+    for(const an of anchors){ if(r.comparePoint(an, 0) <= 0 || r.startContainer === an) pg = +an.id.slice(7); else break; }
+  }
+  return {q:tm.str.slice(a, b), pre:tm.str.slice(Math.max(0, a - 32), a), post:tm.str.slice(b, b + 32), pg:pdfDoc ? pg : 0, f:root === page ? a / Math.max(1, tm.str.length) : null, range:r};
+}
+/* the little toolbar beside a selection or a highlight */
+function selShow(rect, mode, nt){
+  const bar = $('#selBar'), st = stage.getBoundingClientRect(); selMode = {mode, nt};
+  bar.querySelectorAll('.hlc').forEach(b => b.setAttribute('aria-pressed', String(!!nt && nt.c === b.dataset.c)));
+  $('#selCopy').hidden = mode !== 'new'; $('#selDel').hidden = mode !== 'edit'; $('#selNote').textContent = mode === 'edit' && nt.n ? 'Edit note' : 'Note';
+  bar.hidden = false;
+  const w = bar.offsetWidth, h = bar.offsetHeight, coarse = matchMedia('(pointer:coarse)').matches;
+  let top = coarse ? rect.bottom - st.top + 12 : rect.top - st.top - h - 10;
+  if(top < 8) top = rect.bottom - st.top + 10; if(top + h > st.height - 8) top = Math.max(8, rect.top - st.top - h - 10);
+  bar.style.top = top + 'px'; bar.style.left = Math.max(8, Math.min(st.width - w - 8, rect.left - st.left + rect.width / 2 - w / 2)) + 'px';
+}
+function selHide(){ $('#selBar').hidden = true; selMode = null; }
+let selT = 0;
+document.addEventListener('selectionchange', () => {
+  clearTimeout(selT);
+  selT = setTimeout(() => {
+    if(R.hidden || drag) return;
+    const sn = selNote();
+    if(sn){ pause(); const rc = sn.range.getBoundingClientRect(); if(rc.width || rc.height) selShow(rc, 'new'); }
+    else if(selMode && selMode.mode === 'new') selHide();
+  }, 220);
+});
+scroller.addEventListener('scroll', () => { if(selMode && selMode.mode === 'edit') selHide(); }, {passive:true});
+function noteAdd(c, openEditor){
+  const sn = selNote(); if(!sn) return;
+  const nt = {id:uid(), q:sn.q, pre:sn.pre, post:sn.post, pg:sn.pg, f:sn.f, c, n:'', t:Date.now()};
+  bookNotes().push(nt); notesSave(); getSelection().removeAllRanges(); selHide(); notesPaint();
+  if(openEditor) noteEdit(nt);
+}
+$('#selBar').addEventListener('pointerdown', e => e.preventDefault());   // keep the selection while tapping the toolbar
+$('#selBar').addEventListener('click', e => {
+  const b = e.target.closest('.hlc'); if(!b || !selMode) return;
+  if(selMode.mode === 'new') noteAdd(b.dataset.c);
+  else { selMode.nt.c = b.dataset.c; notesSave(); notesPaint(); selHide(); }
+});
+$('#selNote').onclick = () => { if(!selMode) return; if(selMode.mode === 'new') noteAdd('y', true); else { const nt = selMode.nt; selHide(); noteEdit(nt); } };
+$('#selCopy').onclick = async () => { const t = String(getSelection()); try{ await navigator.clipboard.writeText(t); toast('Copied.'); }catch(e){ document.execCommand('copy'); } selHide(); };
+$('#selDel').onclick = () => { if(selMode) noteDelete(selMode.nt); };
+function noteAt(x, y){
+  try{ const c = document.caretPositionFromPoint ? document.caretPositionFromPoint(x, y) : document.caretRangeFromPoint(x, y);
+    const node = c && (c.offsetNode || c.startContainer), off = c ? (c.offset ?? c.startOffset) : 0; if(!node) return null;
+    for(const [nt, r] of notesAnch) if(r.isPointInRange(node, off)){ const rc = r.getBoundingClientRect(); if(x >= rc.left - 2 && x <= rc.right + 2) return [nt, r]; }
+  }catch(e){}
+  return null;
+}
+function noteDelete(nt){
+  const l = bookNotes(), i = l.indexOf(nt); if(i >= 0) l.splice(i, 1);
+  notesSave(); selHide(); notesPaint(); toast('Highlight removed.');
+}
+/* writing a note */
+let noteEditing = null;
+function closeNoteNow(){ $('#noteDlg').hidden = true; noteEditing = null; }
+function noteEdit(nt){
+  noteEditing = nt; $('#noteQuote').textContent = nt.q.length > 600 ? nt.q.slice(0, 600) + '…' : nt.q;
+  $('#noteQuote').style.borderLeftColor = {y:'#ffd84a', g:'#6fd08a', b:'#7cb8ff', p:'#ff8fc0'}[nt.c] || '#ffd84a';
+  $('#noteText').value = nt.n || '';
+  if($('#noteDlg').hidden){ pushLayer('note'); $('#noteDlg').hidden = false; }
+  setTimeout(() => $('#noteText').focus(), 30);
+}
+$('#noteSave').onclick = () => { if(noteEditing){ noteEditing.n = $('#noteText').value.trim(); notesSave(); notesPaint(); } popLayer('note'); };
+$('#noteCancel').onclick = () => popLayer('note');
+$('#noteDel').onclick = () => { const nt = noteEditing; popLayer('note'); if(nt) noteDelete(nt); };
+$('#noteDlg').addEventListener('click', e => { if(e.target === $('#noteDlg')) popLayer('note'); });
+$('#noteText').addEventListener('keydown', e => { if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); $('#noteSave').click(); } });
+/* the Notes tab */
+function notesSorted(){ return [...bookNotes()].sort((a, b) => (a.pg || 0) - (b.pg || 0) || (a.f ?? 0) - (b.f ?? 0) || a.t - b.t); }
+function notesList(){
+  const list = notesSorted(), ul = $('#notesList');
+  $('#notesEmpty').hidden = !!list.length; $('#notesExport').hidden = !list.length;
+  ul.replaceChildren(...list.map(nt => {
+    const b = el('button', {}, el('div', {class:'q', text:nt.q}), nt.n ? el('div', {class:'n', text:nt.n}) : null,
+      el('div', {class:'m', text:(nt.pg ? `Page ${pageName(nt.pg)} · ` : '') + new Date(nt.t).toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'})}));
+    b.style.borderLeftColor = {y:'#ffd84a', g:'#6fd08a', b:'#7cb8ff', p:'#ff8fc0'}[nt.c] || '#ffd84a';
+    b.onclick = () => noteGo(nt);
+    return el('li', {}, b);
+  }));
+}
+async function noteGo(nt){
+  if(innerWidth < 760) closePanels();
+  pause(); ttsHold();
+  let r = null;
+  if(pageMode()){
+    goToPage(nt.pg);
+    const d = page.querySelector('#sec0-pg' + nt.pg);
+    for(let t = 0; t < 60 && d && !d.querySelector('.textLayer'); t++) await new Promise(res => setTimeout(res, 50));
+    notesPaint(); r = (notesAnch.find(x => x[0] === nt) || [])[1];
+  } else { notesPaint(); r = (notesAnch.find(x => x[0] === nt) || [])[1]; }
+  if(!r){ toast('Couldn’t find this passage in this view.'); return; }
+  const rc = r.getBoundingClientRect(), st = stage.getBoundingClientRect();
+  scroller.scrollTop += rc.top - (st.top + readY()); pgTops = null; updateStatus();
+}
+$('#notesExport').onclick = () => {
+  const list = notesSorted(); if(!cur || !list.length) return;
+  let md = `# ${cur.title}${cur.author ? ' — ' + cur.author : ''}\n\nHighlights and notes from Velvet Scroll, ${new Date().toLocaleDateString(undefined, {day:'numeric', month:'long', year:'numeric'})}\n\n`;
+  for(const nt of list){
+    md += nt.q.split(/\n/).map(l => '> ' + l).join('\n') + '\n\n';
+    if(nt.n) md += nt.n + '\n\n';
+    md += `— ${NOTE_COLS[nt.c] || 'yellow'} highlight${nt.pg ? ', page ' + pageName(nt.pg) : ''}\n\n---\n\n`;
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md], {type:'text/markdown'}));
+  a.download = (cur.title || 'notes').replace(/[\\/:*?"<>|]+/g, '').trim() + ' – notes.md'; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+};
+
 // the page (1-based) at the reading guide, from the page anchors
 function currentPage(){
   if(!pdfDoc && !comic) return 0;
@@ -3519,7 +3753,7 @@ $('#rMode').onclick = async () => {
   await new Promise(r => setTimeout(r));
   try{ await showPdf(next); }catch(e){ toast('Couldn’t switch views for this PDF.'); }
   pdfModes[cur.id] = pdfMode; LS.set('pdfmode', pdfModes);
-  $('#loading').hidden = true; buildToc(); layoutGuide(); pgTops = null;
+  $('#loading').hidden = true; buildToc(); layoutGuide(); pgTops = null; notesTm = null; setTimeout(notesPaint, 300);
   requestAnimationFrame(() => requestAnimationFrame(() => { goTo('sec0-pg'+n); ready = true; updateStatus(); saveCur(); }));
 };
 
@@ -3574,7 +3808,7 @@ function closeReaderNow(){
   if(!R.hidden && page.childNodes.length) saveCur(); ready = false;
   stopComic(); stopPdfPages(); try{ pdfDoc?.destroy(); }catch(e){} pdfDoc = null; pdfLabels = null; pdfRot = 0; pdfTrim = null; thumbsReset(); railMenu(false); pdfSizes = null; pgTops = null; pgLine = 0;
   R.classList.remove('is-pdf','pdf-pages'); page.classList.remove('pdfmode','tint-light','tint-dark');
-  $('#rMode').hidden = true; $('#pdfGroup').hidden = true; findClose(); tocTab('toc'); $('#tocTabs').hidden = true; $('#goPage').hidden = true; R.classList.remove('has-pages','rail-on'); $('#pdfRail').hidden = true; $('#railShow').hidden = true;
+  $('#rMode').hidden = true; $('#pdfGroup').hidden = true; findClose(); notesClear(); tocTab('toc'); $('#tabThumbs').hidden = true; $('#goPage').hidden = true; R.classList.remove('has-pages','rail-on'); $('#pdfRail').hidden = true; $('#railShow').hidden = true;
   R.hidden = true; document.body.classList.remove('locked');
   page.replaceChildren(); urls.forEach(URL.revokeObjectURL); urls = []; cur = null;
   render();
@@ -4322,6 +4556,8 @@ scroller.addEventListener('click', e=>{
   const pl = e.target.closest('[data-pdfdest]'); if(pl){ e.preventDefault(); pause(); goToPdfDest(pl.dataset.pdfdest); return; }
   if(e.target.closest('a[href]')) return;
   if(String(getSelection())) return;
+  if(notesAnch.length && !S.hand){ const hit = noteAt(e.clientX, e.clientY); if(hit){ pause(); selShow(hit[1].getBoundingClientRect(), 'edit', hit[0]); return; } }
+  if(selMode){ selHide(); return; }
   // while reading aloud, a tap on the text reads from that sentence
   if(tts.on){ try{ const c = document.caretPositionFromPoint ? document.caretPositionFromPoint(e.clientX, e.clientY) : document.caretRangeFromPoint(e.clientX, e.clientY);
       const node = c && (c.offsetNode || c.startContainer), off = c ? (c.offset ?? c.startOffset) : 0;
@@ -4382,7 +4618,7 @@ function togglePanel(id, other){
 /* Go to page (PDFs and comics): accepts the number printed in the book ("87", "xii") or the plain page count */
 function goPageSetup(total){
   $('#goPage').hidden = false; R.classList.add('has-pages'); railPinned = S.mode !== 'relax'; railApply();
-  $('#tocTabs').hidden = !pdfDoc; if(!pdfDoc) tocTab('toc');
+  $('#tabThumbs').hidden = !pdfDoc;
   $('#goPageIn').value = ''; $('#goPageIn').placeholder = pdfLabels ? `e.g. ${pdfLabels[Math.min(total - 1, Math.floor(total / 3))]}` : `1 to ${total}`;
   $('#goPageHint').textContent = pdfLabels ? `${total} pages. Type the number printed on the page (like ${pdfLabels[0]} or ${pageName(total)}), or put # in front to count from the start of the file (#${Math.min(12, total)}).` : `${total} pages.`;
 }
@@ -4494,8 +4730,9 @@ $('#railRot').onclick = async () => {
 let thumbIO = null;
 function tocTab(t){
   document.querySelectorAll('#tocTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === t)));
-  $('#toc').hidden = t !== 'toc'; $('#thumbs').hidden = t !== 'thumbs';
+  $('#toc').hidden = t !== 'toc'; $('#thumbs').hidden = t !== 'thumbs'; $('#notesBox').hidden = t !== 'notes';
   if(t === 'thumbs') thumbsBuild();
+  if(t === 'notes') notesList();
 }
 $('#tocTabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if(b) tocTab(b.dataset.t); });
 function thumbsReset(){ thumbIO?.disconnect(); thumbIO = null; $('#thumbs').replaceChildren(); }
@@ -4690,6 +4927,8 @@ addEventListener('keydown', e=>{
   if(!$('#bk').hidden){ if(e.key === 'Escape') closeBackup(); return; }
   if(!$('#ax').hidden && e.key === 'Escape'){ closeAx(); return; }
   if(!$('#pinfo').hidden && e.key === 'Escape'){ closePinfo(); return; }
+  if(!$('#noteDlg').hidden){ if(e.key === 'Escape') popLayer('note'); return; }
+  if(selMode && e.key === 'Escape'){ selHide(); return; }
   if(!$('#railMenu').hidden && e.key === 'Escape'){ railMenu(false); return; }
   if(!$('#ap').hidden && e.key === 'Escape'){ closeAp(); return; }
   if(R.hidden) return;
@@ -4764,7 +5003,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 1681fee</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 55c23aa</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

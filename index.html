@@ -269,7 +269,7 @@ body.dragging .drop{display:grid}
 @media (max-width:480px){ .findbar .rtool{width:34px;height:34px} .findbar output{font-size:12px} }
 html.ax-hc .findbar{border:2px solid var(--rfg)}
 /* page tools for PDFs and comics on wider screens, pinned to the right */
-.rail{position:absolute;z-index:4;top:12px;right:12px;max-height:calc(100% - 24px);overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px;border-radius:14px;
+.rail{position:absolute;z-index:4;top:50%;transform:translateY(-50%);right:12px;max-height:calc(100% - 24px);overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px;border-radius:14px;
   background:color-mix(in srgb,var(--rbg) 88%,var(--rfg));border:1px solid color-mix(in srgb,var(--rfg) 16%,transparent);box-shadow:0 6px 22px rgb(0 0 0 / .18)}
 .rail[hidden],.rail-show[hidden]{display:none!important}
 .rtool{width:36px;height:36px;flex:none;border:0;border-radius:10px;background:transparent;color:var(--rfg);display:grid;place-items:center;cursor:pointer}
@@ -305,7 +305,7 @@ html.ax-hc .findbar{border:2px solid var(--rfg)}
   #printBox img{display:block;width:100%;height:auto;break-after:page;page-break-after:always;margin:0}
   @page{margin:0}
 }
-.rail-show{position:absolute;z-index:4;top:12px;right:0;width:28px;height:48px;border:1px solid color-mix(in srgb,var(--rfg) 16%,transparent);border-right:0;border-radius:12px 0 0 12px;
+.rail-show{position:absolute;z-index:4;top:50%;transform:translateY(-50%);right:0;width:28px;height:48px;border:1px solid color-mix(in srgb,var(--rfg) 16%,transparent);border-right:0;border-radius:12px 0 0 12px;
   background:color-mix(in srgb,var(--rbg) 88%,var(--rfg));color:var(--rfg);display:grid;place-items:center;cursor:pointer;padding:0}
 .rail-show svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media (min-width:760px){ .reader.rail-on .page.pdfmode{padding-left:84px;padding-right:84px} }
@@ -4814,7 +4814,7 @@ function railMenu(open){
   const m = $('#railMenu'), b = $('#railMore');
   if(open === undefined) open = m.hidden;
   m.hidden = !open; b.setAttribute('aria-expanded', String(open));
-  if(open){ m.style.top = Math.max(8, Math.min(stage.clientHeight - m.offsetHeight - 8, $('#pdfRail').offsetTop + b.offsetTop - 6)) + 'px';
+  if(open){ m.style.top = Math.max(8, Math.min(stage.clientHeight - m.offsetHeight - 8, b.getBoundingClientRect().top - stage.getBoundingClientRect().top - 6)) + 'px';
     $('#mPrint').disabled = pdfDoc && pdfDoc.printAllowed === false; m.querySelector('button:not(:disabled)')?.focus(); }
 }
 $('#railMore').onclick = e => { e.stopPropagation(); railMenu(); };
@@ -5003,7 +5003,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 55c23aa</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · d4a3d6d</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

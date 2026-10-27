@@ -205,6 +205,11 @@ body.dragging .drop{display:grid}
 .chrome{background:color-mix(in srgb,var(--rbg) 90%,var(--rfg));border-color:color-mix(in srgb,var(--rfg) 14%,transparent);transition:opacity .4s;position:relative;z-index:3}
 .r-top{display:flex;align-items:center;gap:8px;border-bottom:1px solid;padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
 .r-title{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;text-align:center}
+.r-spacer{display:none}
+/* wider windows: the title centred on the window, not just in the space between the buttons */
+.r-top.tcenter{position:relative}
+.r-top.tcenter .r-title{position:absolute;left:50%;transform:translateX(-50%);width:max-content}
+.r-top.tcenter .r-spacer{display:block;flex:1}
 .r-title strong{font-family:var(--f-read);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .r-title span{font-size:13px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rbtn{border:1px solid color-mix(in srgb,var(--rfg) 20%,transparent);background:transparent;color:var(--rfg);border-radius:999px;padding:7px 13px;cursor:pointer;font-weight:700;font-size:14px;white-space:nowrap}
@@ -604,6 +609,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   <div class="r-top chrome">
     <button id="rBack" class="rbtn" aria-label="Library">← <span class="rlbl">Library</span></button>
     <div class="r-title"><strong id="rTitle"></strong><span id="rChap"></span></div>
+    <span class="r-spacer" aria-hidden="true"></span>
     <button id="rMode" class="rbtn" hidden></button>
     <button id="rToc" class="rbtn">Contents</button>
     <button id="rSet" class="rbtn">Display</button>
@@ -3243,7 +3249,7 @@ async function openBook(b){
   if(!R.hidden) return;
   pushLayer('reader');
   cur = b; document.body.classList.add('locked');
-  R.hidden = false; $('#rTitle').textContent = b.title; $('#rChap').textContent = b.author || '';
+  R.hidden = false; requestAnimationFrame(titleCentre); $('#rTitle').textContent = b.title; $('#rChap').textContent = b.author || '';
   page.replaceChildren(); setLoading('Opening book…'); $('#toc').replaceChildren();
   ready = false; hidePanels(); sweepEnd(); applySettings(false); tocItems = [];
   try{
@@ -3339,6 +3345,7 @@ async function showPdf(mode){
   tocItems = pdfOutline.filter(o => o.page <= pdfDoc.numPages).map(o => ({label:o.label || `Page ${o.page}`, target:'sec0-pg'+o.page, sec:0, depth:o.depth, page:o.page}));
   if(!tocItems.length && mode === 'pages') tocItems = Array.from({length:Math.min(pdfDoc.numPages, 3000)}, (_,i) => ({label:`Page ${pageName(i+1)}`, target:'sec0-pg'+(i+1), sec:0, depth:0, page:i+1}));
   applySettings(false);
+  requestAnimationFrame(titleCentre);
   if(find.q) setTimeout(() => findRun(find.q), 300);   // search again in the new view
   notesTm = null; setTimeout(notesPaint, 350);
 }
@@ -3543,6 +3550,19 @@ $('#findPrev').onclick = () => findGo(find.idx - 1);
 $('#findClose').onclick = findClose;
 $('#findBtn').onclick = () => $('#findBar').hidden ? findOpen() : findClose();
 $('#railFind').onclick = () => findOpen();
+/* centre the title on the window when the buttons either side leave room; otherwise it fills the space between them */
+function titleCentre(){
+  const t = document.querySelector('.r-title'), bar = t.parentElement; if(R.hidden) return;
+  bar.classList.remove('tcenter'); t.style.maxWidth = '';
+  if(innerWidth <= 560) return;
+  const br = bar.getBoundingClientRect(), mid = br.left + br.width / 2; let lEnd = br.left, rStart = br.right;
+  for(const k of bar.children){ if(k === t || !k.offsetWidth || k.classList.contains('r-spacer')) continue;
+    const r = k.getBoundingClientRect(); if(r.right <= mid) lEnd = Math.max(lEnd, r.right); else if(r.left >= mid) rStart = Math.min(rStart, r.left); else return; }
+  const half = Math.min(mid - lEnd, rStart - mid) - 12;
+  if(half < 120) return;
+  bar.classList.add('tcenter'); t.style.maxWidth = half * 2 + 'px';
+}
+new ResizeObserver(() => titleCentre()).observe(document.querySelector('.r-top'));
 
 /* ---------- highlights and notes (saved per book; found again from the quoted text and the words around it) ---------- */
 const NOTE_COLS = {y:'yellow', g:'green', b:'blue', p:'pink'};
@@ -5003,7 +5023,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · d4a3d6d</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 4bfaea1</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

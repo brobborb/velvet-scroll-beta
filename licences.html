@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Licences · Velvet Scroll</title>
+<link rel="icon" href="icon.png">
+<style>
+:root{--bg:#eef2f0;--surface:#fff;--fg:#16201c;--muted:#56655f;--line:#d3ddd8;--accent:#2c6a57;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:68ch;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 64px max(16px,env(safe-area-inset-right,0px))}
+h1{font:400 34px/1.15 "Young Serif",Georgia,serif;margin:0 0 4px}
+h2{font:400 21px/1.3 "Young Serif",Georgia,serif;margin:32px 0 6px}
+p,li{margin:0 0 10px}
+ul{padding-left:20px}
+a{color:var(--accent)}
+.meta{color:var(--muted);margin-bottom:24px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+</style>
+</head>
+<body>
+<main>
+<h1>Licences</h1>
+<p class="meta">Open-source software and voices used by Velvet Scroll</p>
+
+<div class="box"><p>Velvet Scroll is free. It is built with the open-source projects below, and the optional natural voices use openly licensed voice models. Each keeps its own licence.</p></div>
+
+<h2>Natural voices (optional)</h2>
+<ul>
+<li><strong>eSpeak NG</strong>, which works out how words are pronounced. GNU General Public License, version 3 (<a href="LICENSE-GPL-3.0.txt">full text</a>). Source code: <a href="https://github.com/espeak-ng/espeak-ng">github.com/espeak-ng/espeak-ng</a>.</li>
+<li><strong>piper-phonemize</strong> (Michael Hansen), which connects eSpeak NG to Piper voices, MIT licence: <a href="https://github.com/rhasspy/piper-phonemize">github.com/rhasspy/piper-phonemize</a>. Velvet Scroll uses the unmodified WebAssembly build of eSpeak NG and piper-phonemize published as <a href="https://www.npmjs.com/package/@diffusionstudio/piper-wasm/v/1.0.0">@diffusionstudio/piper-wasm 1.0.0</a> (build scripts: <a href="https://github.com/diffusion-studio/piper-wasm">github.com/diffusion-studio/piper-wasm</a>).</li>
+<li><strong>ONNX Runtime Web</strong> 1.20.1 (Microsoft), which runs the voice models, MIT licence: <a href="https://github.com/microsoft/onnxruntime">github.com/microsoft/onnxruntime</a>.</li>
+<li><strong>Piper voices</strong> from the Piper project (<a href="https://huggingface.co/rhasspy/piper-voices">rhasspy/piper-voices</a>, version 1.0.0). Velvet Scroll offers only voices whose model cards list public-domain training recordings: Cori (British English), Linda (LJ Speech), Kristin, John, Norman and Bryce (American English). Voices are downloaded from Hugging Face only when you choose one.</li>
+</ul>
+<p>The GNU GPL lets you copy, change and share eSpeak NG. If you would like a copy of the exact eSpeak NG and piper-phonemize source code used by the build above, it is available from the links above, or ask through <a href="https://github.com/brobborb/velvet-scroll/issues">the project page</a> and we will provide it.</p>
+
+<h2>Reading and library</h2>
+<ul>
+<li><strong>PDF.js</strong> 3.11.174 (Mozilla), Apache License 2.0: <a href="https://github.com/mozilla/pdf.js">github.com/mozilla/pdf.js</a></li>
+<li><strong>JSZip</strong> 3.10.1, MIT licence: <a href="https://github.com/Stuk/jszip">github.com/Stuk/jszip</a></li>
+<li><strong>Readability</strong> 0.6.0 (Mozilla), Apache License 2.0: <a href="https://github.com/mozilla/readability">github.com/mozilla/readability</a></li>
+<li><strong>Fonts</strong>: Literata, Atkinson Hyperlegible, Lexend and Young Serif, SIL Open Font License 1.1.</li>
+</ul>
+
+<p><a href="./">← Back to Velvet Scroll</a></p>
+</main>
+</body>
+</html>

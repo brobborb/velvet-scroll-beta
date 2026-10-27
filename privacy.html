@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Velvet Scroll</title>
+<link rel="icon" href="icon.png">
+<style>
+:root{--bg:#eef2f0;--surface:#fff;--fg:#16201c;--muted:#56655f;--line:#d3ddd8;--accent:#2c6a57;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:68ch;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 64px max(16px,env(safe-area-inset-right,0px))}
+h1{font:400 34px/1.15 "Young Serif",Georgia,serif;margin:0 0 4px}
+h2{font:400 21px/1.3 "Young Serif",Georgia,serif;margin:32px 0 6px}
+p,li{margin:0 0 10px}
+ul{padding-left:20px}
+a{color:var(--accent)}
+.meta{color:var(--muted);margin-bottom:24px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+</style>
+</head>
+<body>
+<main>
+<h1>Privacy</h1>
+<p class="meta">Velvet Scroll website and browser extension · Updated 26 October 2026</p>
+
+<div class="box"><p><strong>In short:</strong> your books, reading positions and settings stay in your own browser. Velvet Scroll has no accounts, no analytics, no advertising and no server that receives your library. The only information it sends anywhere is a book's title and author, and only when you ask it to look up a book's details.</p></div>
+
+<h2>What stays on your device</h2>
+<p>The books you add, their covers, your reading positions, shelves, book details and display settings are stored in your browser's own storage on your device. They are not uploaded to velvetscroll.net or anywhere else. Clearing your browser's site data, or removing the extension, deletes them.</p>
+
+<h2>Looking up book details (extension only)</h2>
+<p>When you use <em>Find details</em>, or search from a book's <em>Details</em> window, Velvet Scroll sends that book's title and author to these public book databases, and downloads cover images from them:</p>
+<ul>
+<li>Open Library (Internet Archive): openlibrary.org, covers.openlibrary.org</li>
+<li>Wikidata and Wikimedia Commons: wikidata.org, commons.wikimedia.org, upload.wikimedia.org</li>
+<li>Project Gutenberg, through the Gutendex search service: gutendex.com, gutenberg.org</li>
+</ul>
+<p>No other information about you or your library is sent. Your browser asks your permission before the extension contacts these sites, and you can withdraw it at any time in your browser's extension settings. Those services handle requests under their own privacy policies.</p>
+
+<h2>Saving articles (extension only)</h2>
+<p>When you save a web page, the extension reads that page in your browser, keeps a clean copy of the article and stores it in your library on your device. It reads a page only when you choose <em>Save this page</em>, use the right-click option, or paste a link into <em>Save article</em>; for a pasted link, your browser asks your permission to contact that site. Pictures are copied into the saved article where the site allows; any that can't be copied are loaded from the original site when you read the article, just as if you visited it. Saved articles are never sent to velvetscroll.net or anyone else.</p>
+
+<h2>Read aloud</h2>
+<p>Read aloud uses the voices provided by your device and browser. Most are built into your device; some browsers also offer online voices, marked "online" in the voice list, which send the text being read to the browser maker's speech service. Choose a voice without "online" to keep reading aloud on your device.</p>
+
+<h2>Natural voices (optional)</h2>
+<p>If you choose to use a natural voice, Velvet Scroll downloads that voice (about 63 MB) from Hugging Face (huggingface.co), and a pronunciation dictionary (about 18 MB) from jsDelivr (cdn.jsdelivr.net). On the website, the speech engine's code also comes from jsDelivr; the extension includes it. Like any download, these services receive the technical details of the request, such as your IP address. The voices are kept in your browser and run entirely on your device: the text being read is never sent anywhere. You can remove the downloads at any time under Display, in the reader. Details of the software and voice licences are on the <a href="licences.html">licences page</a>.</p>
+
+<h2>Browser sync (extension only, optional)</h2>
+<p>If you turn on sync, your reading positions, shelves, book details and settings are saved to your browser's built-in sync (Firefox Sync or Chrome sync) so they follow you between your own computers. The books themselves are never synced. This data is handled by Mozilla or Google under their privacy policies. Sync is off unless you turn it on.</p>
+
+<h2>Sync codes</h2>
+<p>A sync code is made on your device and encrypted with AES-256 using the passphrase you choose. It holds your reading positions, shelves, book details and settings, but no books. Velvet Scroll doesn't send it anywhere: you copy, share or scan it yourself. If you scan its QR code, your phone opens velvetscroll.net with the code in the address after the "#", a part of the address browsers don't send to the website, and the code still can't be read without the passphrase.</p>
+
+<h2>Backups</h2>
+<p>A backup is a file saved to your own device. Velvet Scroll doesn't send it anywhere. If you choose a password, the backup is encrypted with AES-256 before it's saved.</p>
+
+<h2>The website</h2>
+<p>velvetscroll.net is hosted by GitHub Pages. Like any web host, GitHub may record technical information such as IP addresses when pages are loaded. The website also loads fonts from Google Fonts and code libraries from cdnjs (Cloudflare), which receive the same kind of technical request information. The extension includes its fonts and libraries, so it doesn't contact these services.</p>
+
+<h2>Donations</h2>
+<p>Donations are optional and made directly through PayPal or Bitcoin. Velvet Scroll never sees or stores payment details. PayPal handles payments under its own privacy policy, and Bitcoin transactions are public on the Bitcoin network.</p>
+
+<h2>Changes and contact</h2>
+<p>If this policy changes, the updated version will be published on this page with a new date. Questions can be raised through the project's page at <a href="https://github.com/brobborb/velvet-scroll/issues">github.com/brobborb/velvet-scroll</a>.</p>
+
+<p><a href="./">← Back to Velvet Scroll</a></p>
+</main>
+</body>
+</html>

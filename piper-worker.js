@@ -2,7 +2,7 @@
    Text is turned into speech sounds by eSpeak NG (piper-phonemize, GPL-3.0), then into audio by a Piper voice model
    with ONNX Runtime Web. The page says where the code is (packaged with the extension, or jsDelivr for the website).
    Voice models and eSpeak NG's dictionary data are downloaded once and kept in the browser's cache. */
-let P = null, ORT = null, phonData = null, phon = null, session = null, config = null, voiceId = '', pending = null;
+let P = null, ORT = null, phonData = null, phon = null, phonCalls = 0, phonWasm = null, session = null, config = null, voiceId = '', pending = null;
 const send = (m, t) => postMessage(m, t || []);
 const CACHE = 'velvet-voices';
 
@@ -31,9 +31,16 @@ async function engine(){
   importScripts(P.ortJs, P.phonJs);
   ORT = self.ort; ORT.env.wasm.wasmPaths = P.ortBase; ORT.env.wasm.numThreads = 1;
 }
-async function phonemizer(){
-  if(phon) return phon;
+// eSpeak NG keeps a little memory from every sentence and its memory can't grow, so after a couple of hundred sentences
+// it fails ("memory access out of bounds"). A fresh copy is started every 100 sentences, or straight away if one fails.
+const PHON_FRESH_EVERY = 100;
+async function phonemizer(fresh){
+  if(phon && !fresh && phonCalls < PHON_FRESH_EVERY) return phon;
+  phon = null; phonCalls = 0;
+  if(!phonWasm){ const r = await fetch(P.phonWasm); if(!r.ok) throw new Error('download failed (' + r.status + ')'); phonWasm = await WebAssembly.compile(await r.arrayBuffer()); }
   phon = await self.createPiperPhonemize({
+    // the compiled engine is kept, so a fresh copy only has to start up (a fraction of a second)
+    instantiateWasm: (imports, done) => { WebAssembly.instantiate(phonWasm, imports).then(inst => done(inst, phonWasm)); return {}; },
     print: line => { const p = pending; pending = null; if(p) try{ p.ok(JSON.parse(line).phoneme_ids); }catch(e){ p.no(e); } },
     printErr: () => {},
     locateFile: f => f.endsWith('.wasm') ? P.phonWasm : f,
@@ -41,7 +48,12 @@ async function phonemizer(){
   });
   return phon;
 }
-function phonemes(text){
+async function phonemes(text){
+  try{ await phonemizer(); return await phonemesOnce(text); }
+  catch(e){ await phonemizer(true); return phonemesOnce(text); }
+}
+function phonemesOnce(text){
+  phonCalls++;
   return new Promise((ok, no) => {
     pending = {ok, no};
     try{ phon.callMain(['-l', config.espeak.voice, '--input', JSON.stringify([{text}]), '--espeak_data', '/espeak-ng-data']); }
@@ -69,7 +81,10 @@ async function load(d){
 }
 
 async function generate(text, speed){
-  const ids = await phonemes(text);
+  let ids = null;
+  try{ ids = await phonemes(text); }catch(e){ if(!/no phonemes/.test(e.message)) throw e; }
+  // nothing to say (a row of asterisks, a lone symbol): a short pause instead
+  if(!ids || ids.length < 3) return {pcm:new Float32Array(Math.round((config.audio.sample_rate || 22050) * 0.25)), rate:config.audio.sample_rate || 22050};
   const inf = config.inference || {}, feeds = {
     input: new ORT.Tensor('int64', BigInt64Array.from(ids, BigInt), [1, ids.length]),
     input_lengths: new ORT.Tensor('int64', BigInt64Array.from([BigInt(ids.length)]), [1]),

@@ -3760,7 +3760,15 @@ async function nvSpeak(){
     const ahead = nvPeek(); tts.nvNext = ahead ? {text:ahead, p:nvGen(ahead)} : null;
     tts.nvNext?.p.catch(() => {});
     ttsWord(s + Math.max(0, text.search(/\S/)));
-    const d = await job; if(gen !== tts.gen || !tts.on) return;
+    let d;
+    try{ d = await job; NV.fails = 0; }
+    catch(err){
+      // one sentence failed but the voice is still running: skip it and carry on; stop if it keeps happening
+      if(gen !== tts.gen || !tts.on) return;
+      if(NV.worker && NV.loaded && ++NV.fails < 3) return ttsSpeakNext();
+      throw err;
+    }
+    if(gen !== tts.gen || !tts.on) return;
     const secs = d.pcm.length / d.rate;
     if(!NV.slowWarned && d.ms > secs * 1000 && secs > 1.5){ NV.slowWarned = true;
       toast('This device makes the natural voice a little slower than it speaks, so there may be short pauses between sentences.', 7000); }
@@ -4243,7 +4251,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · bd99bd0</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 277ef63</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

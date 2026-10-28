@@ -36,6 +36,13 @@ a{color:var(--accent)}
 </ul>
 <p>The GNU GPL lets you copy, change and share eSpeak NG. If you would like a copy of the exact eSpeak NG and piper-phonemize source code used by the build above, it is available from the links above, or ask through <a href="https://github.com/brobborb/velvet-scroll/issues">the project page</a> and we will provide it.</p>
 
+<h2>Recognising text in scanned PDFs (optional)</h2>
+<ul>
+<li><strong>Tesseract</strong> (the Tesseract OCR project), which recognises printed text in page images, Apache License 2.0 (<a href="LICENSE-Apache-2.0.txt">full text</a>): <a href="https://github.com/tesseract-ocr/tesseract">github.com/tesseract-ocr/tesseract</a>.</li>
+<li><strong>Tesseract.js</strong> 7.0.0 and <strong>tesseract.js-core</strong> 7.0.0 (Project Naptha), which run Tesseract in the browser as WebAssembly, Apache License 2.0: <a href="https://github.com/naptha/tesseract.js">github.com/naptha/tesseract.js</a> and <a href="https://github.com/naptha/tesseract.js-core">github.com/naptha/tesseract.js-core</a>. Velvet Scroll uses the unmodified npm releases. They include small libraries under the MIT and BSD licences (regenerator-runtime, buffer, ieee754 and zlib.js), whose notices come with the files.</li>
+<li><strong>English language data</strong> from the Tesseract project’s <a href="https://github.com/tesseract-ocr/tessdata_best">tessdata_best</a> models (integer version), Apache License 2.0, as published in <a href="https://www.npmjs.com/package/@tesseract.js-data/eng/v/1.0.0">@tesseract.js-data/eng 1.0.0</a>. It is downloaded from jsDelivr only when you choose Recognise text.</li>
+</ul>
+
 <h2>Reading and library</h2>
 <ul>
 <li><strong>PDF.js</strong> 3.11.174 (Mozilla), Apache License 2.0: <a href="https://github.com/mozilla/pdf.js">github.com/mozilla/pdf.js</a></li>

@@ -7,5 +7,5 @@
 
 window.VELVET_DONATE = {
   paypal: "https://paypal.me/brobborb",
-  bitcoin: ""
+  bitcoin: "18QjUhwZLywKEawEt5MKWVz5Gmzkb3zBjm"
 };

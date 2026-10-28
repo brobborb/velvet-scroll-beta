@@ -38,6 +38,8 @@ button,input,select{font:inherit;color:inherit}
 /* Library header */
 .top{border-bottom:1px solid var(--line);background:var(--surface)}
 .top .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:22px 18px}
+/* when the buttons drop below the title onto one row of their own, spread them across the full width */
+.top .hdrbtns.spread{flex:1 1 100%;justify-content:space-between}
 .brand h1{font-family:var(--f-display);font-weight:400;font-size:32px;line-height:1.1;margin:0;letter-spacing:-.01em}
 .brand p{margin:4px 0 0;color:var(--muted)}
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:700;white-space:nowrap}
@@ -547,7 +549,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <h1>Velvet Scroll</h1>
       <p>Your ebooks, scrolling at your pace.</p>
     </div>
-    <div class="row" style="flex-wrap:wrap;gap:10px">
+    <div class="row hdrbtns" style="flex-wrap:wrap;gap:10px">
     <button id="cont" class="btn" hidden></button>
     <button id="find" class="btn" hidden title="Look up titles, authors, dates and covers in public databases">Find details</button>
     <button id="artOpen" class="btn" hidden>Save article</button>
@@ -3563,6 +3565,15 @@ function titleCentre(){
   bar.classList.add('tcenter'); t.style.maxWidth = half * 2 + 'px';
 }
 new ResizeObserver(() => titleCentre()).observe(document.querySelector('.r-top'));
+function headerSpread(){
+  const row = document.querySelector('.top .hdrbtns'), brand = document.querySelector('.top .brand'); if(!row || !brand) return;
+  row.classList.remove('spread');
+  const kids = [...row.children].filter(k => k.offsetWidth);
+  const below = row.offsetTop > brand.offsetTop + brand.offsetHeight / 2, oneLine = kids.length && kids.every(k => Math.abs(k.offsetTop - kids[0].offsetTop) < 4);
+  if(below && oneLine){ row.classList.add('spread'); if(!kids.every(k => Math.abs(k.offsetTop - kids[0].offsetTop) < 4)) row.classList.remove('spread'); }
+}
+new ResizeObserver(() => headerSpread()).observe(document.querySelector('.top .wrap'));
+new MutationObserver(() => headerSpread()).observe(document.querySelector('.top .hdrbtns'), {attributes:true, subtree:true, attributeFilter:['hidden'], childList:true, characterData:true});
 
 /* ---------- highlights and notes (saved per book; found again from the quoted text and the words around it) ---------- */
 const NOTE_COLS = {y:'yellow', g:'green', b:'blue', p:'pink'};
@@ -5023,7 +5034,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 4bfaea1</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · a64421b</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

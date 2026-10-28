@@ -3581,7 +3581,29 @@ function applyHome(){
   else if(cvd){ const dark = homeDark(), pal = homePalette(dark, dark ? cvd.dark : cvd.light, h.bg); for(const k of TOKENS) st.setProperty(k, pal[k]); }
   else if(h.mode === 'system' && !h.accent && !h.bg){ TOKENS.forEach(k => st.removeProperty(k)); }
   else { const pal = homePalette(homeDark(), h.accent, h.bg); for(const k of TOKENS) st.setProperty(k, pal[k]); }
+  faviconUpdate(hc, cvd, h);
   if(!$('#ap').hidden) renderAppearance();
+}
+/* the tab's icon in the library's colour: the usual icon, its green tile repainted in the chosen accent */
+const favLink = document.querySelector('link[rel~="icon"]'), favOrig = favLink && favLink.getAttribute('href');
+let favLast = '';
+function faviconUpdate(hc, cvd, h){
+  if(!favLink) return;
+  const tile = hc !== 'off' ? '#000000' : cvd ? homePalette(false, cvd.light, null)['--accent'] : h.accent ? homePalette(false, h.accent, null)['--accent'] : null;
+  const key = tile ? tile + hc : '';
+  if(key === favLast) return; favLast = key;
+  if(!tile){ favLink.setAttribute('href', favOrig); return; }
+  try{
+    const S2 = 64, cv = document.createElement('canvas'); cv.width = cv.height = S2; const c = cv.getContext('2d'), k = S2 / 128;
+    const rr = (x, y, w, hh, r, fill) => { c.beginPath(); c.roundRect(x * k, y * k, w * k, hh * k, r * k); c.fillStyle = fill; c.fill(); };
+    rr(4, 4, 120, 120, 27, tile);
+    const hue = C.hsl(tile)[0], goldish = hue >= 25 && hue <= 70;
+    const line = hc !== 'off' ? '#ffffff' : 'rgba(255,255,255,.88)';
+    [[25, 70], [39, 58], [84, 74], [98, 48]].forEach(([y, w]) => rr(27, y, w, 7, 3.5, line));
+    rr(17, 54, 94, 22, 8, hc !== 'off' ? '#ffd60a' : goldish ? '#f7f1e3' : '#f0c24b');
+    rr(27, 61.5, 66, 7, 3.5, hc !== 'off' ? '#000000' : '#1f1a0e');
+    favLink.setAttribute('href', cv.toDataURL('image/png'));
+  }catch(e){}
 }
 try{ darkMQ.addEventListener ? darkMQ.addEventListener('change', applyHome) : darkMQ.addListener && darkMQ.addListener(applyHome); }catch(e){}
 new MutationObserver(applyHome).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
@@ -5715,7 +5737,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 0f36403</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · c35dd5c</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

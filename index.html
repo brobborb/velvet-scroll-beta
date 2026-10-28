@@ -363,6 +363,7 @@ html.ax-hc .rail,html.ax-hc .rail-show{border:2px solid var(--rfg)}
 .ctl output,.ctl .num{font-variant-numeric:tabular-nums;white-space:nowrap;opacity:.85;flex:none}
 .stepbtn{width:30px;height:30px;flex:none;border-radius:50%;border:1px solid color-mix(in srgb,var(--rfg) 22%,transparent);background:transparent;color:var(--rfg);cursor:pointer;font-weight:700}
 .rbtn.icon{padding:6px 9px;display:inline-grid;place-items:center}
+.rbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .rbtn .sht{display:none}
 .rbtn.icon svg{width:18px;height:18px}
 .ribtog{display:none;width:36px;height:36px;flex:none;margin-left:auto;border-radius:50%;border:1px solid color-mix(in srgb,var(--rfg) 22%,transparent);background:transparent;color:var(--rfg);place-items:center;cursor:pointer}
@@ -3475,11 +3476,11 @@ function rangesIn(root, re){
 }
 function findOpen(){
   if(!cur || R.hidden) return;
-  $('#findBar').hidden = false; $('#findIn').focus(); $('#findIn').select();
+  $('#findBar').hidden = false; findMarks(); $('#findIn').focus(); $('#findIn').select();
   if(find.q) findPaint();
 }
 function findClose(){
-  $('#findBar').hidden = true; find.gen++; find.q = ''; find.re = null; find.total = 0; find.idx = -1; find.pages = null; find.ranges = [];
+  $('#findBar').hidden = true; findMarks(); find.gen++; find.q = ''; find.re = null; find.total = 0; find.idx = -1; find.pages = null; find.ranges = [];
   $('#findIn').value = ''; $('#findCount').value = '';
   try{ CSS.highlights.delete('vs-find'); CSS.highlights.delete('vs-find-cur'); }catch(e){}
 }
@@ -3551,7 +3552,8 @@ $('#findNext').onclick = () => findGo(find.idx + 1);
 $('#findPrev').onclick = () => findGo(find.idx - 1);
 $('#findClose').onclick = findClose;
 $('#findBtn').onclick = () => $('#findBar').hidden ? findOpen() : findClose();
-$('#railFind').onclick = () => findOpen();
+$('#railFind').onclick = () => $('#findBar').hidden ? findOpen() : findClose();
+function findMarks(){ const on = String(!$('#findBar').hidden); $('#railFind').setAttribute('aria-pressed', on); $('#findBtn').setAttribute('aria-pressed', on); }
 /* centre the title on the window when the buttons either side leave room; otherwise it fills the space between them */
 function titleCentre(){
   const t = document.querySelector('.r-title'), bar = t.parentElement; if(R.hidden) return;
@@ -5042,7 +5044,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 88c172e</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 59a5c8c</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

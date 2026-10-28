@@ -3885,7 +3885,48 @@ $('#selBar').addEventListener('click', e => {
   else { selMode.nt.c = b.dataset.c; notesSave(); notesPaint(); selHide(); }
 });
 $('#selNote').onclick = () => { if(!selMode) return; if(selMode.mode === 'new') noteAdd('y', true); else { const nt = selMode.nt; selHide(); noteEdit(nt); } };
-$('#selCopy').onclick = async () => { const t = String(getSelection()); try{ await navigator.clipboard.writeText(t); toast('Copied.'); }catch(e){ document.execCommand('copy'); } selHide(); };
+/* copying from a PDF page: the text layer has one piece per printed line, so join the lines back into paragraphs
+   (a new paragraph after a wider gap, or after a short line ending a sentence) and rejoin words split with a hyphen */
+function pdfCopyText(sel){
+  if(!sel || !sel.rangeCount || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0), root = r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentElement;
+  const layers = root.closest('.textLayer') ? [root.closest('.textLayer')] : [...root.querySelectorAll('.textLayer')].filter(l => r.intersectsNode(l));
+  if(!layers.length) return null;
+  const pieces = [];
+  for(const layer of layers){
+    for(const sp of layer.querySelectorAll('span')){
+      const tn = sp.firstChild; if(!tn || tn.nodeType !== 3 || sp.childNodes.length !== 1 || !r.intersectsNode(tn)) continue;
+      let t = tn.data, a = 0, z = t.length;
+      if(tn === r.startContainer) a = r.startOffset; if(tn === r.endContainer) z = r.endOffset;
+      t = t.slice(a, z); if(!t.trim()) continue;
+      const b = sp.getBoundingClientRect(); pieces.push({t, top:b.top, bot:b.bottom, l:b.left, r:b.right, page:layer});
+    }
+  }
+  if(!pieces.length) return null;
+  const lines = [];   // pieces sharing a baseline make a line
+  for(const p of pieces){
+    const ln = lines[lines.length - 1], h = p.bot - p.top;
+    if(ln && ln.page === p.page && Math.abs((p.top + p.bot) / 2 - (ln.top + ln.bot) / 2) < h * 0.5 && p.l >= ln.r - h){ ln.t += (/\s$/.test(ln.t) || /^\s/.test(p.t) || p.l - ln.r < h * 0.15 ? '' : ' ') + p.t; ln.r = Math.max(ln.r, p.r); }
+    else lines.push({...p});
+  }
+  lines.forEach(l => l.t = l.t.replace(/\s+/g, ' ').trim());
+  const gaps = []; for(let i = 1; i < lines.length; i++) if(lines[i].page === lines[i-1].page && lines[i].top > lines[i-1].top) gaps.push(lines[i].top - lines[i-1].top);
+  gaps.sort((x, y) => x - y); const step = gaps.length ? gaps[gaps.length >> 1] : 0;
+  const right = Math.max(...lines.map(l => l.r)), left = Math.min(...lines.map(l => l.l));
+  let out = lines[0].t;
+  for(let i = 1; i < lines.length; i++){
+    const p = lines[i-1], c = lines[i], h = p.bot - p.top;
+    const gap = c.page === p.page ? c.top - p.top : 0;
+    const ends = /[.!?:;’”"')]$/.test(p.t), short = p.r < right - Math.max(h * 3, (right - left) * 0.12);
+    const newPara = (step && gap > step * 1.45) || gap < 0 || (ends && short) || /^([•·▪●\-–]|\(?[a-z\d]{1,3}\)|\d+(\.\d+)+)\s/.test(c.t) || (p.t.length < 60 && p.t === p.t.toUpperCase() && /[A-Z]/.test(p.t));
+    if(newPara) out += '\n\n' + c.t;
+    else if(/[A-Za-z]-$/.test(p.t) && /^[a-z]/.test(c.t)) out = out.slice(0, -1) + c.t;
+    else out += ' ' + c.t;
+  }
+  return out;
+}
+document.addEventListener('copy', e => { const t = pdfCopyText(getSelection()); if(t != null && e.clipboardData){ e.clipboardData.setData('text/plain', t); e.preventDefault(); } });
+$('#selCopy').onclick = async () => { const t = pdfCopyText(getSelection()) ?? String(getSelection()); try{ await navigator.clipboard.writeText(t); toast('Copied.'); }catch(e){ document.execCommand('copy'); } selHide(); };
 $('#selDel').onclick = () => { if(selMode) noteDelete(selMode.nt); };
 function noteAt(x, y){
   try{ const c = document.caretPositionFromPoint ? document.caretPositionFromPoint(x, y) : document.caretRangeFromPoint(x, y);
@@ -5238,7 +5279,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 6b0f6d5</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 33cdcd3</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

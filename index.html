@@ -169,6 +169,10 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .ltable .tsub{display:none}
 .ltable .tt{overflow-wrap:break-word}
 .grid.compact .card > .row{display:none}
+/* phones: the smallest cover size always fits three across */
+@media (max-width:560px){ .grid.compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 10px}
+  .grid.compact .card{gap:7px} .grid.compact .card h3{font-size:13px} .grid.compact .card .au{font-size:11.5px}
+  .grid.compact .status{font-size:11px} .grid.compact .row2{gap:0} .grid.compact .row2 .ghost{font-size:12px;padding:3px 2px} .grid.compact .gen strong{font-size:14px} }
 @media (max-width:560px){ .ltable .c-au,.ltable .ta,.ltable .tp .prog{display:none} .ltable .tsub{display:flex;gap:2px;font-size:12.5px;margin-top:2px} .ltable .tsub .ghost{padding:2px 8px 2px 0;font-size:12.5px} .ltable td{padding:8px 10px} .drow{grid-template-columns:48px minmax(0,1fr);padding:10px 4px} .drow .cover{width:48px} .dact{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:4px} .dact .shelf{width:140px} }
 .card{display:flex;flex-direction:column;gap:10px;min-width:0}
 /* the title takes the spare space, so progress, shelf and Details/Remove line up along each row of books */
@@ -5711,7 +5715,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · a1c0330</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · fb38a86</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

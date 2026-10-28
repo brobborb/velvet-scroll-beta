@@ -281,6 +281,7 @@ html.ax-hc .findbar{border:2px solid var(--rfg)}
 .rail{position:absolute;z-index:4;top:50%;transform:translateY(-50%);right:12px;max-height:calc(100% - 24px);overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px;border-radius:14px;
   background:color-mix(in srgb,var(--rbg) 88%,var(--rfg));border:1px solid color-mix(in srgb,var(--rfg) 16%,transparent);box-shadow:0 6px 22px rgb(0 0 0 / .18)}
 .rail[hidden],.rail-show[hidden]{display:none!important}
+.rail-show.rail-hide{right:calc(12px + var(--railw, 48px) - 1px)}
 .rtool{width:36px;height:36px;flex:none;border:0;border-radius:10px;background:transparent;color:var(--rfg);display:grid;place-items:center;cursor:pointer}
 .rtool svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rtool:hover{background:color-mix(in srgb,var(--rfg) 10%,transparent)}
@@ -643,8 +644,6 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <button type="button" class="rtool" id="findClose" title="Close search (Esc)" aria-label="Close search"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </form>
   <nav id="pdfRail" class="rail" hidden aria-label="Page tools">
-    <button class="rtool" id="railPin" title="Hide the page tools" aria-label="Hide the page tools"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-    <div class="rail-sep"></div>
     <input id="railPage" class="rail-page" type="text" inputmode="text" spellcheck="false" aria-label="Page" title="Type a page and press Enter">
     <span id="railTotal" class="rail-total"></span>
     <button class="rtool" id="railFirst" title="First page" aria-label="First page"><svg viewBox="0 0 24 24"><path d="M6 5h12M7 15l5-5 5 5"/></svg></button>
@@ -672,6 +671,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <button role="menuitem" id="mSave"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>Download original</button>
     <button role="menuitem" id="mInfo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Document details</button>
   </div>
+  <button id="railPin" class="rail-show rail-hide" hidden title="Hide the page tools" aria-label="Hide the page tools"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
   <button id="railShow" class="rail-show" hidden title="Show the page tools" aria-label="Show the page tools"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
     <div id="lens" class="lens circle" hidden>
       <div class="lens-view"><div class="lens-content page" aria-hidden="true"></div></div>
@@ -3073,7 +3073,7 @@ function setAx(patch, relayout){ const go = () => { S.ax = {...S.ax, ...patch}; 
 function closeAxNow(){ $('#ax').hidden = true; }
 function closeAx(){ popLayer('ax'); }
 function openAx(){ if($('#ax').hidden){ pushLayer('ax'); $('#ax').hidden = false; } renderAx(); $('#axClose').focus(); }
-$('#axOpen').onclick = openAx; $('#axFromReader').onclick = openAx; $('#axClose').onclick = closeAx;
+$('#axOpen').onclick = () => $('#ax').hidden ? openAx() : closeAx(); $('#axFromReader').onclick = openAx; $('#axClose').onclick = closeAx;
 $('#axHc').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if(b) setAx({contrast:b.dataset.v}); });
 $('#axCvd').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if(b) setAx({cvd:b.dataset.v}); });
 $('#axMotion').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if(b) setAx({motion:b.dataset.v}); });
@@ -3086,7 +3086,7 @@ $('#axEasy').addEventListener('change', e => {
 $('#axReset').onclick = () => { const go = () => { if(S.ax.easy && S.ax.prevFont && S.font === 'Atkinson') S.font = S.ax.prevFont; S.ax = {...AX_DEFAULT}; applySettings(); renderAx(); }; R.hidden ? go() : keepPlace(go); };
 // follow the device when its contrast, colour or motion settings change
 [AXMQ.contrast, AXMQ.forced, AXMQ.motion].forEach(m => { try{ m.addEventListener('change', () => applySettings(false)); }catch(e){} });
-$('#apOpen').onclick = () => { if($('#ap').hidden){ pushLayer('ap'); $('#ap').hidden = false; } renderAppearance(); $('#apClose').focus(); };
+$('#apOpen').onclick = () => { if(!$('#ap').hidden){ closeAp(); return; } pushLayer('ap'); $('#ap').hidden = false; renderAppearance(); $('#apClose').focus(); };
 $('#apClose').onclick = closeAp;
 $('#apReset').onclick = () => setHome({...HOME_DEFAULT});
 $('#apAccentC').addEventListener('input', e => setHome({accent:e.target.value}));
@@ -3843,7 +3843,7 @@ function closeReaderNow(){
   if(!R.hidden && page.childNodes.length) saveCur(); ready = false;
   stopComic(); stopPdfPages(); try{ pdfDoc?.destroy(); }catch(e){} pdfDoc = null; pdfLabels = null; pdfRot = 0; pdfTrim = null; thumbsReset(); railMenu(false); pdfSizes = null; pgTops = null; pgLine = 0;
   R.classList.remove('is-pdf','pdf-pages'); page.classList.remove('pdfmode','tint-light','tint-dark');
-  $('#rMode').hidden = true; $('#pdfGroup').hidden = true; findClose(); notesClear(); tocTab('toc'); $('#tabThumbs').hidden = true; $('#goPage').hidden = true; R.classList.remove('has-pages','rail-on'); $('#pdfRail').hidden = true; $('#railShow').hidden = true;
+  $('#rMode').hidden = true; $('#pdfGroup').hidden = true; findClose(); notesClear(); tocTab('toc'); $('#tabThumbs').hidden = true; $('#goPage').hidden = true; R.classList.remove('has-pages','rail-on'); $('#pdfRail').hidden = true; $('#railShow').hidden = true; $('#railPin').hidden = true;
   R.hidden = true; document.body.classList.remove('locked');
   page.replaceChildren(); urls.forEach(URL.revokeObjectURL); urls = []; cur = null;
   render();
@@ -4680,12 +4680,14 @@ const pageTotal = () => pdfDoc ? pdfDoc.numPages : comic ? comic.pages.length : 
 let railPinned = true;
 function railApply(){
   const on = R.classList.contains('has-pages'), pinned = railPinned;
-  $('#pdfRail').hidden = !(on && pinned); $('#railShow').hidden = !(on && !pinned);
+  $('#pdfRail').hidden = !(on && pinned); $('#railShow').hidden = !(on && !pinned); $('#railPin').hidden = !(on && pinned);
+  if(on && pinned) stage.style.setProperty('--railw', $('#pdfRail').offsetWidth + 'px');
   R.classList.toggle('rail-on', on && pinned);
   railUpdate();
 }
 function railUpdate(){
   if($('#pdfRail').hidden) return;
+  stage.style.setProperty('--railw', $('#pdfRail').offsetWidth + 'px');
   const n = currentPage(), total = pageTotal();
   if(document.activeElement !== $('#railPage')) $('#railPage').value = pageName(n);
   $('#railTotal').textContent = (pdfLabels && pageName(n) !== String(n)) ? `${n} / ${total}` : `/ ${total}`;
@@ -5046,7 +5048,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 9f40c95</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · cc9f3cf</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

@@ -260,6 +260,10 @@ body.dragging .drop{display:grid}
 .tool.solo{border:1px solid color-mix(in srgb,var(--rfg) 22%,transparent)}
 /* PDF text and link layers over each page (from pdf.js's viewer styles): invisible text that can be selected, copied and searched */
 .textLayer{position:absolute;inset:0;overflow:hidden;line-height:1;text-align:initial;-webkit-text-size-adjust:none;text-size-adjust:none;forced-color-adjust:none;transform-origin:0 0;z-index:2;caret-color:CanvasText}
+/* pdf.js lays text out on the unrotated page and turns it with these (from its viewer's stylesheet): needed for rotated pages */
+.textLayer[data-main-rotation="90"]{transform:rotate(90deg) translateY(-100%)}
+.textLayer[data-main-rotation="180"]{transform:rotate(180deg) translate(-100%,-100%)}
+.textLayer[data-main-rotation="270"]{transform:rotate(270deg) translateX(-100%)}
 .textLayer :is(span,br){color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
 .textLayer span.markedContent{top:0;height:0}
 .textLayer .endOfContent{display:block;position:absolute;inset:100% 0 0;z-index:-1;cursor:default;user-select:none}
@@ -3067,7 +3071,7 @@ async function ocrPage(w, doc, n){
   const r = await w.recognize(blob, {}, {blocks: true, text: false});
   const out = [];
   for(const b of r.data.blocks || []) for(const p of b.paragraphs || []) for(const l of p.lines || []){
-    const s = (l.text || '').replace(/\s+/g, ' ').trim(), bb = l.bbox;
+    const s = (l.text || '').replace(/\s+/g, ' ').trim().replace(/^[+«»*®]\s/, '• '), bb = l.bbox;   // bullets often come out as + or «
     if(!s || !bb || l.confidence < 45 || !/[\p{L}\p{N}]/u.test(s)) continue;   // skip guesses (often from pictures)
     const bl = l.baseline && l.baseline.x1 > l.baseline.x0 ? l.baseline : {x0: bb.x0, y0: bb.y1 - (bb.y1 - bb.y0) * 0.2, x1: bb.x1, y1: bb.y1 - (bb.y1 - bb.y0) * 0.2};
     const slope = (bl.y1 - bl.y0) / (bl.x1 - bl.x0), yb = x => bl.y0 + (x - bl.x0) * slope;
@@ -5234,7 +5238,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 2df48f1</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 6b0f6d5</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

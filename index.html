@@ -80,6 +80,8 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:28px 22px}
 .card{display:flex;flex-direction:column;gap:10px;min-width:0}
+/* the title takes the spare space, so progress, shelf and Details/Remove line up along each row of books */
+.card > .meta{flex:1 1 auto}
 .cover{display:block;width:100%;aspect-ratio:2/3;max-width:100%;border:0;padding:0;border-radius:4px 8px 8px 4px;overflow:hidden;cursor:pointer;background:var(--line);box-shadow:0 1px 2px rgb(0 0 0 / .15),0 8px 20px -10px rgb(0 0 0 / .35);position:relative;transition:transform .15s}
 .cover:hover{transform:translateY(-3px)}
 .cover img{width:100%;height:100%;object-fit:cover;display:block}
@@ -2880,7 +2882,7 @@ function card(b){
   if(shelf) shelf.addEventListener('change', async ()=>{ b.shelf = shelf.value.trim(); b.upd = Date.now(); await dbPutMeta(b); render(); });
   return el('article',{class:'card'},
     el('button',{class:'cover', 'aria-label':`Read ${b.title}`, onclick:()=>openBook(b)}, coverEl(b)),
-    el('div',{}, el('h3',{text:b.title}), (b.author || b.year) ? el('p',{class:'au'}, b.author || '', b.author && b.year ? ' · ' : '', b.year ? el('span',{class:'yr', text:String(b.year)}) : null) : null),
+    el('div',{class:'meta'}, el('h3',{text:b.title}), (b.author || b.year) ? el('p',{class:'au'}, b.author || '', b.author && b.year ? ' · ' : '', b.year ? el('span',{class:'yr', text:String(b.year)}) : null) : null),
     el('div',{class:'prog'}, Object.assign(el('span'),{style:`width:${Math.round(p*100)}%`})),
     el('div',{class:'status'}, el('span',{text: st==='finished'?'Finished': st==='reading'?`${Math.round(p*100)}% read`:'Unread'}),
       b.sample ? el('span',{class:'pill',text:'Sample'}) : b.needsCheck ? el('button',{class:'pill check', text:'Check details', onclick:()=>openDetails(b)}) : null),
@@ -5044,7 +5046,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 59a5c8c</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 9f40c95</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

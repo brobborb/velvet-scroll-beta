@@ -40,6 +40,40 @@ button,input,select{font:inherit;color:inherit}
 .top .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:22px 18px}
 .brand h1{font-family:var(--f-display);font-weight:400;font-size:32px;line-height:1.1;margin:0;letter-spacing:-.01em}
 .brand p{margin:4px 0 0;color:var(--muted)}
+.hdrbtns{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap}
+.hquiet{display:flex;align-items:center;gap:2px}
+.qbtn{display:inline-flex;align-items:center;gap:7px;border:0;background:none;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap}
+.qbtn svg{width:20px;height:20px;flex:none}
+.qbtn:hover,.qbtn[aria-expanded="true"]{background:var(--accent-soft);color:var(--fg)}
+.qbtn[hidden]{display:none}
+.addsplit{position:relative;display:inline-flex}
+.addsplit .addmain{border-radius:999px 0 0 999px;padding-right:14px}
+.addsplit .addmain svg{width:18px;height:18px}
+.addsplit .addmore{border-radius:0 999px 999px 0;padding:9px 11px 9px 9px;border-left:1px solid color-mix(in srgb,var(--accent-fg) 30%,transparent)}
+.addsplit .addmore svg{width:17px;height:17px}
+.addmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:40;min-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 40px rgb(0 0 0 / .22);padding:6px;display:flex;flex-direction:column}
+.addmenu[hidden]{display:none}
+.addmenu button{white-space:nowrap;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px;color:var(--fg)}
+.addmenu button[hidden]{display:none}
+.addmenu button:hover,.addmenu button:focus-visible{background:var(--accent-soft);outline:none}
+.addmenu svg{width:19px;height:19px;flex:none;color:var(--muted)}
+/* Continue reading */
+.resume{display:flex;align-items:center;gap:16px;margin-top:20px;padding:12px 14px 12px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.resume[hidden]{display:none}
+.resume .cover{width:52px;flex:none;border-radius:2px 5px 5px 2px}
+.resume .cover:hover{transform:none}
+.resume .rinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.resume .rk{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.resume .rt{font-family:var(--f-read);font-weight:600;font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resume .ra{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resume .rp{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:3px}
+.resume .rp .prog{flex:0 1 240px;min-width:40px}
+.resume .rp span{white-space:nowrap}
+.resume .more{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:40%}
+.resume .more button{border:1px solid var(--line);background:none;border-radius:999px;padding:4px 10px;font-size:12.5px;color:var(--muted);cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resume .more button:hover{border-color:var(--accent);color:var(--fg)}
+@media (max-width:860px){ .hquiet .qbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} .hquiet .qbtn{padding:9px} .resume .more{display:none} }
+@media (max-width:560px){ .top .wrap{padding-block:16px 14px} .brand h1{font-size:27px} .brand p{font-size:14px} .resume{gap:12px;margin-top:14px} .resume .cover{width:44px} .resume .rt{font-size:16px} .resume > .btn{padding:8px 14px} }
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:700;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
 .btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
@@ -645,24 +679,29 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <h1>Velvet Scroll</h1>
       <p>Your ebooks, scrolling at your pace.</p>
     </div>
-    <div class="row hdrbtns" style="flex-wrap:wrap;gap:10px">
-    <button id="cont" class="btn" hidden></button>
-    <button id="find" class="btn" hidden title="Look up titles, authors, dates and covers in public databases">Find details</button>
-    <button id="artOpen" class="btn" hidden>Save article</button>
-    <button id="axOpen" class="btn">Accessibility</button>
-    <button id="apOpen" class="btn">Appearance</button>
-    <button id="bkOpen" class="btn">Backup</button>
-    <button id="urlOpen" class="btn" title="Add an ebook or PDF from a web address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>Add from URL</button>
-    <label class="btn primary" for="file">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-      Add books
-    </label>
+    <div class="hdrbtns">
+    <nav class="hquiet" aria-label="Library tools">
+      <button id="find" class="qbtn" hidden title="Look up titles, authors, dates and covers in public databases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/><path d="M8.5 9.5h5M8.5 12.5h3"/></svg><span>Find details</span></button>
+      <button id="apOpen" class="qbtn" title="Appearance: theme, colours and fonts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.3-1-.6-1.4-.3-.4-.6-.8-.6-1.4 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10" cy="7" r="1.1"/><circle cx="14.5" cy="7" r="1.1"/></svg><span>Appearance</span></button>
+      <button id="axOpen" class="qbtn" title="Accessibility: larger text, contrast and motion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.5 7-1.5M12 10v5M12 15l-3 6M12 15l3 6"/></svg><span>Accessibility</span></button>
+      <button id="bkOpen" class="qbtn" title="Backup, restore and sync codes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v3H4zM5.5 10v9h13v-9M10 13.5h4"/></svg><span>Backup</span></button>
+    </nav>
+    <div class="addsplit">
+      <label class="btn primary addmain" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add books</label>
+      <button class="btn primary addmore" id="addMore" aria-haspopup="menu" aria-expanded="false" aria-controls="addMenu" title="More ways to add" aria-label="More ways to add books"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div id="addMenu" class="addmenu" role="menu" hidden>
+        <button role="menuitem" id="addFilesItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>Choose files on this device…</button>
+        <button role="menuitem" id="urlOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>From a web address…</button>
+        <button role="menuitem" id="artOpen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 12.5h8M8 16h5"/></svg>Save a web article…</button>
+      </div>
+    </div>
     <input type="file" id="file" accept=".epub,.kepub,.mobi,.azw3,.azw,.prc,.pdf,.txt,.htm,.html,.xhtml,.fb2,.fbz,.cbz,.zip,application/epub+zip,application/x-mobipocket-ebook,application/pdf,text/plain,text/html,application/x-cbz,application/zip" multiple hidden>
     </div>
   </div>
 </header>
 
 <main class="wrap">
+  <section id="cont" class="resume" hidden aria-label="Continue reading"></section>
   <div class="tools">
     <input id="q" class="search" type="search" placeholder="Search titles, authors or ISBN" aria-label="Search library">
     <select id="sort" class="sortsel" aria-label="Sort by">
@@ -2369,6 +2408,16 @@ $('#dSave').onclick = async () => {
 const URL_MAX = 500e6;
 let urlCtl = null;
 function closeUrlNow(){ $('#urlDlg').hidden = true; if(urlCtl){ urlCtl.abort(); urlCtl = null; } }
+/* the Add books menu */
+function addMenu(open){ const m = $('#addMenu'), b = $('#addMore'); if(open === undefined) open = m.hidden; m.hidden = !open; b.setAttribute('aria-expanded', String(open));
+  if(open) m.querySelector('button:not([hidden])').focus(); }
+$('#addMore').onclick = e => { e.stopPropagation(); addMenu(); };
+document.addEventListener('pointerdown', e => { if(!$('#addMenu').hidden && !e.target.closest('#addMenu, #addMore')) addMenu(false); });
+$('#addMenu').addEventListener('keydown', e => { const items = [...$('#addMenu').querySelectorAll('button:not([hidden])')], i = items.indexOf(document.activeElement);
+  if(e.key === 'Escape'){ e.stopPropagation(); addMenu(false); $('#addMore').focus(); }
+  else if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus(); } });
+$('#addMenu').addEventListener('click', e => { if(e.target.closest('button')) addMenu(false); });
+$('#addFilesItem').onclick = () => $('#file').click();
 $('#urlOpen').onclick = () => { pushLayer('url'); $('#urlDlg').hidden = false; $('#urlSt').textContent = ''; $('#urlAct').replaceChildren(); $('#urlProg').hidden = true; $('#urlIn').value = ''; $('#urlIn').focus(); };
 $('#urlClose').onclick = () => popLayer('url');
 $('#urlDlg').addEventListener('click', e => { if(e.target === $('#urlDlg')) popLayer('url'); });
@@ -3233,9 +3282,16 @@ function render(){
     G.replaceChildren(...(miss ? [el('div', {class:'dbar'}, el('span', {text:`${miss} ${miss === 1 ? 'book has' : 'books have'} no description.`}), el('button', {class:'btn', text:'Find descriptions', onclick:descFind}))] : []), ...list.map(detailRow)); descFill(list); }
   else if(libLayout === 'table'){ G.className = 'tview'; G.replaceChildren(list.length ? libTable(list) : ''); }
   else { G.className = 'grid' + (libSize < 140 ? ' compact' : ''); G.replaceChildren(...list.map(card)); }
-  const lastB = books.filter(b=>{ const s=status(b); return s==='reading' && inMode(b); }).sort((a,b)=>(progress[b.id]?.t||0)-(progress[a.id]?.t||0))[0];
+  const reading = books.filter(b=>{ const s=status(b); return s==='reading' && inMode(b); }).sort((a,b)=>(progress[b.id]?.t||0)-(progress[a.id]?.t||0)), lastB = reading[0];
   const cb = $('#cont'); cb.hidden = !lastB;
-  if(lastB){ cb.textContent = `Continue “${lastB.title.length>28 ? lastB.title.slice(0,27)+'…' : lastB.title}” · ${Math.round(progress[lastB.id].p*100)}%`; cb.onclick = ()=>openBook(lastB); }
+  if(lastB){ const pc = Math.round(progress[lastB.id].p*100), when = progress[lastB.id].t ? ago(progress[lastB.id].t) : '';
+    cb.replaceChildren(
+      el('button', {class:'cover', 'aria-label':`Continue ${lastB.title}`, onclick:() => openBook(lastB)}, coverEl(lastB)),
+      el('div', {class:'rinfo'}, el('span', {class:'rk', text:'Continue reading'}), el('span', {class:'rt', text:lastB.title, title:lastB.title}),
+        lastB.author ? el('span', {class:'ra', text:lastB.author}) : null,
+        el('div', {class:'rp'}, el('div', {class:'prog'}, Object.assign(el('span'), {style:`width:${pc}%`})), el('span', {text:`${pc}%` + (when ? ` · ${when}` : '')}))),
+      reading.length > 1 ? el('div', {class:'more', 'aria-label':'Also reading'}, ...reading.slice(1, 4).map(b => el('button', {text:b.title, title:`Continue ${b.title} (${Math.round(progress[b.id].p*100)}%)`, onclick:() => openBook(b)}))) : null,
+      el('button', {class:'btn primary', text:'Continue', onclick:() => openBook(lastB)})); }
 }
 function rmButton(b){
   const rm = !b.sample && el('button',{class:'ghost', text:'Remove', 'aria-label':`Remove ${b.title}`});
@@ -5799,7 +5855,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 8f3c965</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 4fa8156</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

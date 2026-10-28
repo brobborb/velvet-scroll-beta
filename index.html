@@ -143,6 +143,21 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .dmodes .dml{font-size:13px;color:var(--muted);font-weight:700}
 .dmodes .modeseg button{width:auto;padding:0 12px 0 10px}
 #dModesHint{margin:-6px 0 0}
+/* Book details: compact, with Save always in view */
+#dlg .sheet{gap:12px;padding:16px 20px 0;width:min(700px,100%)}
+#dlg .dgrid{gap:16px}
+#dlg .dfields{gap:9px}
+#dlg .dfields label{gap:3px}
+#dlg .dfields input{padding:6px 10px}
+#dlg .drow2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:10px}
+#dlg .isbnmsg:empty,#dlg #dModesHint:empty{display:none}
+#dlg .isbnmsg{margin:-4px 0 0}
+#dlg .modeseg button{height:30px}
+#dlg .grp{gap:6px}
+#dlg .covers{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+#dlg .hint{font-size:12.5px;margin:0}
+#dlg .sh-foot{position:sticky;bottom:0;z-index:2;background:var(--surface);margin:0 -20px;padding:10px 20px 14px;border-top:1px solid var(--line)}
+@media (max-width:480px){ #dlg .drow2{grid-template-columns:minmax(0,1fr)} #dlg .sheet{padding:14px 14px 0} #dlg .sh-foot{margin:0 -14px;padding:10px 14px 12px} }
 .dfields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:700}
 .dfields input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--fg);font-size:15px;font-weight:400;min-width:0}
 .cadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -870,8 +885,10 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="dfields">
         <label for="dTitle">Title<input id="dTitle" autocomplete="off"></label>
         <label for="dAuthor">Author<input id="dAuthor" autocomplete="off"></label>
-        <label for="dYear">First published<input id="dYear" inputmode="numeric" placeholder="e.g. 1890" autocomplete="off"></label>
-        <label for="dIsbn">ISBN<input id="dIsbn" placeholder="e.g. 978-0-14-118776-1" autocomplete="off" spellcheck="false" aria-describedby="dIsbnMsg"></label>
+        <div class="drow2">
+          <label for="dYear">First published<input id="dYear" inputmode="numeric" placeholder="e.g. 1890" autocomplete="off"></label>
+          <label for="dIsbn">ISBN<input id="dIsbn" placeholder="e.g. 978-0-14-118776-1" autocomplete="off" spellcheck="false" aria-describedby="dIsbnMsg"></label>
+        </div>
         <p class="hint isbnmsg" id="dIsbnMsg" aria-live="polite"></p>
         <div class="dmodes"><span class="dml" id="dModesL">Show in</span>
           <div class="modeseg" role="group" aria-labelledby="dModesL">
@@ -893,7 +910,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
         <div class="seg" role="group" aria-label="How the image fits the cover"><button data-m="fill">Fill the cover</button><button data-m="fit">Show the whole image</button></div>
         <p class="hint" id="dFitHint">Drag the large preview to choose which part of the image shows.</p>
       </div>
-      <p class="hint" id="dCoverHint">Images are shaped to a 2:3 book cover automatically. You can also paste an image, or drop one onto the large preview.</p>
+      <p class="hint" id="dCoverHint">Images are shaped to a 2:3 cover. You can also paste an image, or drop one onto the preview.</p>
     </div>
     <div class="grp">
       <span class="lbl">Public databases</span>
@@ -2147,7 +2164,7 @@ async function openDetails(b){
   $('#dResults').replaceChildren(); $('#dStatus').textContent = '';
   $('#dSearch').hidden = !IS_EXT;
   $('#dHint').textContent = IS_EXT ? 'Searches using the title and author above. Only those words are sent. Covers from Wikimedia Commons and Project Gutenberg are openly licensed.'
-    : 'Looking up details needs the Velvet Scroll browser extension, because this page can’t connect to other websites. You can still edit the details and choose the classic leather cover here.';
+    : 'Looking up details online needs the Velvet Scroll browser extension.';
   renderCoverChoices(); $('#dlg').hidden = false; $('#dTitle').focus();
   if(!b.isbn){ const t = await openingText(b), found = findIsbn(t);
     if(found && dlg && dlg.b === b && !$('#dIsbn').value){ $('#dIsbn').value = found; isbnMsg(); $('#dStatus').textContent = 'ISBN found in the book.'; } }
@@ -5392,7 +5409,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · b840665</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · cfa2a9a</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

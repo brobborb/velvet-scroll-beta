@@ -94,6 +94,10 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .seg3 button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
 .seg3 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dlist{display:flex;flex-direction:column}
+.sheet > .urlrow{flex:none}
+.urlprog{width:100%;height:6px;accent-color:var(--accent)}
+.urlprog[hidden]{display:none}
+#urlAct:empty{display:none}
 .dbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end;font-size:14px;color:var(--muted);padding:0 4px 8px}
 .dbar .btn{padding:6px 14px}
 #dDescSrc{margin:-6px 0 0}
@@ -648,6 +652,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <button id="axOpen" class="btn">Accessibility</button>
     <button id="apOpen" class="btn">Appearance</button>
     <button id="bkOpen" class="btn">Backup</button>
+    <button id="urlOpen" class="btn" title="Add an ebook or PDF from a web address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>Add from URL</button>
     <label class="btn primary" for="file">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
       Add books
@@ -1068,6 +1073,18 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <div class="urlrow"><input id="artUrl" type="url" inputmode="url" placeholder="https://…" aria-label="Article web address" autocomplete="off"><button class="btn primary" id="artGo">Save</button></div>
     <p class="hint" id="artSt" role="status"></p>
     <p class="hint">On a page you’re reading, you can also save it with the Velvet Scroll button in the browser toolbar, or by right-clicking the page.</p>
+  </div>
+</div>
+
+<div id="urlDlg" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="urlH">
+    <header class="sh-head"><h2 id="urlH">Add from a web address</h2><button class="btn" id="urlClose">Close</button></header>
+    <p class="hint">Paste a link to an ebook or PDF: EPUB, PDF, MOBI, AZW3, FB2, TXT or CBZ. Links to a book’s page on Project Gutenberg or arXiv work too, as do shared Dropbox, Google Drive and GitHub links. DRM-protected books can’t be added.</p>
+    <div class="urlrow"><input id="urlIn" type="url" inputmode="url" placeholder="https://…" aria-label="Web address of the book or PDF" autocomplete="off"><button class="btn primary" id="urlGo">Add</button></div>
+    <progress id="urlProg" class="urlprog" hidden></progress>
+    <p class="hint" id="urlSt" role="status" aria-live="polite"></p>
+    <div class="row" id="urlAct" style="flex-wrap:wrap;gap:8px"></div>
+    <p class="hint" id="urlExtHint">Many sites don’t let other websites download their files. If a link doesn’t work here, download the file in your browser and use Add books, or use the Velvet Scroll browser extension, which can download from any site you allow.</p>
   </div>
 </div>
 
@@ -2242,7 +2259,7 @@ function renderResults(){
 /* ---------- Back button: every open book, panel and window adds a history step, so Back closes it ---------- */
 const layers = [];
 function pushLayer(name){ try{ history.pushState({bookroll:true, depth:layers.length + 1}, ''); layers.push(name); }catch(e){} }
-function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, pinfo:closePinfoNow, note:closeNoteNow}[name] || (() => {}))(); }
+function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, url:closeUrlNow, pinfo:closePinfoNow, note:closeNoteNow}[name] || (() => {}))(); }
 // close a layer from a button: step history back to just below it, and popstate does the closing
 function popLayer(name){ const i = layers.lastIndexOf(name); if(i < 0){ closeLayerNow(name); return; } history.go(-(layers.length - i)); }
 addEventListener('popstate', e => { const d = e.state && e.state.bookroll ? e.state.depth : 0; while(layers.length > d) closeLayerNow(layers.pop()); });
@@ -2345,6 +2362,107 @@ $('#dSave').onclick = async () => {
   await dbPutMeta(b); closeDetails(); render();
   toast(vis && vis !== modeKey() ? `Details saved. This book now shows only in ${vis === 's' ? 'Study' : 'Relaxed'} mode, so it’s hidden here.` : 'Details saved.', vis && vis !== modeKey() ? 6000 : 3200);
 };
+
+/* ---------- Adding a book or PDF from a web address ----------
+   The website downloads directly when the site allows it (many don't, for any other website); the extension asks for
+   permission to that one site, then can download from it. Common book pages are turned into their file's address. */
+const URL_MAX = 500e6;
+let urlCtl = null;
+function closeUrlNow(){ $('#urlDlg').hidden = true; if(urlCtl){ urlCtl.abort(); urlCtl = null; } }
+$('#urlOpen').onclick = () => { pushLayer('url'); $('#urlDlg').hidden = false; $('#urlSt').textContent = ''; $('#urlAct').replaceChildren(); $('#urlProg').hidden = true; $('#urlIn').value = ''; $('#urlIn').focus(); };
+$('#urlClose').onclick = () => popLayer('url');
+$('#urlDlg').addEventListener('click', e => { if(e.target === $('#urlDlg')) popLayer('url'); });
+$('#urlIn').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#urlGo').click(); } });
+$('#urlExtHint').hidden = IS_EXT;
+function bookUrl(u){   // a book's page to its file, and the other sites its download passes through
+  const h = u.hostname.replace(/^www\./, ''), p = u.pathname; let m;
+  if(h === 'gutenberg.org' && (m = /^\/ebooks\/(\d+)\/?$/.exec(p))) return {href:`https://www.gutenberg.org/ebooks/${m[1]}.epub3.images`, also:[]};
+  if(h === 'arxiv.org' && (m = /^\/(?:abs|pdf)\/(.+?)(?:\.pdf)?\/?$/.exec(p))) return {href:`https://arxiv.org/pdf/${m[1]}`, also:[]};
+  if(h === 'github.com' && (m = /^\/([^/]+)\/([^/]+)\/(?:blob|raw)\/(.+)$/.exec(p))) return {href:`https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}`, also:['https://raw.githubusercontent.com/*']};
+  if(/(^|\.)dropbox\.com$/.test(h)){ const v = new URL(u.href); v.searchParams.set('dl', '1'); return {href:v.href, also:['https://*.dropboxusercontent.com/*']}; }
+  if(h === 'drive.google.com' && (m = /\/file\/d\/([^/]+)/.exec(p) || (/^\/open$/.test(p) && [0, u.searchParams.get('id')]))) return {href:`https://drive.google.com/uc?export=download&id=${m[1]}`, also:['https://drive.usercontent.google.com/*']};
+  if(h === 'archive.org') return {href:u.href, also:['https://*.archive.org/*']};
+  return {href:u.href, also:[]};
+}
+const BOOK_EXT = /\.(epub|kepub|pdf|mobi|azw3?|prc|fb2|fbz|cbz|txt)$/i;
+function urlFileName(r, href, u8){
+  const cd = r.headers.get('content-disposition') || '';
+  let name = (/filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i.exec(cd) || [])[1] || (/filename\s*=\s*"?([^";]+)"?/i.exec(cd) || [])[1] || '';
+  try{ name = decodeURIComponent(name.trim()); }catch(e){}
+  if(!name){ try{ name = decodeURIComponent(new URL(r.url || href).pathname.split('/').filter(Boolean).pop() || ''); }catch(e){} }
+  name = (name || 'download').replace(/[\\/:*?"<>|]+/g, ' ').trim();
+  if(!BOOK_EXT.test(name)){   // no telling extension: go by the content
+    const head = String.fromCharCode(...u8.subarray(0, 64)), at60 = String.fromCharCode(...u8.subarray(60, 68)), type = r.headers.get('content-type') || '';
+    const ext = head.startsWith('%PDF') ? '.pdf' : at60 === 'BOOKMOBI' ? '.mobi' : head.startsWith('PK') ? (/epub/.test(type) || head.includes('mimetypeapplication/epub') ? '.epub' : /cbz|comic/.test(type) ? '.cbz' : '.zip')
+      : /fictionbook/i.test(type) ? '.fb2' : /text\/plain/.test(type) ? '.txt' : '';
+    name = name.replace(/(\.epub3?)?\.(no)?images$/i, '').replace(/\.(cgi|php|aspx?|jsp)$/i, '') + ext;
+  }
+  return name;
+}
+// links on a web page that lead to book files (an EPUB first, then a PDF)
+function bookLinks(doc, base){
+  const seen = new Set(), out = [];
+  for(const a of doc.querySelectorAll('a[href]')){
+    let h; try{ h = new URL(a.getAttribute('href'), base); }catch(e){ continue; }
+    if(!/^https?:$/.test(h.protocol) || seen.has(h.href)) continue;
+    const path = h.pathname.toLowerCase(), m = /\.(epub|pdf|mobi|azw3|fb2|cbz)$/.exec(path) || (/gutenberg\.org$/.test(h.hostname) && /\.epub3?\.(no)?images$/.exec(path) && ['', 'epub']);
+    if(!m) continue; seen.add(h.href);
+    out.push({href:h.href, kind:m[1], label:(a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60) || h.pathname.split('/').pop()});
+  }
+  const rank = k => ['epub', 'pdf', 'mobi', 'azw3', 'fb2', 'cbz'].indexOf(k);
+  return out.sort((a, b) => rank(a.kind) - rank(b.kind)).slice(0, 4);
+}
+async function urlAdd(raw, from){
+  const st = $('#urlSt'), act = $('#urlAct'), prog = $('#urlProg'); act.replaceChildren();
+  let u = null; raw = String(raw || '').trim();
+  try{ u = new URL(/^[a-z][a-z0-9+.-]*:/i.test(raw) ? raw : 'https://' + raw); }catch(e){}
+  if(!u || /\s/.test(raw) || !/^https?:$/.test(u.protocol) || !/\./.test(u.hostname)){ st.textContent = 'Enter a web address starting with https://'; return; }
+  if(!IS_EXT && u.protocol === 'http:' && location.protocol === 'https:'){ st.textContent = 'This website can only download from secure (https://) addresses. Try the same address with https://, or download the file and use Add books.'; return; }
+  const bu = bookUrl(u), target = new URL(bu.href);
+  if(IS_EXT){   // permission for this site, asked for straight from the click
+    const ok = await browser.permissions.request({origins:[...new Set([u.origin + '/*', target.origin + '/*', ...bu.also])]}).catch(() => false);
+    if(!ok){ st.textContent = 'Velvet Scroll needs your permission to download from ' + target.hostname + '.'; return; }
+  }
+  const ctl = urlCtl = new AbortController(); $('#urlGo').disabled = true; prog.hidden = false; prog.removeAttribute('value');
+  st.textContent = 'Connecting to ' + target.hostname + '…';
+  try{
+    const r = await fetch(bu.href, {credentials:'omit', signal:ctl.signal});
+    if(!r.ok){ st.textContent = r.status === 404 ? 'Nothing was found at that address (error 404). Check the link.' : r.status === 401 || r.status === 403 ? 'That site wants you to sign in or doesn’t allow this download. Download the file in your browser, then use Add books.' : `The site answered with an error (${r.status}). Try again later, or download the file and use Add books.`; return; }
+    const total = +r.headers.get('content-length') || 0;
+    if(total > URL_MAX){ st.textContent = 'That file is too large to add (over 500 MB).'; return; }
+    const type = r.headers.get('content-type') || '';
+    if(/text\/html|application\/xhtml/i.test(type)){
+      // a web page: look for links to book files on it
+      const html = decodeText(new Uint8Array(await r.arrayBuffer())), doc = new DOMParser().parseFromString(html, 'text/html'), links = bookLinks(doc, r.url || bu.href);
+      if(links.length){
+        st.textContent = links.length === 1 ? 'That’s a web page with a book file on it:' : 'That’s a web page with these book files on it. Choose one:';
+        act.replaceChildren(...links.map(l => el('button', {class:'btn', text:`Add ${l.kind.toUpperCase()}: ${l.label}`, onclick:() => urlAdd(l.href, u.href)})));
+      } else {
+        st.textContent = 'That address is a web page, not an ebook or PDF file. Copy the link to the file itself (often a Download button), or download it and use Add books.';
+        if(CAN_SAVE_ARTICLES) act.replaceChildren(el('button', {class:'btn', text:'Save the page as an article instead', onclick:() => { popLayer('url'); setTimeout(() => { $('#artOpen').click(); $('#artUrl').value = u.href; $('#artGo').click(); }, 60); }}));
+      }
+      return;
+    }
+    // download, showing progress
+    const rd = r.body.getReader(), parts = []; let got = 0, last = 0;
+    if(total) prog.max = total;
+    for(;;){ const {done, value} = await rd.read(); if(done) break; parts.push(value); got += value.length;
+      if(got > URL_MAX){ ctl.abort(); st.textContent = 'That file is too large to add (over 500 MB).'; return; }
+      if(Date.now() - last > 200){ last = Date.now(); if(total) prog.value = got; st.textContent = `Downloading… ${(got / 1e6).toFixed(1)}${total ? ' of ' + (total / 1e6).toFixed(1) : ''} MB`; } }
+    const u8 = new Uint8Array(got); let o = 0; for(const p of parts){ u8.set(p, o); o += p.length; }
+    const name = urlFileName(r, bu.href, u8);
+    if(!BOOK_EXT.test(name) && !/\.zip$/i.test(name)){ st.textContent = 'That file doesn’t look like an ebook or PDF that Velvet Scroll can open.'; return; }
+    st.textContent = 'Adding to your library…'; prog.hidden = true;
+    const res = await new Promise(done => { addFiles([new File([u8], name, {type: type.split(';')[0] || ''})], {source: from || u.href, done}).then(() => done(null)); });
+    if(res && res.added) popLayer('url');
+    else st.textContent = res && res.dup ? 'That book is already in your library.' : 'Couldn’t open that file. It may be damaged, DRM-protected or not an ebook.';
+  }catch(e){
+    if(ctl.signal.aborted) return;
+    st.textContent = IS_EXT ? 'Couldn’t download from that address. Check your connection and the link, then try again.'
+      : 'That site doesn’t let other websites download its files, or couldn’t be reached. Download the file in your browser and use Add books, or use the Velvet Scroll browser extension, which can download from any site you allow.';
+  } finally { if(urlCtl === ctl) urlCtl = null; $('#urlGo').disabled = false; prog.hidden = true; }
+}
+$('#urlGo').onclick = () => urlAdd($('#urlIn').value);
 
 /* ---------- Saving web articles (extension) ---------- */
 const CAN_SAVE_ARTICLES = IS_EXT && typeof velvetArticle === 'function' && typeof velvetStoreArticle === 'function';
@@ -3243,7 +3361,7 @@ function card(b){
   );
 }
 
-async function addFiles(files){
+async function addFiles(files, opts){
   const all = [...files];
   const rar = all.filter(f => /\.(cbr|cb7|rar)$/i.test(f.name)).map(f => f.name);
   const rarMsg = rar.length ? ` ${rar.join(', ')} ${rar.length === 1 ? 'is a CBR/CB7 comic' : 'are CBR/CB7 comics'}, which Velvet Scroll can’t open. Convert to CBZ first (Calibre does this for free).` : '';
@@ -3266,7 +3384,7 @@ async function addFiles(files){
       }
       const title = ep.title || f.name.replace(/(\.(fb2|txt|x?html?|kepub))?\.[a-z0-9]+$/i,'').replace(/[_-]+/g,' ').trim();
       if(books.some(b=>b.title===title && b.author===ep.author)){ dup++; continue; }
-      const m = {id:uid(), title, author:ep.author, year:ep.year || null, isbn:ep.isbn || '', added:Date.now(), upd:Date.now(), shelf:'', file:f.name, size:buf.byteLength, fp: await fingerprint(buf), desc: cleanDesc(ep.desc)};
+      const m = {id:uid(), title, author:ep.author, year:ep.year || null, isbn:ep.isbn || '', added:Date.now(), upd:Date.now(), shelf:'', file:f.name, size:buf.byteLength, fp: await fingerprint(buf), desc: cleanDesc(ep.desc)}; if(opts && opts.source) m.source = opts.source;
       try{ const fm = fmtFromSniff((await sniff(buf, f.name)).kind, f.name); if(fm) m.fmt = fm; }catch(e){}
       if(m.fp && books.some(b => b.fp === m.fp)){ dup++; continue; }
       if(ep.coverBuf){ m.coverBuf = ep.coverBuf; m.coverType = ep.coverType; m.coverSrc = PDF.isPdf(new Uint8Array(buf)) ? 'page' : 'own'; }
@@ -3281,6 +3399,7 @@ async function addFiles(files){
   if(dup) parts.push(`${dup} already in your library.`);
   if(bad.length) parts.push(`Couldn’t read ${bad.join(', ')}.`);
   toast((parts.join(' ') || 'Nothing added.') + rarMsg, bad.length || rarMsg ? 9000 : 3500);
+  if(opts && opts.done) opts.done({added, dup, bad});
   if(fresh.length && await hasLookup()){
     const res = await autoLookup(fresh);
     if(!res.offline && (res.upd || res.check)) toast(`Found details for ${res.upd} new book${res.upd===1?'':'s'}.` + (res.check ? ` ${res.check} need${res.check===1?'s':''} checking.` : ''), 6000);
@@ -5599,6 +5718,7 @@ $('#rBack').onclick = closeReader;
 addEventListener('keydown', e=>{
   if(!$('#nvdlg').hidden){ if(e.key === 'Escape') nvClose(); return; }
   if(!$('#ocrdlg').hidden){ if(e.key === 'Escape') ocrClose(); return; }
+  if(!$('#urlDlg').hidden){ if(e.key === 'Escape') popLayer('url'); return; }
   if(!$('#dlg').hidden){ if(e.key === 'Escape') closeDetails(); return; }
   if(!$('#bk').hidden){ if(e.key === 'Escape') closeBackup(); return; }
   if(!$('#ax').hidden && e.key === 'Escape'){ closeAx(); return; }
@@ -5679,7 +5799,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 0954f85</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 8f3c965</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

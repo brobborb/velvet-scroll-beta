@@ -812,7 +812,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <label class="check" id="tintRow"><input type="checkbox" id="sTint"> Tint pages to match the colours above</label>
       <label class="check" id="trimRow"><input type="checkbox" id="sTrim"> Trim white margins from pages</label>
       <p class="hint" id="pgHint">Text size, typeface and spacing apply when the PDF is shown as reflowed text.</p>
-      <div class="row pdftools" id="pdfTools" style="flex-wrap:wrap;gap:8px"><button class="btn" id="dPrint">Print…</button><button class="btn" id="dSave">Download original</button><button class="btn" id="dInfo">Document details</button></div>
+      <div class="row pdftools" id="pdfTools" style="flex-wrap:wrap;gap:8px"><button class="btn" id="pdfPrintBtn">Print…</button><button class="btn" id="pdfSaveBtn">Download original</button><button class="btn" id="pdfInfoBtn">Document details</button></div>
     </div>
 
     <div class="grp">
@@ -4854,9 +4854,9 @@ $('#mTrim').onclick = () => { railMenu(false); setTrim(!S.trim); };
 $('#mPrint').onclick = () => { railMenu(false); pdfPrint(); };
 $('#mSave').onclick = () => { railMenu(false); pdfDownload(); };
 $('#mInfo').onclick = () => { railMenu(false); pdfInfo(); };
-$('#dPrint').onclick = () => pdfPrint();
-$('#dSave').onclick = () => pdfDownload();
-$('#dInfo').onclick = () => pdfInfo();
+$('#pdfPrintBtn').onclick = () => pdfPrint();
+$('#pdfSaveBtn').onclick = () => pdfDownload();
+$('#pdfInfoBtn').onclick = () => pdfInfo();
 /* download the original file */
 async function pdfDownload(){
   if(!cur) return;
@@ -5034,7 +5034,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · a64421b</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 31a42c7</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

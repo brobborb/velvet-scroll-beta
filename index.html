@@ -762,7 +762,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <button id="fsBtn" class="rbtn icon" aria-label="Full screen" title="Full screen (F)"><svg id="icFs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg id="icFsOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
   </div>
   <div class="r-stage" id="stage">
-    <div id="scroller" class="scroller" tabindex="-1"><article id="page" class="page"></article></div>
+    <div id="scroller" class="scroller" tabindex="-1" role="region" aria-label="Book text"><article id="page" class="page"></article></div>
     <div id="sweepFoot" class="sweep-foot" hidden></div>
     <div id="sweepHead" class="sweep-head" hidden></div>
     <div id="sweepLine" class="sweep-line" hidden><span class="sweep-mark"></span></div>
@@ -1073,6 +1073,11 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="seg" id="axMotion" role="group" aria-labelledby="axMoL"><button data-v="auto">Match my device</button><button data-v="reduce">Reduce motion</button></div>
       <p class="hint" id="axMoHint"></p>
     </div>
+    <div class="grp">
+      <span class="lbl">Keyboard</span>
+      <label class="check"><input type="checkbox" id="axKeys"> Single-letter shortcuts (H, M, R, F, G, [ and ])</label>
+      <p class="hint">Turn these off if they clash with your screen reader or speech software. Space, the arrow keys and Page Up / Page Down still work, and every shortcut also has a button. With a screen reader, Read aloud (the speaker button in the reader) reads the book to you and follows along on the page.</p>
+    </div>
     <footer class="sh-foot"><button class="btn" id="axReset">Reset accessibility</button></footer>
   </div>
 </div>
@@ -1221,7 +1226,8 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   </div>
 </div>
 
-<div id="toast" class="toast" hidden role="status"></div>
+<div id="toast" class="toast" hidden aria-hidden="true"></div>
+<div id="srLive" class="vh" role="status" aria-live="polite"></div>
 <script src="donate.js"></script>
 <script>
 (() => {
@@ -1231,7 +1237,36 @@ const LS = {
   set(k, v){ try{ localStorage.setItem('bookroll.'+k, JSON.stringify(v)) }catch(e){} }
 };
 let toastT;
-function toast(msg, ms=3200){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, ms); }
+function toast(msg, ms=3200){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, ms); announce(msg); }
+// Screen readers: #srLive is always on the page (a live region that appears at the same moment as its text is often missed).
+// Emptying it first and refilling it a moment later means the same message is spoken again if it repeats; a longer delay lets a run of key presses speak only the last one.
+let announceT = 0;
+function announce(msg, delay=60){ const l = $('#srLive'); if(!l) return; clearTimeout(announceT); l.textContent = ''; announceT = setTimeout(() => { l.textContent = msg; }, delay); }
+
+/* ---------- Modal dialogs keep the keyboard and screen readers inside them ---------- */
+// While a modal dialog is open, everything else on the page is made inert, so Tab and a screen reader can't wander behind it.
+// The side panels (Accessibility, Appearance, page info) aren't modal and are left alone.
+// It runs the moment a dialog's hidden changes, so code that closes a dialog and then moves focus back finds the page usable again.
+const MODALS = [...document.querySelectorAll('.modal')].filter(m => m.querySelector('[role="dialog"][aria-modal="true"]'));
+const HIDDEN_PROP = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden');
+function syncInert(){
+  const open = MODALS.filter(m => !HIDDEN_PROP.get.call(m));
+  [...document.body.children].forEach(el => {
+    if(el.tagName === 'SCRIPT' || el.id === 'toast' || el.id === 'srLive') return;
+    const want = open.length > 0 && !open.includes(el);
+    if(want && !el.inert){ el.inert = true; el.dataset.vsInert = '1'; }
+    else if(!want && el.dataset.vsInert){ el.inert = false; delete el.dataset.vsInert; }
+  });
+}
+// When a dialog closes without sending focus anywhere, focus goes back to whatever opened it, so keyboard and screen reader users keep their place.
+function modalHidden(m, v){
+  const was = HIDDEN_PROP.get.call(m);
+  if(was && !v){ const a = document.activeElement; m._vsReturn = a && a !== document.body && !m.contains(a) ? a : null; }
+  HIDDEN_PROP.set.call(m, v); syncInert();
+  if(!was && v){ const back = m._vsReturn; m._vsReturn = null;
+    setTimeout(() => { const a = document.activeElement; if(back && back.isConnected && back.offsetParent !== null && (!a || a === document.body || m.contains(a))) back.focus({preventScroll:true}); }, 0); }
+}
+MODALS.forEach(m => Object.defineProperty(m, 'hidden', {configurable:true, get(){ return HIDDEN_PROP.get.call(this); }, set(v){ modalHidden(this, !!v); }}));
 function el(tag, attrs={}, ...kids){ const e=document.createElement(tag); for(const [k,v] of Object.entries(attrs)){ if(k==='class') e.className=v; else if(k==='text') e.textContent=v; else if(k.startsWith('on')) e.addEventListener(k.slice(2),v); else if(v!==undefined&&v!==null) e.setAttribute(k,v);} for(const c of kids) if(c) e.append(c); return e; }
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
 
@@ -3345,7 +3380,7 @@ const FONTS = [
   {n:'Lexend', v:'"Lexend", system-ui, sans-serif'}, {n:'Georgia', v:'Georgia, "Times New Roman", serif'}];
 const GMODES = [['band','Band'],['under','Underline'],['spot','Spotlight'],['off','Off']];
 const HOME_DEFAULT = {mode:'system', accent:null, bg:null};
-const AX_DEFAULT = {contrast:'auto', cvd:'none', large:false, easy:false, motion:'auto', prevFont:''};
+const AX_DEFAULT = {contrast:'auto', cvd:'none', large:false, easy:false, motion:'auto', keys:true, prevFont:''};
 const S = Object.assign({ttsVoice:'', ttsRate:1, ttsHl:true, lensShape:'circle', lensSize:240, lensZoom:2, home:{...HOME_DEFAULT}, size:22, lh:1.6, width:62, font:'Literata', bg:'#fbfaf7', fg:'#1d1c1a', bright:100, gmode:'band', gpos:32, gh:1, guide:'#e0a72e', lpm:20, pgw:90, tint:true, hand:false, smooth:true, hz:'auto', style:'cinema', book:true, ax:{...AX_DEFAULT}}, LS.get('settings', {}));
 // the reading guide follows the accent colour unless a guide colour was chosen (older settings with a changed colour keep it)
 if(S.guideAuto === undefined) S.guideAuto = S.guide === '#e0a72e';
@@ -3638,7 +3673,7 @@ function closeAp(){ popLayer('ap'); }
 function renderAx(){
   const a = S.ax;
   [['#axHc', a.contrast], ['#axCvd', a.cvd], ['#axMotion', a.motion]].forEach(([id, v]) => document.querySelectorAll(id + ' button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v))));
-  $('#axLarge').checked = !!a.large; $('#axEasy').checked = !!a.easy;
+  $('#axLarge').checked = !!a.large; $('#axEasy').checked = !!a.easy; $('#axKeys').checked = a.keys !== false;
   $('#axHcHint').textContent = (a.contrast === 'auto' ? (deviceContrast() ? 'Your device asks for more contrast, so high contrast is on. ' : 'Your device isn’t asking for more contrast, so it’s off. ') : '') +
     'High contrast uses pure black and white with bold outlines, keeps the reader’s controls fully visible, and pauses your chosen colours (they come back when you turn it off).';
   $('#axMoHint').textContent = (AXMQ.motion.matches ? 'Your device asks for less motion, so motion is reduced. ' : '') +
@@ -3653,6 +3688,7 @@ $('#axHc').addEventListener('click', e => { const b = e.target.closest('[data-v]
 $('#axCvd').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if(b) setAx({cvd:b.dataset.v}); });
 $('#axMotion').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if(b) setAx({motion:b.dataset.v}); });
 $('#axLarge').addEventListener('change', e => setAx({large:e.target.checked}, true));
+$('#axKeys').addEventListener('change', e => setAx({keys:e.target.checked}));
 $('#axEasy').addEventListener('change', e => {
   const on = e.target.checked, patch = {easy:on};
   if(on){ patch.prevFont = S.font === 'Atkinson' ? (S.ax.prevFont || '') : S.font; }
@@ -5685,6 +5721,8 @@ addEventListener('keydown', e=>{
   const t = e.target, tag = t.tagName;
   const typing = (tag==='INPUT' && t.type!=='range') || tag==='TEXTAREA' || tag==='SELECT';
   if(typing) return;
+  // Single-letter shortcuts can clash with screen readers and speech input, so they can be switched off (Accessibility > Keyboard)
+  if(S.ax.keys === false && e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey) return;
   if(e.key===' ' || e.code==='Space'){ if(tag==='BUTTON') return; e.preventDefault(); toggle(); }
   else if(tag==='INPUT') return;
   else if(e.key==='PageDown' || e.key==='PageUp'){ e.preventDefault();
@@ -5697,10 +5735,10 @@ addEventListener('keydown', e=>{
   else if((e.ctrlKey || e.metaKey) && imagePages() && (e.key==='=' || e.key==='+' || e.key==='-' || e.key==='0')){ e.preventDefault();
     if(e.key==='0') $('#railFitW').click(); else keepPagePlace(() => setPgw(S.pgw + (e.key==='-' ? -10 : 10))); }
   else if((e.key==='g' || e.key==='G') && R.classList.contains('has-pages') && !e.ctrlKey && !e.metaKey && !e.altKey){ e.preventDefault(); document.querySelector('.r-title').click(); }
-  else if(e.key==='ArrowUp'){ e.preventDefault(); S.lpm=Math.min(120,S.lpm+2); applySettings(); }
-  else if(e.key==='ArrowDown'){ e.preventDefault(); S.lpm=Math.max(2,S.lpm-2); applySettings(); }
-  else if(e.key===']'){ keepPlace(()=>{ S.size=Math.min(56,S.size+1); applySettings(); }); }
-  else if(e.key==='['){ keepPlace(()=>{ S.size=Math.max(14,S.size-1); applySettings(); }); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); S.lpm=Math.min(120,S.lpm+2); applySettings(); announce('Speed ' + S.lpm + ' lines a minute', 350); }
+  else if(e.key==='ArrowDown'){ e.preventDefault(); S.lpm=Math.max(2,S.lpm-2); applySettings(); announce('Speed ' + S.lpm + ' lines a minute', 350); }
+  else if(e.key===']'){ keepPlace(()=>{ S.size=Math.min(56,S.size+1); applySettings(); }); announce('Text size ' + S.size, 350); }
+  else if(e.key==='['){ keepPlace(()=>{ S.size=Math.max(14,S.size-1); applySettings(); }); announce('Text size ' + S.size, 350); }
   else if((e.key==='h' || e.key==='H') && !e.ctrlKey && !e.metaKey && !e.altKey){ setHand(!S.hand); }
   else if((e.key==='m' || e.key==='M') && !e.ctrlKey && !e.metaKey && !e.altKey){ setLens(!lensOn); }
   else if((e.key==='r' || e.key==='R') && !e.ctrlKey && !e.metaKey && !e.altKey && synth){ tts.on ? ttsStop() : ttsStart(); }
@@ -5751,7 +5789,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · ba308cc</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 453b886</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

@@ -3243,6 +3243,9 @@ function render(){
       reading.length > 1 ? el('div', {class:'more', 'aria-label':'Also reading'}, ...reading.slice(1, 4).map(b => el('button', {text:b.title, title:`Continue ${b.title} (${Math.round(progress[b.id].p*100)}%)`, onclick:() => openBook(b)}))) : null,
       el('button', {class:'btn primary', text:'Continue', onclick:() => openBook(lastB)})); }
 }
+// who a book is by; a saved article also names its website (once, if the author is the site)
+function byLine(b){ if(b.kind !== 'article') return b.author || '';
+  const a = (b.author || '').trim(), st = (b.site || '').trim(); return a && st && a.toLowerCase() !== st.toLowerCase() ? `${a} · ${st}` : a || st; }
 function rmButton(b){
   const rm = !b.sample && el('button',{class:'ghost', text:'Remove', 'aria-label':`Remove ${b.title}`});
   if(rm){ let t; rm.onclick = async ()=>{ if(rm.classList.contains('confirm')){ clearTimeout(t); await dbDel(b.id); books = books.filter(x=>x.id!==b.id); delete progress[b.id]; LS.set('progress',progress); if(notesAll[b.id]){ delete notesAll[b.id]; LS.set('notes', notesAll); } ocrDrop(b.id); render(); toast(`Removed “${b.title}”.`); }
@@ -3270,7 +3273,7 @@ const progText = b => { const st = status(b), p = progress[b.id]?.p || 0; return
 const fmtName = b => b.kind === 'article' ? 'Article' : FMT_LABEL[fmtOf(b)] || '';
 function detailRow(b){
   const p = progress[b.id]?.p || 0;
-  const meta = el('p', {class:'dmeta'}, ...[b.kind === 'article' ? (b.site || b.author) : b.author, b.year, fmtName(b), progText(b), b.shelf ? 'Shelf: ' + b.shelf : ''].filter(Boolean).map(t => el('span', {text:String(t)})));
+  const meta = el('p', {class:'dmeta'}, ...[byLine(b), b.year, fmtName(b), progText(b), b.shelf ? 'Shelf: ' + b.shelf : ''].filter(Boolean).map(t => el('span', {text:String(t)})));
   const rm = rmButton(b), shelf = shelfInput(b);
   return el('article', {class:'drow', 'data-id':b.id},
     el('button', {class:'cover', 'aria-label':`Read ${b.title}`, onclick:() => openBook(b)}, coverEl(b)),
@@ -3290,9 +3293,9 @@ function libTable(list){
   const rows = list.map(b => { const p = progress[b.id]?.p || 0, rm = rmButton(b);
     return el('tr', {'data-id':b.id},
       el('td', {class:'c-ti'}, el('button', {class:'linkbtn tt', text:b.title, title:'Read', onclick:() => openBook(b)}),
-        el('div', {class:'tsub mut', text:[b.kind === 'article' ? (b.site || b.author) : b.author, fmtName(b)].filter(Boolean).join(' · ')}),
+        el('div', {class:'tsub mut', text:[byLine(b), fmtName(b)].filter(Boolean).join(' · ')}),
         rm ? el('div', {class:'tsub'}, el('button', {class:'ghost det', text:'Details', onclick:() => openDetails(b)}), rmButton(b)) : ''),
-      el('td', {class:'c-au mut', text: b.kind === 'article' ? (b.site || b.author || '') : (b.author || '')}),
+      el('td', {class:'c-au mut', text: byLine(b)}),
       el('td', {class:'yr mut', text: b.year ? String(b.year) : ''}),
       el('td', {class:'c-fmt mut', text: fmtName(b)}),
       el('td', {}, el('div', {class:'tp'}, el('div', {class:'prog'}, Object.assign(el('span'), {style:`width:${Math.round(p*100)}%`})), el('span', {class:'mut', text:progText(b)}))),
@@ -3307,7 +3310,7 @@ function card(b){
   const rm = rmButton(b), shelf = shelfInput(b);
   return el('article',{class:'card'},
     el('button',{class:'cover', 'aria-label':`Read ${b.title}`, onclick:()=>openBook(b)}, coverEl(b)),
-    el('div',{class:'meta'}, el('h3',{text:b.title}), (b.author || b.year) ? el('p',{class:'au'}, b.author || '', b.author && b.year ? ' · ' : '', b.year ? el('span',{class:'yr', text:String(b.year)}) : null) : null),
+    el('div',{class:'meta'}, el('h3',{text:b.title}), (byLine(b) || b.year) ? el('p',{class:'au'}, byLine(b), byLine(b) && b.year ? ' · ' : '', b.year ? el('span',{class:'yr', text:String(b.year)}) : null) : null),
     el('div',{class:'prog'}, Object.assign(el('span'),{style:`width:${Math.round(p*100)}%`})),
     el('div',{class:'status'}, el('span',{text: st==='finished'?'Finished': st==='reading'?`${Math.round(p*100)}% read`:'Unread'}),
       b.sample ? el('span',{class:'pill',text:'Sample'}) : b.needsCheck ? el('button',{class:'pill check', text:'Check details', onclick:()=>openDetails(b)}) : null),
@@ -5789,7 +5792,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · a25edea</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · d39221f</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

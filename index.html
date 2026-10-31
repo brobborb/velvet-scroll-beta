@@ -1228,6 +1228,13 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       </div>
       <p class="hint" id="bkLoadSt" role="status"></p>
     </div>
+    <div class="grp" id="gdGrp">
+      <span class="lbl">Google Drive sync</span>
+      <p class="hint">Keep your reading places, shelves, book details, highlights, notes and settings in step on all your devices, through one small file in your own Google Drive. Velvet Scroll can only see the files it creates there. The books themselves aren’t uploaded: copy them to each device once with a backup.</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn primary" id="gdConnect">Connect Google Drive</button><button class="btn" id="gdNow" hidden>Sync now</button><button class="btn" id="gdOff" hidden>Disconnect</button></div>
+      <p class="hint" id="gdSt" role="status"></p>
+      <div id="gdMissing" hidden><p class="hint">In your Google Drive sync but not in this library:</p><ul class="missing" id="gdList"></ul></div>
+    </div>
     <div class="grp" id="scGrp">
       <span class="lbl">Sync code</span>
       <p class="hint">Copy your reading places, shelves, book details and settings to another browser or device, with no account. The code is encrypted with a passphrase you choose. Books themselves aren’t included: copy them once with a backup, then use a sync code whenever you switch devices.</p>
@@ -2842,12 +2849,13 @@ const SY = IS_EXT && browser.storage && browser.storage.sync ? browser.storage.s
 let syncOn = !!(SY && LS.get('syncOn', false)), syncTimer = 0, pullTimer = 0, syncMsg = '';
 const syncQ = new Map();
 function syncBook(b){
+  gdMark(b);
   if(!syncOn || !b || !b.fp || b.sample) return;
   const pr = progress[b.id] || {};
   syncQ.set('b:' + b.fp, {title:b.title, author:b.author || '', year:b.year || null, isbn:b.isbn || '', shelf:b.shelf || '', vis:b.vis || '', upd:b.upd || b.added || 0, p:pr.p || 0, pt:pr.t || 0, pg:pr.pg || null, mode:pr.mode || null});
   if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000);   // at most every 15 seconds while reading
 }
-function syncSettings(){ if(!syncOn) return; const {hz, ...rest} = S; syncQ.set('settings', {t:LS.get('settingsT', Date.now()), s:rest}); if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000); }
+function syncSettings(){ gdMark(); if(!syncOn) return; const {hz, ...rest} = S; syncQ.set('settings', {t:LS.get('settingsT', Date.now()), s:rest}); if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000); }
 async function syncFlush(){
   clearTimeout(syncTimer); syncTimer = 0;
   if(!syncOn || !syncQ.size) return;
@@ -2889,6 +2897,144 @@ $('#syncOn').addEventListener('change', async e => {
   for(const b of books) syncBook(b);
   syncSettings(); await syncFlush();
 });
+
+/* ---------- Google Drive sync: places, shelves, details, notes and settings in one small file in the reader's own Drive ----------
+   Uses the drive.file permission, so Velvet Scroll can only see files it created. Books are never uploaded.
+   Website: Google Identity Services (a pop-up). Extension: the browser's identity API. Tokens last about an hour and stay in memory only. */
+const GD = {id:'711766366511-25rq4l26d3ann1kfi2opvoij2iif8i27.apps.googleusercontent.com', scope:'https://www.googleapis.com/auth/drive.file', name:'Velvet Scroll sync.json', api:'https://www.googleapis.com/'};
+let gdOn = LS.get('gdOn', false), gdTok = '', gdExp = 0, gdDirty = false, gdBusy = false, gdLast = 0, gdMsg = '';
+function gdMark(b){ if(gdOn && !(b && b.sample)) gdDirty = true; }
+function gdLoadGis(){
+  if(globalThis.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
+  return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+    sc.onload = () => res(); sc.onerror = () => rej(new Error('offline')); document.head.appendChild(sc); });
+}
+async function gdToken(interactive){
+  if(!gdTok){ const k = LS.get('gdTok', null); if(k && k.e > Date.now()) { gdTok = k.t; gdExp = k.e; } }   // survives a reload, until it expires
+  if(gdTok && Date.now() < gdExp - 60000) return gdTok;
+  if(IS_EXT){
+    if(!browser.identity || !browser.identity.launchWebAuthFlow) throw new Error('noidentity');
+    const q = {client_id:GD.id, response_type:'token', redirect_uri:browser.identity.getRedirectURL(), scope:GD.scope};
+    if(!interactive) q.prompt = 'none';
+    let back; try{ back = await browser.identity.launchWebAuthFlow({url:'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams(q), interactive:!!interactive}); }
+    catch(e){ throw new Error(interactive ? 'cancelled' : 'reconnect'); }
+    const h = new URLSearchParams(new URL(back).hash.slice(1));
+    if(!h.get('access_token')) throw new Error(interactive ? (h.get('error') || 'cancelled') : 'reconnect');
+    gdTok = h.get('access_token'); gdExp = Date.now() + (+h.get('expires_in') || 3600) * 1000; LS.set('gdTok', {t:gdTok, e:gdExp}); return gdTok;
+  }
+  if(!interactive) throw new Error('reconnect');          // a pop-up needs a tap or click on the website
+  await gdLoadGis();
+  return new Promise((res, rej) => {
+    const c = google.accounts.oauth2.initTokenClient({client_id:GD.id, scope:GD.scope,
+      callback: r => { if(r.error || !google.accounts.oauth2.hasGrantedAllScopes(r, GD.scope)) return rej(new Error(r.error || 'denied'));
+        gdTok = r.access_token; gdExp = Date.now() + (+r.expires_in || 3600) * 1000; LS.set('gdTok', {t:gdTok, e:gdExp}); res(gdTok); },
+      error_callback: e => rej(new Error(e && e.type === 'popup_failed_to_open' ? 'popup' : 'cancelled'))});
+    c.requestAccessToken({prompt:''});
+  });
+}
+async function gdApi(path, opt = {}, interactive){
+  const go = async () => fetch(GD.api + path, {...opt, headers:{...(opt.headers || {}), Authorization:'Bearer ' + await gdToken(interactive)}});
+  let r = await go();
+  if(r.status === 401){ gdTok = ''; gdExp = 0; LS.set('gdTok', null); r = await go(); }
+  if(!r.ok) throw new Error('http' + r.status);
+  return r;
+}
+async function gdFindFile(interactive){
+  let id = LS.get('gdFile', '');
+  if(id) return id;
+  const q = encodeURIComponent(`name='${GD.name}' and trashed=false`);
+  const r = await (await gdApi(`drive/v3/files?q=${q}&spaces=drive&orderBy=modifiedTime%20desc&fields=files(id)`, {}, interactive)).json();
+  id = r.files && r.files[0] ? r.files[0].id : '';
+  if(id) LS.set('gdFile', id);
+  return id;
+}
+async function gdData(){
+  for(const b of books) await ensureFp(b);
+  const {hz, ttsVoice, ...settings} = S, n = {};
+  for(const b of books) if(!b.sample && b.fp && notesAll[b.id] && notesAll[b.id].length) n[b.fp] = notesAll[b.id];
+  return {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, m:pdfModes, n,
+    b: books.filter(b => !b.sample && b.fp).map(b => { const pr = progress[b.id] || {};
+      return [b.fp, (b.title || '').slice(0, 200), (b.author || '').slice(0, 120), b.year || 0, b.isbn || '', b.shelf || '', b.upd || b.added || 0, +(pr.p || 0).toFixed(5), pr.t || 0, pr.pg || 0, pr.mode || '', b.vis || '']; })};
+}
+async function gdMerge(remote){
+  const st = LS.get('settingsT', 0), useSettings = !!remote.s && (remote.st || 0) > st;
+  const r = await applySyncCode(remote, useSettings);
+  if(useSettings){ LS.set('settings', S); LS.set('settingsT', remote.st); }
+  let notes = 0;
+  for(const [fp, list] of Object.entries(remote.n || {})){
+    const b = books.find(x => x.fp === fp); if(!b) continue;
+    const have = notesAll[b.id] ||= [];
+    for(const x of list || []) if(x && x.id && !have.some(y => y.id === x.id)){ have.push(x); notes++; }
+  }
+  if(notes){ LS.set('notes', notesAll); if(cur && !R.hidden && typeof notesPaint === 'function') try{ notesPaint(); }catch(e){} }
+  return {...r, notes};
+}
+async function gdSync(interactive){
+  if(!gdOn || gdBusy) return;
+  gdBusy = true; gdShow('Syncing with Google Drive…');
+  try{
+    let id = await gdFindFile(interactive), remote = null;
+    if(id){
+      try{ remote = await (await gdApi(`drive/v3/files/${id}?alt=media`, {}, interactive)).json(); }
+      catch(e){ if(e.message === 'http404'){ LS.set('gdFile', ''); id = ''; } else throw e; }
+    }
+    let r = null;
+    if(remote && remote.app === 'VS' && Array.isArray(remote.b)) r = await gdMerge(remote);
+    const data = await gdData();
+    // keep what other devices have that this one doesn't
+    if(remote && Array.isArray(remote.b)){
+      const have = new Set(data.b.map(x => x[0]));
+      for(const x of remote.b) if(!have.has(x[0])) data.b.push(x);
+      for(const [fp, v] of Object.entries(remote.n || {})) if(!data.n[fp]) data.n[fp] = v;
+    }
+    const body = JSON.stringify(data);
+    if(id) await gdApi(`upload/drive/v3/files/${id}?uploadType=media`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body}, interactive);
+    else {
+      const fd = new FormData();
+      fd.append('metadata', new Blob([JSON.stringify({name:GD.name, mimeType:'application/json', description:'Reading places, shelves, notes and settings for Velvet Scroll (velvetscroll.net). No books.'})], {type:'application/json'}));
+      fd.append('file', new Blob([body], {type:'application/json'}));
+      const made = await (await gdApi('upload/drive/v3/files?uploadType=multipart&fields=id', {method:'POST', body:fd}, interactive)).json();
+      LS.set('gdFile', made.id);
+    }
+    gdDirty = false; gdLast = Date.now();
+    const missing = r ? r.missing : [];
+    $('#gdMissing').hidden = !missing.length; $('#gdList').replaceChildren(...missing.slice(0, 50).map(t => el('li', {text:t})));
+    const bits = r ? [r.places ? `updated your place in ${r.places} book${r.places === 1 ? '' : 's'}` : '', r.details ? `details for ${r.details}` : '', r.notes ? `${r.notes} note${r.notes === 1 ? '' : 's'}` : '', r.settings ? 'settings' : ''].filter(Boolean) : [];
+    gdShow('Synced at ' + new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + (bits.length ? ': ' + bits.join(', ') + '.' : '.'));
+  }catch(e){
+    const m = e.message;
+    gdShow(m === 'reconnect' ? 'Google Drive needs you to sign in again. Choose Sync now.'
+      : m === 'popup' ? 'Your browser blocked the Google sign-in window. Allow pop-ups for this site, then try again.'
+      : m === 'cancelled' || m === 'denied' || m === 'access_denied' ? 'Google Drive wasn’t connected. Make sure the Google Drive box is ticked when you sign in.'
+      : m === 'offline' || e instanceof TypeError ? 'Couldn’t reach Google Drive. Check your internet connection.'
+      : m === 'noidentity' ? 'This browser doesn’t support signing in to Google from extensions. Use velvetscroll.net instead.'
+      : 'Couldn’t sync with Google Drive (' + m + '). Please try again.');
+  }finally{ gdBusy = false; }
+}
+function gdShow(msg){ if(msg !== undefined) gdMsg = msg;
+  $('#gdConnect').hidden = gdOn; $('#gdNow').hidden = $('#gdOff').hidden = !gdOn;
+  $('#gdSt').textContent = gdOn ? gdMsg || 'Connected to Google Drive.' : ''; }
+$('#gdConnect').onclick = async () => {
+  try{ await gdToken(true); }catch(e){ gdOn = false; gdShow(); $('#gdSt').textContent = e.message === 'popup' ? 'Your browser blocked the Google sign-in window. Allow pop-ups for this site, then try again.' : e.message === 'noidentity' ? 'This browser doesn’t support signing in to Google from extensions. Use velvetscroll.net instead.' : 'Google Drive wasn’t connected. Make sure the Google Drive box is ticked when you sign in.'; return; }
+  gdOn = true; LS.set('gdOn', true); gdShow('Connected.'); await gdSync(true);
+};
+$('#gdNow').onclick = () => gdSync(true);
+$('#gdOff').onclick = async () => {
+  const t = gdTok; gdOn = false; gdTok = ''; gdExp = 0; LS.set('gdTok', null); LS.set('gdOn', false); LS.set('gdFile', ''); gdShow();
+  if(t) try{ await fetch('https://oauth2.googleapis.com/revoke?token=' + encodeURIComponent(t), {method:'POST'}); }catch(e){}
+  $('#gdSt').textContent = 'Disconnected. Your sync file stays in your Google Drive until you delete it there.';
+};
+function initGd(){
+  gdShow();
+  if(!gdOn) return;
+  gdSync(false);
+  // while the page is open: save changes every two minutes, and catch up when you come back to it
+  setInterval(() => { if(gdDirty && document.visibilityState === 'visible') gdSync(false); }, 120000);
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible' && Date.now() - gdLast > 60000) gdSync(false);
+    else if(document.visibilityState === 'hidden' && gdDirty) gdSync(false);
+  });
+}
 
 /* ---------- ISBN ---------- */
 function isbnClean(s){ return String(s || '').toUpperCase().replace(/^\s*(URN:)?ISBN[:\s-]*/, '').replace(/[^0-9X]/g, ''); }
@@ -4239,7 +4385,7 @@ new ResizeObserver(() => titleCentre()).observe(document.querySelector('.r-top')
 const NOTE_COLS = {y:'yellow', g:'green', b:'blue', p:'pink'};
 let notesAll = LS.get('notes', {}), notesAnch = [], notesTm = null, selMode = null;
 const bookNotes = () => cur ? (notesAll[cur.id] ||= []) : [];
-function notesSave(){ if(cur && notesAll[cur.id] && !notesAll[cur.id].length) delete notesAll[cur.id]; LS.set('notes', notesAll); }
+function notesSave(){ gdMark(); if(cur && notesAll[cur.id] && !notesAll[cur.id].length) delete notesAll[cur.id]; LS.set('notes', notesAll); }
 function tmAt(tm, i){ const n = tm.nodes; let lo = 0, hi = n.length - 1; while(lo < hi){ const m = (lo + hi + 1) >> 1; if(n[m][1] <= i) lo = m; else hi = m - 1; } return n[lo]; }
 function rangeAt(tm, s, e){
   if(!tm.nodes.length || e <= s) return null;
@@ -5827,6 +5973,7 @@ setupDonate();
   if(!ok){ const n=$('#notice'); n.hidden=false; n.textContent='This browser isn’t allowing storage here, so books you add will only last until you close the page.'; }
   books = await dbAll(); await loadProgress();
   initSync();
+  initGd();
   syncCodeFromAddress();
   try{ navigator.storage?.persist?.(); }catch(e){}
   render();
@@ -5836,7 +5983,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 430dcd6</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 8f3b515</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

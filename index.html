@@ -2770,11 +2770,17 @@ async function readSyncCode(code, pw){
   if(data.app !== 'VS' || !Array.isArray(data.b)) throw new Error('notcode');
   return data;
 }
+// the same book on another device: the same file, or failing that the same ISBN, or the same title and author (another copy of it)
+const syncNm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+function syncMatch(fp, title, author, isbn){
+  return books.find(x => x.fp === fp) || (isbn && books.find(x => !x.sample && x.isbn && x.isbn === isbn))
+    || books.find(x => !x.sample && syncNm(x.title) === syncNm(title) && syncNm(x.author) === syncNm(author)) || null;
+}
 async function applySyncCode(data, useSettings){
   for(const b of books) await ensureFp(b);
   let places = 0, details = 0; const missing = [];
   for(const [fp, title, author, year, isbn, shelf, upd, p, pt, pg, mode, vis] of data.b){
-    const b = books.find(x => x.fp === fp) || books.find(x => x.title === title && (x.author || '') === (author || ''));
+    const b = syncMatch(fp, title, author, isbn);
     if(!b){ missing.push(title + (author ? ' · ' + author : '')); continue; }
     // newer details win; so do any details at all when this copy has never been edited (it was only just added here)
     const untouched = (b.upd || 0) - (b.added || 0) < 5000, differs = b.title !== title || (b.author || '') !== (author || '') || (b.year || 0) !== (year || 0) || (b.isbn || '') !== (isbn || '') || (b.shelf || '') !== (shelf || '') || (vis !== undefined && (b.vis || '') !== vis);
@@ -2903,7 +2909,8 @@ $('#syncOn').addEventListener('change', async e => {
    Website: Google Identity Services (a pop-up). Extension: the browser's identity API. Tokens last about an hour and stay in memory only. */
 const GD = {id:'711766366511-25rq4l26d3ann1kfi2opvoij2iif8i27.apps.googleusercontent.com', scope:'https://www.googleapis.com/auth/drive.file', name:'Velvet Scroll sync.json', api:'https://www.googleapis.com/'};
 let gdOn = LS.get('gdOn', false), gdTok = '', gdExp = 0, gdDirty = false, gdBusy = false, gdLast = 0, gdMsg = '';
-function gdMark(b){ if(gdOn && !(b && b.sample)) gdDirty = true; }
+let gdSoon = 0;
+function gdMark(b){ if(!gdOn || (b && b.sample)) return; gdDirty = true; if(!gdSoon) gdSoon = setTimeout(() => { gdSoon = 0; if(gdDirty) gdSync(false); }, 20000); }
 function gdLoadGis(){
   if(globalThis.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
   return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
@@ -2958,7 +2965,18 @@ async function gdData(){
 }
 async function gdMerge(remote){
   const st = LS.get('settingsT', 0), useSettings = !!remote.s && (remote.st || 0) > st;
+  // the book that's open here is skipped by applySyncCode; if another device read further since, move there (unless it's playing)
+  let jump = null;
+  if(cur && !cur.sample && cur.fp && !R.hidden){
+    const e = remote.b.filter(x => syncMatch(x[0], x[1], x[2], x[4]) === cur).sort((a, b) => (b[8] || 0) - (a[8] || 0))[0], lp = progress[cur.id] || {};
+    if(e && e[8] > (lp.t || 0) + 5000 && Math.abs((e[7] || 0) - (lp.p || 0)) > 0.002) jump = e;
+  }
   const r = await applySyncCode(remote, useSettings);
+  if(jump && !playing && ready){
+    setProgressRec(cur.id, {p:jump[7], t:jump[8], pg:jump[9] || undefined, mode:jump[10] || undefined});
+    if(pdfDoc && jump[9] && jump[10] && jump[10] !== pdfMode) goTo('sec0-pg' + jump[9]); else setFrac(jump[7]);
+    toast('Moved to where you left off on another device.'); r.places++;
+  }
   if(useSettings){ LS.set('settings', S); LS.set('settingsT', remote.st); }
   let notes = 0;
   for(const [fp, list] of Object.entries(remote.n || {})){
@@ -2984,7 +3002,7 @@ async function gdSync(interactive){
     // keep what other devices have that this one doesn't
     if(remote && Array.isArray(remote.b)){
       const have = new Set(data.b.map(x => x[0]));
-      for(const x of remote.b) if(!have.has(x[0])) data.b.push(x);
+      for(const x of remote.b) if(!have.has(x[0]) && !syncMatch(x[0], x[1], x[2], x[4])) data.b.push(x);   // books only other devices have
       for(const [fp, v] of Object.entries(remote.n || {})) if(!data.n[fp]) data.n[fp] = v;
     }
     const body = JSON.stringify(data);
@@ -3026,12 +3044,12 @@ $('#gdOff').onclick = async () => {
 };
 function initGd(){
   gdShow();
-  if(!gdOn) return;
-  gdSync(false);
-  // while the page is open: save changes every two minutes, and catch up when you come back to it
-  setInterval(() => { if(gdDirty && document.visibilityState === 'visible') gdSync(false); }, 120000);
+  if(gdOn) gdSync(false);
+  // while the page is open (and connected): save changes every two minutes, and catch up when you come back to it
+  setInterval(() => { if(gdOn && gdDirty && document.visibilityState === 'visible') gdSync(false); }, 120000);
   document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible' && Date.now() - gdLast > 60000) gdSync(false);
+    if(!gdOn) return;
+    if(document.visibilityState === 'visible' && Date.now() - gdLast > 10000) gdSync(false);
     else if(document.visibilityState === 'hidden' && gdDirty) gdSync(false);
   });
 }
@@ -5983,7 +6001,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 8f3b515</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · d8ca0ff</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

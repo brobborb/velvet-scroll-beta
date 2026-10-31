@@ -3667,7 +3667,7 @@ function applyHome(){
   if(!$('#ap').hidden) renderAppearance();
 }
 /* the tab's icon in the library's colours: light themes paint the tile in the accent, dark themes use the page colour
-   with the reading band in the accent. The default light theme keeps the usual icon. */
+   with the reading band in the accent. The default light theme keeps the usual (dark) icon. */
 let favLink = document.querySelector('link[rel~="icon"]'); const favOrig = favLink && favLink.getAttribute('href');
 let favLast = '';
 // some browsers (Firefox, Safari) only notice a new icon when the link itself is replaced
@@ -5836,7 +5836,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 3fb3dec</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 82a2693</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

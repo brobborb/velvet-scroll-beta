@@ -267,6 +267,17 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #dlg .drow2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:10px}
 #dlg .isbnmsg:empty,#dlg #dModesHint:empty{display:none}
 #dlg .isbnmsg{margin:-4px 0 0}
+.dbio{display:flex;flex-direction:column;gap:4px;margin:-3px 0 2px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--accent) 6%,var(--bg));font-size:13.5px;line-height:1.45}
+.dbio[hidden]{display:none}
+.dbio p{margin:0}
+.dbio .bdesc{font-weight:700}
+.dbio .btext.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dbio .bmeta{font-size:12.5px;color:var(--muted)}
+.dbio .blink{border:0;background:none;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;align-self:flex-start}
+.dbio .bmeta a{color:var(--accent);font-weight:600}
+.dbio .bpick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dbio .bedit{width:100%;box-sizing:border-box;font:14px/1.5 var(--f-ui);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);resize:vertical}
+html.ax-hc .dbio{border:2px solid var(--fg)}
 #dlg .modeseg button{height:30px}
 #dlg .grp{gap:6px}
 #dlg .covers{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
@@ -1026,6 +1037,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="dfields">
         <label for="dTitle">Title<input id="dTitle" autocomplete="off"></label>
         <label for="dAuthor">Author<input id="dAuthor" autocomplete="off"></label>
+        <div class="dbio" id="dBio" aria-live="polite" hidden></div>
         <div class="drow2">
           <label for="dYear">First published<input id="dYear" inputmode="numeric" placeholder="e.g. 1890" autocomplete="off"></label>
           <label for="dIsbn">ISBN<input id="dIsbn" placeholder="e.g. 978-0-14-118776-1" autocomplete="off" spellcheck="false" aria-describedby="dIsbnMsg"></label>
@@ -2363,7 +2375,7 @@ async function openDetails(b){
   $('#dSearch').hidden = !IS_EXT;
   $('#dHint').textContent = IS_EXT ? 'Searches using the title and author above. Only those words are sent. Covers from Wikimedia Commons and Project Gutenberg are openly licensed.'
     : 'Looking up details online needs the Velvet Scroll browser extension.';
-  renderCoverChoices(); $('#dlg').hidden = false; $('#dTitle').focus();
+  renderCoverChoices(); $('#dlg').hidden = false; $('#dTitle').focus(); bioOpen(b);
   if(!b.isbn){ const t = await openingText(b), found = findIsbn(t);
     if(found && dlg && dlg.b === b && !$('#dIsbn').value){ $('#dIsbn').value = found; isbnMsg(); $('#dStatus').textContent = 'ISBN found in the book.'; } }
   if(LOOKUP.weakTitle(b.title, b.file) || !b.author){
@@ -2436,6 +2448,125 @@ $('#dSave').onclick = async () => {
   await dbPutMeta(b); closeDetails(); render();
   toast(vis && vis !== modeKey() ? `Details saved. This book now shows only in ${vis === 's' ? 'Study' : 'Relaxed'} mode, so it’s hidden here.` : 'Details saved.', vis && vis !== modeKey() ? 6000 : 3200);
 };
+
+/* ---------- Author bios: a one-line summary from Wikidata and a short bio from Wikipedia, kept once per author ----------
+   Stored in authorsAll[key] = {name, desc, bio, url, qid, src:'wiki'|'own', t} or {none:true, t} after a lookup that found nothing,
+   or {cleared:true, t} when the reader removed it. Only the author's name is sent, and only to Wikidata and Wikipedia. */
+let authorsAll = LS.get('authors', {});
+const BIO_HOSTS = ['https://www.wikidata.org/*', 'https://*.wikipedia.org/*'];
+const WRITERS = new Set(['Q36180','Q6625963','Q49757','Q482980','Q4853732','Q214917','Q11774202','Q18844224','Q333634','Q1930187','Q28389','Q3745071','Q15949613','Q201788','Q4964182','Q1234713','Q12144794','Q1607826','Q18939491','Q6430706','Q10297252','Q37226','Q1622272','Q20669601','Q12406482','Q2526255','Q8178443','Q14467526']);
+const WRITER_RX = /\b(writer|novelist|poet|author|playwright|dramatist|essayist|journalist|philosopher|historian|critic|screenwriter|lyricist|diarist|translator|biographer|storyteller|cartoonist|illustrator|theologian|scientist|naturalist|explorer|economist|mathematician)\b/i;
+function authorFirst(a){ let n = String(a || '').split(/\s*(?:&|;|\band\b|\bwith\b)\s*/i)[0].trim(); if(/^[^,]+,\s*[^,]+$/.test(n)) n = n.replace(/^([^,]+),\s*(.+)$/, '$2 $1'); return n.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim(); }
+const authorKey = a => authorFirst(a).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+function authorsSave(){ LS.set('authors', authorsAll); gdMark(); }
+function bioTrim(t, max = 900){ t = String(t || '').replace(/\s+/g, ' ').trim(); if(t.length <= max) return t; const cut = t.slice(0, max), i = cut.lastIndexOf('. '); return (i > 200 ? cut.slice(0, i + 1) : cut.replace(/\s+\S*$/, '') + '…'); }
+const yearOf = cl => { const v = cl && cl[0] && cl[0].mainsnak && cl[0].mainsnak.datavalue && cl[0].mainsnak.datavalue.value; const m = v && /^([+-])0*(\d+)/.exec(v.time || ''); return m ? (m[1] === '-' ? -m[2] : +m[2]) : null; };
+async function bioCandidates(name, bookYear, signal){
+  const s = await (await fetch('https://www.wikidata.org/w/api.php?' + new URLSearchParams({action:'wbsearchentities', search:name, language:'en', uselang:'en', type:'item', limit:'8', format:'json', origin:'*'}), {signal, credentials:'omit'})).json();
+  const ids = (s.search || []).map(x => x.id); if(!ids.length) return [];
+  const e = await (await fetch('https://www.wikidata.org/w/api.php?' + new URLSearchParams({action:'wbgetentities', ids:ids.join('|'), props:'claims|descriptions|labels|sitelinks', languages:'en', sitefilter:'enwiki', format:'json', origin:'*'}), {signal, credentials:'omit'})).json();
+  const out = [];
+  for(const id of ids){
+    const it = e.entities && e.entities[id]; if(!it || !it.claims) continue;
+    const isHuman = (it.claims.P31 || []).some(c => c.mainsnak.datavalue && c.mainsnak.datavalue.value.id === 'Q5'); if(!isHuman) continue;
+    const desc = it.descriptions && it.descriptions.en ? it.descriptions.en.value : '';
+    const occ = (it.claims.P106 || []).map(c => c.mainsnak.datavalue && c.mainsnak.datavalue.value.id).filter(Boolean);
+    const writer = occ.some(o => WRITERS.has(o)) || WRITER_RX.test(desc);
+    const born = yearOf(it.claims.P569), died = yearOf(it.claims.P570);
+    // a book can't predate its author by much; old books by modern namesakes are unlikely
+    let fits = true; if(bookYear && born && bookYear < born + 8) fits = false; if(bookYear && died && bookYear > died + 300) fits = false;
+    out.push({qid:id, name:it.labels && it.labels.en ? it.labels.en.value : name, desc, born, died, writer, fits, wiki: it.sitelinks && it.sitelinks.enwiki ? it.sitelinks.enwiki.title : ''});
+  }
+  return out.filter(x => x.writer && x.fits).concat(out.filter(x => x.writer && !x.fits));
+}
+function bioLine(c){
+  let d = c.desc ? c.desc[0].toUpperCase() + c.desc.slice(1) : '';
+  if((c.born || c.died) && !/\d{3,4}/.test(d)) d += c.died ? ` (${c.born || '?'}–${c.died})` : ` (born ${c.born})`;
+  return d.trim();
+}
+async function bioFetch(c, signal){
+  let bio = '', url = c.wiki ? 'https://en.wikipedia.org/wiki/' + encodeURIComponent(c.wiki.replace(/ /g, '_')) : 'https://www.wikidata.org/wiki/' + c.qid;
+  if(c.wiki){ try{ const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(c.wiki.replace(/ /g, '_')), {signal, credentials:'omit'});
+    if(r.ok){ const j = await r.json(); if(j.type !== 'disambiguation') bio = bioTrim(j.extract); if(j.content_urls && j.content_urls.desktop) url = j.content_urls.desktop.page; } }catch(e){ if(e.name === 'AbortError') throw e; } }
+  return {name:c.name, desc:bioLine(c), bio, url, qid:c.qid, src:'wiki', wiki:!!bio, t:Date.now()};
+}
+async function bioAllowed(ask){
+  if(!IS_EXT) return true;
+  try{ if(await browser.permissions.contains({origins:BIO_HOSTS})) return true; if(!ask) return false;
+    try{ return await browser.permissions.request({origins:BIO_HOSTS, data_collection:['searchTerms']}); }catch(e){ return await browser.permissions.request({origins:BIO_HOSTS}); } }
+  catch(e){ return false; }
+}
+let bioCtl = null, bioAlt = [];
+async function bioLookup(name, ask){
+  const key = authorKey(name); if(!key) return;
+  if(!await bioAllowed(ask)){ bioShow(name, ask ? 'Velvet Scroll wasn’t given permission to contact Wikipedia.' : ''); return; }
+  if(bioCtl) bioCtl.abort(); const ctl = bioCtl = new AbortController();
+  bioShow(name, 'Looking up the author…');
+  try{
+    const year = dlg ? parseInt($('#dYear').value, 10) || null : null;
+    const cands = await bioCandidates(authorFirst(name), year, ctl.signal);
+    if(ctl !== bioCtl) return;
+    if(!cands.length){ authorsAll[key] = {none:true, t:Date.now()}; authorsSave(); bioShow(name, ask ? 'No writer by that name was found on Wikidata.' : ''); return; }
+    bioAlt = cands;
+    authorsAll[key] = await bioFetch(cands[0], ctl.signal); authorsSave();
+    if(ctl === bioCtl) bioShow(name);
+  }catch(e){ if(e.name !== 'AbortError' && ctl === bioCtl) bioShow(name, ask ? 'Couldn’t reach Wikipedia. Check your connection and try again.' : ''); }
+}
+function bioShow(name, msg){
+  const box = $('#dBio'), key = authorKey(name), a = key && authorsAll[key];
+  box.hidden = !key; if(!key) return;
+  const kids = [];
+  if(a && (a.bio || a.desc) && !a.none && !a.cleared){
+    if(a.desc) kids.push(el('p', {class:'bdesc', text:a.desc}));
+    if(a.bio){ const p = el('p', {class:'btext clamp', text:a.bio}); kids.push(p);
+      if(a.bio.length > 220){ const more = el('button', {class:'blink', type:'button', text:'Show more'}); more.onclick = () => { const c = p.classList.toggle('clamp'); more.textContent = c ? 'Show more' : 'Show less'; }; kids.push(more); } }
+    const meta = el('p', {class:'bmeta'});
+    if(a.src === 'wiki') meta.append(a.wiki ? 'From Wikipedia · ' : 'From Wikidata · ', el('a', {href:a.url, target:'_blank', rel:'noopener', text: a.wiki ? 'Read the full article' : 'View on Wikidata'}));
+    else meta.append('Your own note');
+    const ed = el('button', {class:'blink', type:'button', text:'Edit'}); ed.onclick = () => bioEdit(name); meta.append(' · ', ed);
+    if(a.src === 'wiki' && bioAlt.length > 1){ const nt = el('button', {class:'blink', type:'button', text:'Wrong person?'}); nt.onclick = () => bioPick(name); meta.append(' · ', nt); }
+    kids.push(meta);
+  } else {
+    const row = el('p', {class:'bmeta'});
+    row.append(a && a.cleared ? 'No author bio. ' : 'No author bio yet. ');
+    const lk = el('button', {class:'blink', type:'button', text:'Look up on Wikipedia'}); lk.onclick = () => bioLookup($('#dAuthor').value, true);
+    const wr = el('button', {class:'blink', type:'button', text:'Write one'}); wr.onclick = () => bioEdit(name);
+    row.append(lk, ' · ', wr); kids.push(row);
+  }
+  if(msg) kids.push(el('p', {class:'bmeta', text:msg}));
+  box.replaceChildren(...kids);
+}
+function bioPick(name){
+  const box = $('#dBio'), key = authorKey(name), list = el('ul', {class:'bpick'});
+  for(const c of bioAlt.slice(0, 6)){ const b = el('button', {type:'button', class:'blink', text: c.name + (c.desc ? ' — ' + bioLine(c) : '')});
+    b.onclick = async () => { box.replaceChildren(el('p', {class:'bmeta', text:'Loading…'})); try{ authorsAll[key] = await bioFetch(c); authorsSave(); }catch(e){} bioShow(name); };
+    const li = el('li'); li.append(b); list.append(li); }
+  const cancel = el('button', {type:'button', class:'blink', text:'Cancel'}); cancel.onclick = () => bioShow(name);
+  box.replaceChildren(el('p', {class:'bmeta', text:'Which person wrote this book?'}), list, cancel);
+}
+function bioEdit(name){
+  const box = $('#dBio'), key = authorKey(name), a = authorsAll[key] || {};
+  const ta = el('textarea', {class:'bedit', rows:'4', 'aria-label':'Author bio'}); ta.value = a.bio || a.desc || '';
+  const save = el('button', {type:'button', class:'btn primary', text:'Save bio'}), cancel = el('button', {type:'button', class:'btn', text:'Cancel'}), rm = el('button', {type:'button', class:'btn', text:'Remove bio'});
+  save.onclick = () => { const v = ta.value.trim(); authorsAll[key] = v ? {name:authorFirst(name), desc:'', bio:bioTrim(v, 4000), url:'', src:'own', t:Date.now()} : {cleared:true, t:Date.now()}; authorsSave(); bioShow(name); };
+  rm.onclick = () => { authorsAll[key] = {cleared:true, t:Date.now()}; authorsSave(); bioShow(name); };
+  cancel.onclick = () => bioShow(name);
+  const row = el('div', {class:'row'}); row.style.cssText = 'gap:8px;flex-wrap:wrap'; row.append(save, cancel); if(a.bio || a.desc) row.append(rm);
+  box.replaceChildren(ta, row); ta.focus();
+}
+// open the details window: show what's saved, and look the author up once if nothing is known yet
+async function bioOpen(b){
+  bioAlt = []; const name = b.author || ''; bioKey = authorKey(name);
+  bioShow(name);
+  const key = authorKey(name), a = key && authorsAll[key];
+  if(!key || b.sample || b.kind === 'article') { $('#dBio').hidden = !key || b.sample; return; }
+  const stale = a && a.none && Date.now() - a.t > 30 * 864e5;
+  if(!a || stale) bioLookup(name, false);
+}
+let bioKey = '';
+$('#dAuthor').addEventListener('change', () => { if(!dlg) return; const n = $('#dAuthor').value, k = authorKey(n); if(k === bioKey) return; bioKey = k; bioAlt = []; bioShow(n); if(k && !authorsAll[k]) bioLookup(n, false); });
+// merging bios from another device or a backup: the newer one wins
+function authorsMerge(other){ let n = 0; for(const [k, v] of Object.entries(other || {})){ const h = authorsAll[k]; if(v && (!h || (v.t || 0) > (h.t || 0))){ authorsAll[k] = v; n++; } } if(n) LS.set('authors', authorsAll); return n; }
 
 /* ---------- Adding a book or PDF from a web address ----------
    The website downloads directly when the site allows it (many don't, for any other website); the extension asks for
@@ -2630,7 +2761,7 @@ async function buildBackup(withBooks, pw, onStep){
     if(withBooks){ const f = await dbGetFile(b.id); if(f){ zip.file('books/' + b.id, f); m.hasFile = true; } }
     metas.push(m);
   }
-  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes, notes:notesAll}));
+  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes, notes:notesAll, authors:authorsAll}));
   let out = await zip.generateAsync({type:'uint8array', compression:'STORE'});
   if(pw){
     const z = new JSZip();
@@ -2731,6 +2862,7 @@ async function restore(zip){
     if(rp) setProgressRec(nb.id, rp);
   }
   if(lib.pdfModes) for(const [k,v] of Object.entries(lib.pdfModes)) if(!pdfModes[k]) pdfModes[k] = v;
+  if(lib.authors) authorsMerge(lib.authors);
   if(lib.notes){ for(const [k, v] of Object.entries(lib.notes)){ const have = notesAll[k] ||= []; for(const n of v || []) if(n && n.id && !have.some(x => x.id === n.id)) have.push(n); } LS.set('notes', notesAll); }
   LS.set('pdfmode', pdfModes);
   if(wasEmpty && lib.settings){ Object.assign(S, lib.settings); applySettings(); }
@@ -2959,7 +3091,7 @@ async function gdData(){
   for(const b of books) await ensureFp(b);
   const {hz, ttsVoice, ...settings} = S, n = {};
   for(const b of books) if(!b.sample && b.fp && notesAll[b.id] && notesAll[b.id].length) n[b.fp] = notesAll[b.id];
-  return {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, m:pdfModes, n,
+  return {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, m:pdfModes, n, au:authorsAll,
     b: books.filter(b => !b.sample && b.fp).map(b => { const pr = progress[b.id] || {};
       return [b.fp, (b.title || '').slice(0, 200), (b.author || '').slice(0, 120), b.year || 0, b.isbn || '', b.shelf || '', b.upd || b.added || 0, +(pr.p || 0).toFixed(5), pr.t || 0, pr.pg || 0, pr.mode || '', b.vis || '']; })};
 }
@@ -2984,8 +3116,9 @@ async function gdMerge(remote){
     const have = notesAll[b.id] ||= [];
     for(const x of list || []) if(x && x.id && !have.some(y => y.id === x.id)){ have.push(x); notes++; }
   }
+  const bios = remote.au ? authorsMerge(remote.au) : 0;
   if(notes){ LS.set('notes', notesAll); if(cur && !R.hidden && typeof notesPaint === 'function') try{ notesPaint(); }catch(e){} }
-  return {...r, notes};
+  return {...r, notes, bios};
 }
 async function gdSync(interactive){
   if(!gdOn || gdBusy) return;
@@ -6001,7 +6134,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · d8ca0ff</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 1e71468</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

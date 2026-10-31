@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About Velvet Scroll</title>
+<meta name="description" content="Velvet Scroll is a free ebook reader that scrolls for you, with a reading guide, read aloud and accessible display settings. Your books stay private on your device.">
+<link rel="canonical" href="https://velvetscroll.net/about.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Velvet Scroll">
+<meta property="og:title" content="Velvet Scroll: an ebook reader that scrolls for you">
+<meta property="og:description" content="Free and private. Auto-scrolling with a reading guide, read aloud, and accessible display settings for your DRM-free ebooks, PDFs and comics.">
+<meta property="og:url" content="https://velvetscroll.net/about.html">
+<meta property="og:image" content="https://velvetscroll.net/media/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Young+Serif&display=swap">
+<style>
+/* Layout: one readable column on the library's cloth-green ground; a wide band for the video and screenshots. */
+:root{--bg:#eef2f0;--surface:#ffffff;--fg:#16201c;--muted:#56655f;--line:#d3ddd8;--accent:#2c6a57;--accent-fg:#ffffff;--accent-soft:#dbe9e3;--gold:#b0892f;
+  --f-display:"Young Serif",Georgia,serif;--f-ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;--accent-fg:#0b1a15;--accent-soft:#1e3a31;--gold:#d8b45a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;--accent-fg:#0b1a15;--accent-soft:#1e3a31;--gold:#d8b45a;color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 var(--f-ui)}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+header.top{border-bottom:1px solid var(--line);background:var(--surface)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font:400 22px/1 var(--f-display)}
+.brand img{width:32px;height:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:10px 18px;font:700 15px/1.2 var(--f-ui);text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn svg{width:18px;height:18px;flex:none}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px 44px;align-items:center;padding-block:48px 40px}
+.kicker{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 14px;font:400 clamp(34px,5vw,52px)/1.08 var(--f-display);text-wrap:balance}
+.lede{margin:0 0 22px;color:var(--muted);max-width:44ch}
+.ctas{display:flex;flex-wrap:wrap;gap:10px}
+.small{font-size:14px;color:var(--muted);margin:14px 0 0}
+.video video{display:block;width:100%;aspect-ratio:16/9;border-radius:14px;background:#121a19;box-shadow:0 18px 44px -20px rgb(0 0 0 / .5)}
+section{padding-block:30px}
+h2{margin:0 0 6px;font:400 28px/1.2 var(--f-display);text-wrap:balance}
+.sub{margin:0 0 22px;color:var(--muted);max-width:60ch}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.feature{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.feature h3{margin:0 0 6px;font:700 17px/1.3 var(--f-ui)}
+.feature p{margin:0;color:var(--muted);font-size:15.5px}
+.shots{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,560px);gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory;scroll-padding-inline:18px}
+.shots figure{margin:0;scroll-snap-align:start}
+.shots img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+.shots figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 24px;padding:0;margin:0;list-style:none}
+.who li{border-top:2px solid var(--gold);padding-top:10px}
+.who strong{display:block}
+.who span{color:var(--muted);font-size:15.5px}
+.private{background:var(--accent-soft);border-radius:16px;padding:24px 26px}
+.private ul{margin:10px 0 0;padding-left:20px}
+.private li{margin-bottom:6px}
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--accent);font-weight:400;font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:8px 0 0;color:var(--muted);max-width:68ch}
+footer.foot{border-top:1px solid var(--line);margin-top:30px}
+footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;font-size:14.5px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){ .hero{grid-template-columns:minmax(0,1fr);padding-block:30px} .video{order:-1} }
+@media (prefers-reduced-motion: reduce){ .shots{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="./"><img src="icon.png" alt="">Velvet Scroll</a>
+  <a class="btn primary" href="./">Open Velvet Scroll</a>
+</div></header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <p class="kicker">Free · No account · Works offline</p>
+    <h1>An ebook reader that scrolls for you</h1>
+    <p class="lede">Press play and your book glides up at a steady pace, with a reading guide that holds your place. Listen with read aloud, set the text exactly how you like it, and keep your books private on your own device.</p>
+    <div class="ctas">
+      <a class="btn primary" href="./">Use it in your browser</a>
+      <a class="btn" href="https://chromewebstore.google.com/detail/lcddfbbfeahgjlilbmclahmfgolpoknf" target="_blank" rel="noopener">Add to Chrome</a>
+      <a class="btn" href="https://addons.mozilla.org/firefox/addon/velvet-scroll/" target="_blank" rel="noopener">Add to Firefox</a>
+    </div>
+    <p class="small">The browser extension also saves web articles to read later, and works in Edge and other Chrome-based browsers.</p>
+  </div>
+  <div class="video"><video src="media/promo.mp4" poster="media/promo-poster.jpg" controls preload="metadata" playsinline aria-label="A one-minute tour of Velvet Scroll"></video></div>
+</div>
+
+<section class="wrap" aria-labelledby="fH">
+  <h2 id="fH">What it does</h2>
+  <p class="sub">Velvet Scroll is built for long, comfortable reading, without turning pages.</p>
+  <div class="features">
+    <div class="feature"><h3>Scrolls at your pace</h3><p>Speed is set in lines per minute, so it stays the same at any text size. Choose a smooth glide, or Page sweep, where the page holds still and the next one is revealed line by line.</p></div>
+    <div class="feature"><h3>A reading guide</h3><p>A band, underline or spotlight across the page keeps your eyes in one place while the words come to you.</p></div>
+    <div class="feature"><h3>Read aloud</h3><p>Listen with your device's voices or download a natural voice, highlighted word by word. Natural voices run entirely on your device.</p></div>
+    <div class="feature"><h3>Your books, your way</h3><p>Ebooks, PDFs, comics and text files. Text size, spacing, line length, reading typefaces and colours, plus a magnifier and full-screen mode.</p></div>
+    <div class="feature"><h3>Accessible throughout</h3><p>High contrast, colour-vision settings, larger controls, an easier-to-read typeface with extra spacing, and reduced motion.</p></div>
+    <div class="feature"><h3>A tidy library</h3><p>Grid, List or Table views, shelves, search, Continue reading, and real covers looked up from open libraries. Books without one get a leather binding.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="sH">
+  <div class="wrap"><h2 id="sH">A look inside</h2><p class="sub">Scroll sideways for more.</p></div>
+  <div class="wrap shots" tabindex="0" aria-label="Screenshots">
+    <figure><img src="media/shot-library.webp" width="1280" height="800" alt="The library, with book covers on shelves" loading="lazy"><figcaption>Your library</figcaption></figure>
+    <figure><img src="media/shot-reader.webp" width="1280" height="800" alt="A book in the reader on a sepia page with the reading guide" loading="lazy"><figcaption>Reading on sepia, with the reading guide</figcaption></figure>
+    <figure><img src="media/shot-spotlight.webp" width="1280" height="800" alt="Night reading with a spotlight guide" loading="lazy"><figcaption>Night reading with the spotlight</figcaption></figure>
+    <figure><img src="media/shot-page-sweep.webp" width="1280" height="800" alt="Page sweep, where the next page is revealed line by line" loading="lazy"><figcaption>Page sweep</figcaption></figure>
+    <figure><img src="media/shot-high-contrast.webp" width="1280" height="800" alt="The library in high contrast" loading="lazy"><figcaption>High contrast</figcaption></figure>
+    <figure><img src="media/shot-appearance.webp" width="1280" height="800" alt="Appearance settings with accent and background colours" loading="lazy"><figcaption>Your colours</figcaption></figure>
+  </div>
+</section>
+
+<section class="wrap" aria-labelledby="wH">
+  <h2 id="wH">Who it helps</h2>
+  <p class="sub">Anyone who reads a lot, and especially readers for whom page-turning and small text get in the way.</p>
+  <ul class="who">
+    <li><strong>Dyslexia and ADHD</strong><span>A steady pace and a guide that holds your place, with read aloud alongside.</span></li>
+    <li><strong>Low vision</strong><span>Large text, high contrast, a magnifier and voices that read to you.</span></li>
+    <li><strong>Students</strong><span>Course readings and PDFs, with Study mode for searching, highlighting and notes.</span></li>
+    <li><strong>Long-form readers</strong><span>Novels, essays and saved articles, hands-free at your speed.</span></li>
+  </ul>
+</section>
+
+<section class="wrap" aria-labelledby="pH">
+  <div class="private">
+    <h2 id="pH">Private by design</h2>
+    <ul>
+      <li>Your books stay in your browser on your device. Nothing is uploaded.</li>
+      <li>No accounts, analytics, advertising or tracking.</li>
+      <li>Move your reading places to another device with an encrypted sync code, or keep a backup file.</li>
+    </ul>
+    <p class="small">Read the full <a href="privacy.html">privacy policy</a>.</p>
+  </div>
+</section>
+
+<section class="wrap" aria-labelledby="qH">
+  <h2 id="qH">Questions</h2>
+  <details><summary>Is it really free?</summary><p>Yes. There are no adverts and no account. If you'd like to help keep it going, there's a donation link at the bottom of the library.</p></details>
+  <details><summary>Where are my books kept?</summary><p>In your own browser's storage, on your own device. They aren't sent to Velvet Scroll or anyone else. Use Backup to keep a copy or move your library to another computer.</p></details>
+  <details><summary>Can it open Kindle or other store-bought books?</summary><p>Only books without DRM. Velvet Scroll doesn't remove copy protection, so books bought from stores that use it, including the Kindle store, can't be opened. Free books from Project Gutenberg, Standard Ebooks and many small publishers work well.</p></details>
+  <details><summary>Does it work on my phone or tablet?</summary><p>Yes. Open velvetscroll.net in your phone's browser. On Android, the Firefox extension works too.</p></details>
+  <details><summary>Do I need the extension?</summary><p>No. The website does everything for your books. The extension adds saving web articles to read later, and looking up book details and covers online.</p></details>
+  <details><summary>How do I report a problem or ask for a feature?</summary><p>Open an issue on the <a href="https://github.com/brobborb/velvet-scroll/issues" target="_blank" rel="noopener">project page</a>.</p></details>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <a href="./">Open Velvet Scroll</a>
+  <a href="https://chromewebstore.google.com/detail/lcddfbbfeahgjlilbmclahmfgolpoknf" target="_blank" rel="noopener">Chrome Web Store</a>
+  <a href="https://addons.mozilla.org/firefox/addon/velvet-scroll/" target="_blank" rel="noopener">Firefox Add-ons</a>
+  <a href="privacy.html">Privacy</a>
+  <a href="licences.html">Licences</a>
+  <a href="https://github.com/brobborb/velvet-scroll/issues" target="_blank" rel="noopener">Support</a>
+</div></footer>
+</body>
+</html>

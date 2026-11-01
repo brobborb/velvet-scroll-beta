@@ -2777,6 +2777,7 @@ async function decryptBytes(u8, pw){
 let bkChosen = null;   // ids picked for a backup, or null for all of them
 const bkBooksList = () => bkChosen ? books.filter(b => bkChosen.has(b.id)) : books;
 function bkSummary(){
+  if(/at least one book/.test($('#bkSaveSt').textContent)) $('#bkSaveSt').textContent = '';
   const list = bkBooksList(), total = list.reduce((a, b) => a + (b.size || 0), 0);
   $('#bkSize').textContent = list.length ? `(${list.length === books.length ? '' : list.length + ' of '}${books.length} book${books.length === 1 ? '' : 's'}, about ${fmtMB(total)})` : '(no books chosen)';
   $('#bkAllN').textContent = `(${books.length})`;
@@ -6184,7 +6185,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 2171598</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 654ab72</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

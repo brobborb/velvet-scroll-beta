@@ -600,6 +600,18 @@ html.ax-hc .rail,html.ax-hc .rail-show{border:2px solid var(--rfg)}
 .reader.paged .scroller::-webkit-scrollbar{display:none}
 .pg-prog{position:absolute;left:0;bottom:0;height:3px;width:0;z-index:3;pointer-events:none;background:var(--accent);opacity:.55;border-radius:0 2px 2px 0}
 .pg-prog[hidden]{display:none}
+/* Pages: previous and next arrows at the sides, for a mouse or trackpad (touch screens tap or swipe instead) */
+.pgarrow{display:none;position:absolute;top:50%;z-index:4;width:44px;height:88px;margin-top:-44px;border:0;border-radius:12px;padding:0;cursor:pointer;
+  background:color-mix(in srgb,var(--rfg) 5%,transparent);color:var(--rfg);opacity:.35;transition:opacity .15s,background .15s}
+.pgarrow svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pgarrow.prev{left:12px} .pgarrow.next{right:12px}
+.pgarrow:hover,.pgarrow:focus-visible{opacity:1;background:color-mix(in srgb,var(--rfg) 12%,transparent)}
+.pgarrow:disabled{opacity:.08;cursor:default;background:transparent}
+.reader.playing .pgarrow:not(:hover){opacity:.15}
+@media (hover:hover) and (pointer:fine){ .reader.paged .pgarrow{display:grid;place-items:center} }
+.reader.rail-on .pgarrow.next{right:calc(var(--railw, 48px) + 24px)}
+html.ax-large .pgarrow{width:54px;height:104px;margin-top:-52px}
+html.ax-hc .pgarrow{border:2px solid var(--rfg);opacity:.8;background:var(--rbg)}
 .dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:4}
 
 .panel{position:absolute;top:0;bottom:0;width:min(370px,94vw);z-index:6;background:var(--surface);color:var(--fg);overflow-y:auto;box-shadow:0 0 40px rgb(0 0 0 / .3);font-family:var(--f-ui);display:flex;flex-direction:column;gap:18px;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
@@ -850,6 +862,8 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <div id="scroller" class="scroller" tabindex="-1" role="region" aria-label="Book text"><article id="page" class="page"></article></div>
     <div id="sweepFoot" class="sweep-foot" hidden></div>
     <div id="pgProg" class="pg-prog" hidden></div>
+    <button type="button" id="pgPrev" class="pgarrow prev" aria-label="Previous page" title="Previous page (←)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button type="button" id="pgNext" class="pgarrow next" aria-label="Next page" title="Next page (→)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     <div id="sweepHead" class="sweep-head" hidden></div>
     <div id="sweepLine" class="sweep-line" hidden><span class="sweep-mark"></span></div>
     <div id="sweepCover" class="sweep-cover" hidden></div>
@@ -4220,6 +4234,7 @@ function applySettings(save=true){
   $('#bookRow').hidden = !isSweep(); $('#sBook').checked = S.book !== false;
   page.classList.toggle("bookgrid", gridOn()); gridSnapSoon();
   R.classList.toggle('paged', isPages()); $('#pgProg').hidden = true;
+  if(isPages()) setTimeout(() => { if(!R.hidden && cur && ready && !playing){ pagesEnsure(); pagesArrows(); } }, 80);
   $('#styleHint').textContent = isPages() ? 'Turn the pages like a book: tap or click the right side of the page, swipe, or press → or Page Down. The left side, ← or Page Up goes back. Play turns the pages for you at your reading speed.'
     : isSweep() ? 'The page stays still. A blank band, with a line along its top, drifts down at your reading speed and the next page appears above it. Read the new page above the line, or the rest of this page below the band. Smooth motion and refresh rate only apply to Cinema.'
     : 'The text glides up the screen past the reading guide.';
@@ -4408,6 +4423,7 @@ async function openBook(b){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     if(pdfDoc && pr.pg && pr.mode && pr.mode !== pdfMode) goTo('sec0-pg'+pr.pg); else setFrac(p);
     gridSnap(); ready = true; updateStatus(); lastAnchor = null; noteAnchor(); notesTm = null; notesPaint();
+    if(isPages()){ pgStack = []; sweepBegin(); }
     // images can shift the layout as they load; re-apply the saved spot once they settle
     const imgs = [...page.querySelectorAll('img')].filter(i=>!i.complete);
     if(imgs.length && p > 0) Promise.all(imgs.map(i=>new Promise(r=>{ i.onload=i.onerror=r; }))).then(()=>{ if(cur && !playing && Math.abs(frac()-p) < 0.02) setFrac(p); });
@@ -5157,6 +5173,7 @@ function sweepBegin(){
   else { const pl = parseFloat(cs.paddingLeft), pw = pr.width - pl - parseFloat(cs.paddingRight); swMark.style.left = Math.max(0, pr.left - sr.left + pl - 16) + 'px'; swMark.style.width = Math.min(sr.width, pw + 32) + 'px'; }
   swLine.style.height = Math.round(lh) + 'px';
   const pagesOnly = isPages(); if(pagesOnly) pgElapsed = 0;
+  if(pagesOnly) setTimeout(pagesArrows, 0);
   swNext.hidden = last || pagesOnly; swLine.hidden = pagesOnly; swCover.hidden = pagesOnly;
   if(!pagesOnly) sweepClone();
   // a line cut off at the bottom belongs to the next page: hide it here
@@ -5214,7 +5231,7 @@ function pagesTurn(dir){
     if(sw.last){ toast('End of book.'); return false; }
     pgStack.push(sw.start); pgTurning = true; scroller.scrollTop = sw.next;
   } else {
-    if(sw.start <= 1){ toast('This is the first page.'); return false; }
+    if(pagesAtStart()){ toast('This is the first page.'); return false; }
     const back = pgStack.length ? pgStack.pop() : Math.max(0, sw.start - (sw.next - sw.start));
     pgTurning = true; scroller.scrollTop = back;
   }
@@ -5235,6 +5252,10 @@ function pagesTick(t){
   if(lensOn) lensDraw();
   raf = requestAnimationFrame(tick);
 }
+$('#pgPrev').onclick = e => { e.stopPropagation(); pause(); pagesTurn(-1); };
+$('#pgNext').onclick = e => { e.stopPropagation(); pause(); pagesTurn(1); };
+const pagesAtStart = () => !sw || sw.start < sw.lh * 2;   // only the page's top margin above: the first page
+function pagesArrows(){ $('#pgPrev').disabled = pagesAtStart(); $('#pgNext').disabled = !sw || !!sw.last; }
 // a jump (search, contents, the slider) lands mid-page: line the page up again once it settles
 function pagesAlignSoon(){ clearTimeout(pgAlignT); pgAlignT = setTimeout(() => { if(isPages() && !R.hidden && cur && !pgTurning){ pgStack = []; sweepBegin(); } }, 180); }
 // the wheel and trackpad turn pages instead of scrolling
@@ -6347,7 +6368,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 45f71b4</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · bfd446c</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

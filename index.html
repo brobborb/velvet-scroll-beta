@@ -14,6 +14,13 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2c6a57" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101715" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Velvet Scroll">
 <style>*,*::before,*::after{box-sizing:border-box}:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Velvet Scroll</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -767,6 +774,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <button id="apOpen" class="qbtn" title="Appearance: theme, colours and fonts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.3-1-.6-1.4-.3-.4-.6-.8-.6-1.4 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10" cy="7" r="1.1"/><circle cx="14.5" cy="7" r="1.1"/></svg><span>Appearance</span></button>
       <button id="axOpen" class="qbtn" title="Accessibility: larger text, contrast and motion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.5 7-1.5M12 10v5M12 15l-3 6M12 15l3 6"/></svg><span>Accessibility</span></button>
       <button id="bkOpen" class="qbtn" title="Backup, restore and sync codes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v3H4zM5.5 10v9h13v-9M10 13.5h4"/></svg><span>Backup</span></button>
+      <button id="installBtn" class="qbtn" hidden title="Install Velvet Scroll as an app on this device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11.5l3 3 3-3M10 18.5h4"/></svg><span>Install app</span></button>
       <button id="plusOpen" class="qbtn" title="Velvet Scroll Plus: a one-time purchase for extra features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span id="plusLbl">Plus</span></button>
     </nav>
     <div class="addsplit">
@@ -3149,6 +3157,18 @@ $('#syncOn').addEventListener('change', async e => {
   for(const b of books) syncBook(b);
   syncSettings(); await syncFlush();
 });
+
+/* ---------- Installing as an app (the website only): offline copy, an Install button, opening book files from the system ---------- */
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if(!IS_EXT && !IN_CLAUDE && 'serviceWorker' in navigator && (location.protocol === 'https:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)))
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+addEventListener('beforeinstallprompt', e => { if(IS_EXT) return; e.preventDefault(); installEvt = e; $('#installBtn').hidden = isStandalone(); });
+addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').hidden = true; toast('Velvet Scroll is installed. You’ll find it with your other apps.', 5000); });
+$('#installBtn').onclick = async () => { if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt = null; $('#installBtn').hidden = true; };
+// book files opened with Velvet Scroll from the computer's file manager (when installed)
+function launchFiles(){ if(IS_EXT || !('launchQueue' in window)) return;
+  launchQueue.setConsumer(async p => { if(!p || !p.files || !p.files.length) return; try{ const files = await Promise.all(p.files.map(h => h.getFile())); addFiles(files); }catch(e){} }); }
 
 /* ---------- Velvet Scroll Plus: a one-time licence that unlocks extra tools ----------
    Keys are signed with a private key that is not in this code; here only the public half checks them, on the device. */
@@ -6358,6 +6378,7 @@ setupDonate();
   books = await dbAll(); await loadProgress();
   initSync();
   await plusInit();
+  launchFiles();
   initGd();
   syncCodeFromAddress();
   try{ navigator.storage?.persist?.(); }catch(e){}
@@ -6368,7 +6389,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · cfbe352</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 849c550</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

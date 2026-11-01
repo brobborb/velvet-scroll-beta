@@ -1502,7 +1502,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="pluscol"><span class="lbl">Free for everyone, always</span>
         <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
       <div class="pluscol plus"><span class="lbl">Plus</span>
-        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance, mystery and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
+        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
     </div>
     <p class="hint">One payment, no subscription. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
@@ -2569,7 +2569,7 @@ function renderCoverChoices(){
   if(dlg.custom) tiles.push({kind:'custom', label:'Your image', node:() => customCanvas(84, 126)});
   if(b.coverBuf) tiles.push({kind:'own', label: b.coverSrc==='custom' || b.prevSrc==='custom' ? 'Your cover' : b.coverSrc==='online' || b.prevSrc==='online' ? 'Current cover' : (b.coverSrc==='page' || b.prevSrc==='page') ? 'First page' : 'Book’s own cover', node:() => coverImg(b.coverBuf, b.coverType)});
   tiles.push({kind:'classic', style:'', label:'Classic leather', node:() => classicCover(dlgPreview())});
-  for(const [k, v] of Object.entries(COVER_STYLES)) tiles.push({kind:'classic', style:k, label:v.label, plus:!PLUS, node:() => classicCover({...dlgPreview(), coverStyle:k}, true)});
+  for(const [k, v] of Object.entries(COVER_STYLES)) if(!v.reserved) tiles.push({kind:'classic', style:k, label:v.label, plus:!PLUS, node:() => classicCover({...dlgPreview(), coverStyle:k}, true)});
   for(const r of dlg.results) if(r.thumb) tiles.push({kind:'online', url:r.cover, thumb:r.thumb, label: r.source + (r.year ? ` · ${r.year}` : '') + (r.openCover ? '' : ' (copyright may apply)'), node:() => el('img', {src:r.thumb, alt:'', loading:'lazy', referrerpolicy:'no-referrer', onerror:e => { const t = e.target.closest('.ctile'); if(t) t.hidden = true; }})});
   const isSel = t => dlg.choice.kind === t.kind && (t.kind !== 'online' || dlg.choice.url === t.url) && (t.kind !== 'classic' || (dlg.choice.style || '') === t.style);
   $('#dCovers').replaceChildren(...tiles.map(t => el('button', {class:'ctile', 'aria-pressed':String(isSel(t)), onclick:() => { dlg.choice = {kind:t.kind, url:t.url, thumb:t.thumb, style:t.style || ''}; renderCoverChoices(); }},
@@ -3836,7 +3836,7 @@ const COVER_STYLES = {
   fantasy: {label:'Fantasy', pal:[['#173a2a','#08180f'],['#1b2a5a','#0a1028'],['#48183a','#1b0815'],['#123a3f','#061a1d']]},
   space: {label:'Science fiction', pal:[['#13294b','#e4572e','#f3e6c8','#2a9d8f'],['#0f3b3a','#f2a541','#f3e6c8','#e4572e'],['#1d1b2e','#e8c547','#f3e6c8','#d1495b'],['#3d1c2b','#2a9d8f','#f3e6c8','#f2a541']]},
   romance: {label:'Romance', pal:[['#7e3b4f','#4a1e2c'],['#5d4a7a','#33284a'],['#55705f','#2f4236'],['#2c3a5e','#161e36']]},
-  noir: {label:'Mystery & noir', pal:[['#16171a','#f2c230'],['#121821','#e0443a'],['#1a1714','#ece6d6'],['#0f1716','#7fc8a9']]},
+  noir: {label:'Mystery & noir', reserved:true, pal:[['#16171a','#f2c230'],['#121821','#e0443a'],['#1a1714','#ece6d6'],['#0f1716','#7fc8a9']]},
   story: {label:'Children’s classic', pal:[['#c4472f','#7e2716'],['#c99417','#6e4a06'],['#3f6fb0','#1f3f73'],['#4f8a4a','#2b5528']]}
 };
 const coverStyleOf = (b, force) => b.coverStyle && COVER_STYLES[b.coverStyle] && (force || PLUS) ? b.coverStyle : '';
@@ -6551,7 +6551,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · f73980b</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 57a4a9a</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

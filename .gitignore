@@ -1,0 +1,4 @@
+
+# signing keys for Velvet Scroll Plus licences must never be committed
+*.pem
+*PRIVATE*

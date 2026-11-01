@@ -267,6 +267,23 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #dlg .drow2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:10px}
 #dlg .isbnmsg:empty,#dlg #dModesHint:empty{display:none}
 #dlg .isbnmsg{margin:-4px 0 0}
+.plussheet{width:min(720px,100%);gap:14px}
+.plussheet p{margin:0}
+.pluslede{line-height:1.55}
+.plusctx{padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-weight:600}
+.plusgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pluscol{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.pluscol.plus{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.pluscol ul{margin:8px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.pluscol .soon{font-size:12px;color:var(--muted);white-space:nowrap}
+.pluskeylbl{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--muted)}
+.pluskeylbl textarea{font:13px/1.4 ui-monospace,monospace;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);resize:vertical}
+#plusOff{display:flex;flex-direction:column;gap:10px}
+#plusBuy:disabled{opacity:.55;cursor:default}
+#plusOff[hidden],#plusOnBox[hidden]{display:none}
+.plustag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--accent);color:var(--accent-fg);vertical-align:middle}
+#plusOpen.on{color:var(--accent)}
+@media (max-width:620px){ .plusgrid{grid-template-columns:minmax(0,1fr)} }
 .bkwhich{display:flex;flex-wrap:wrap;gap:4px 20px}
 .bkpick[hidden]{display:none}
 .bkpick{display:flex;flex-direction:column;gap:8px}
@@ -733,6 +750,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <button id="apOpen" class="qbtn" title="Appearance: theme, colours and fonts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.3-1-.6-1.4-.3-.4-.6-.8-.6-1.4 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10" cy="7" r="1.1"/><circle cx="14.5" cy="7" r="1.1"/></svg><span>Appearance</span></button>
       <button id="axOpen" class="qbtn" title="Accessibility: larger text, contrast and motion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.5 7-1.5M12 10v5M12 15l-3 6M12 15l3 6"/></svg><span>Accessibility</span></button>
       <button id="bkOpen" class="qbtn" title="Backup, restore and sync codes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v3H4zM5.5 10v9h13v-9M10 13.5h4"/></svg><span>Backup</span></button>
+      <button id="plusOpen" class="qbtn" title="Velvet Scroll Plus: a one-time purchase for extra features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span id="plusLbl">Plus</span></button>
     </nav>
     <div class="addsplit">
       <label class="btn primary addmain" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add books</label>
@@ -793,7 +811,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   <div id="fmts" class="fmts" role="group" aria-label="File formats" hidden></div>
   <div id="notice" class="notice" hidden></div>
   <section id="grid" class="grid" aria-label="Books"></section>
-  <p class="foot"><a class="plink" href="https://velvetscroll.net/about.html" target="_blank" rel="noopener">About</a> · <span id="footExt">Extensions: <a class="plink" href="https://chromewebstore.google.com/detail/lcddfbbfeahgjlilbmclahmfgolpoknf" target="_blank" rel="noopener">Chrome</a> · <a class="plink" href="https://addons.mozilla.org/firefox/addon/velvet-scroll/" target="_blank" rel="noopener">Firefox</a> · </span><a class="plink" href="https://velvetscroll.net/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a class="plink" href="https://velvetscroll.net/licences.html" target="_blank" rel="noopener">Licences</a> · <a class="plink" href="https://velvetscroll.net/terms.html" target="_blank" rel="noopener">Terms</a> · Books stay in this browser on this device; nothing is uploaded. Opens EPUB, KEPUB, MOBI, AZW3, PDF, TXT, HTML, FB2 and CBZ comic files, including zipped ones. Drag them anywhere on the page to add them. DRM-protected and password-locked books, including Kindle store purchases, can't be opened.</p>
+  <p class="foot"><a class="plink" href="https://velvetscroll.net/about.html" target="_blank" rel="noopener">About</a> · <span id="footExt">Extensions: <a class="plink" href="https://chromewebstore.google.com/detail/lcddfbbfeahgjlilbmclahmfgolpoknf" target="_blank" rel="noopener">Chrome</a> · <a class="plink" href="https://addons.mozilla.org/firefox/addon/velvet-scroll/" target="_blank" rel="noopener">Firefox</a> · </span><a class="plink" href="https://velvetscroll.net/privacy.html" target="_blank" rel="noopener">Privacy</a> · <a class="plink" href="https://velvetscroll.net/licences.html" target="_blank" rel="noopener">Licences</a> · <a class="plink" href="https://velvetscroll.net/terms.html" target="_blank" rel="noopener">Terms</a> · <a class="plink" href="#" id="footPlus">Velvet Scroll Plus</a> · Books stay in this browser on this device; nothing is uploaded. Opens EPUB, KEPUB, MOBI, AZW3, PDF, TXT, HTML, FB2 and CBZ comic files, including zipped ones. Drag them anywhere on the page to add them. DRM-protected and password-locked books, including Kindle store purchases, can't be opened.</p>
   <section id="donate" class="donate" hidden aria-labelledby="donH">
     <div class="don-text"><h2 id="donH">Support Velvet Scroll</h2><p>Velvet Scroll is free. If you enjoy it, you can help keep it going.</p></div>
     <div class="don-ways">
@@ -1301,6 +1319,31 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <p class="hint" id="syncHint">Uses your browser's own sync between computers where you're signed in to the browser with extension syncing turned on. The books themselves aren't synced: copy them once with a backup, and after that your place follows you.</p>
       <p class="hint" id="syncSt" role="status"></p>
       <div id="syncMissing" hidden><p class="hint">In your synced library but not on this computer:</p><ul class="missing" id="syncList"></ul></div>
+    </div>
+  </div>
+</div>
+
+<div id="plusDlg" class="modal" hidden>
+  <div class="sheet plussheet" role="dialog" aria-modal="true" aria-labelledby="plusH">
+    <header class="sh-head"><h2 id="plusH">Velvet Scroll Plus</h2><button class="btn" id="plusClose">Close</button></header>
+    <p class="plusctx" id="plusCtx" hidden></p>
+    <p class="pluslede">Velvet Scroll has no ads and never will. The reader, read aloud and every accessibility setting are free for everyone. Velvet Scroll Plus is a one-time purchase that unlocks extra tools for study, syncing and atmosphere. It supports the time that goes into building and maintaining Velvet Scroll, and keeps it independent.</p>
+    <div class="plusgrid">
+      <div class="pluscol"><span class="lbl">Free for everyone, always</span>
+        <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
+      <div class="pluscol plus"><span class="lbl">Plus</span>
+        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
+    </div>
+    <p class="hint">One payment, no subscription. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
+    <div id="plusOff">
+      <div class="row"><button class="btn primary" id="plusBuy" disabled>Buy Plus: coming soon</button></div>
+      <label for="plusKey" class="pluskeylbl">Have a licence key?<textarea id="plusKey" rows="2" spellcheck="false" placeholder="Paste your key, starting VSP1-"></textarea></label>
+      <div class="row end"><button class="btn primary" id="plusApply">Unlock Plus</button></div>
+      <p class="hint" id="plusSt" role="status"></p>
+    </div>
+    <div id="plusOnBox" hidden>
+      <p class="pluson"><strong>Plus is unlocked on this device.</strong> <span id="plusWho"></span> Thank you for supporting Velvet Scroll.</p>
+      <div class="row"><button class="btn" id="plusRemove">Remove the key from this device</button></div>
     </div>
   </div>
 </div>
@@ -2382,7 +2425,7 @@ function renderResults(){
 /* ---------- Back button: every open book, panel and window adds a history step, so Back closes it ---------- */
 const layers = [];
 function pushLayer(name){ try{ history.pushState({bookroll:true, depth:layers.length + 1}, ''); layers.push(name); }catch(e){} }
-function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, url:closeUrlNow, pinfo:closePinfoNow, note:closeNoteNow}[name] || (() => {}))(); }
+function closeLayerNow(name){ ({reader:closeReaderNow, panel:hidePanels, details:closeDetailsNow, backup:closeBackupNow, plus:closePlusNow, ap:closeApNow, ax:closeAxNow, art:closeArtNow, url:closeUrlNow, pinfo:closePinfoNow, note:closeNoteNow}[name] || (() => {}))(); }
 // close a layer from a button: step history back to just below it, and popstate does the closing
 function popLayer(name){ const i = layers.lastIndexOf(name); if(i < 0){ closeLayerNow(name); return; } history.go(-(layers.length - i)); }
 addEventListener('popstate', e => { const d = e.state && e.state.bookroll ? e.state.depth : 0; while(layers.length > d) closeLayerNow(layers.pop()); });
@@ -3087,6 +3130,50 @@ $('#syncOn').addEventListener('change', async e => {
   syncSettings(); await syncFlush();
 });
 
+/* ---------- Velvet Scroll Plus: a one-time licence that unlocks extra tools ----------
+   Keys are signed with a private key that is not in this code; here only the public half checks them, on the device. */
+const PLUS_PUB = {kty:'EC', crv:'P-256', x:'F4IYp1bMFHb56FyejOzzsLUk2WsFKMNI4fq4xI_lXWM', y:'xbftLZvN-l7fSi-kCOkIMq4l3aZ0_ZpiERccsaFf_sE'};
+const PLUS_ITEMS = ['pdfOcrBtn', 'mOcr', 'pdfSaveHlBtn', 'mSaveHl', 'notesPdf', 'notesExport', 'gdConnect'];
+let PLUS = null;
+async function plusVerify(key){
+  const m = /^VSP1-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec(String(key || '').replace(/\s+/g, '')); if(!m) return null;
+  try{
+    const pub = await crypto.subtle.importKey('jwk', {...PLUS_PUB, ext:true}, {name:'ECDSA', namedCurve:'P-256'}, false, ['verify']);
+    const ok = await crypto.subtle.verify({name:'ECDSA', hash:'SHA-256'}, pub, b64u.dec(m[2]), new TextEncoder().encode(m[1]));
+    if(!ok) return null;
+    const p = JSON.parse(new TextDecoder().decode(b64u.dec(m[1]))); return p && p.v === 1 ? p : null;
+  }catch(e){ return null; }
+}
+function plusShow(){
+  $('#plusOff').hidden = !!PLUS; $('#plusOnBox').hidden = !PLUS;
+  $('#plusWho').textContent = PLUS ? `Licensed to ${PLUS.n}${PLUS.d ? ', ' + new Date(PLUS.d).toLocaleDateString([], {day:'numeric', month:'long', year:'numeric'}) : ''}.` : '';
+  $('#plusOpen').classList.toggle('on', !!PLUS); $('#plusLbl').textContent = PLUS ? 'Plus ✓' : 'Plus';
+  for(const id of PLUS_ITEMS){ const b = document.getElementById(id); if(!b) continue; let t = b.querySelector('.plustag');
+    if(!PLUS && !t){ t = el('span', {class:'plustag', text:'Plus'}); b.append(t); } else if(PLUS && t) t.remove(); }
+}
+function plusOpen(feature){
+  if($('#plusDlg').hidden) pushLayer('plus');
+  $('#plusCtx').hidden = !feature; $('#plusCtx').textContent = feature ? `${feature} is part of Velvet Scroll Plus.` : '';
+  $('#plusSt').textContent = ''; plusShow(); $('#plusDlg').hidden = false; (PLUS ? $('#plusClose') : $('#plusKey')).focus();
+}
+function closePlusNow(){ $('#plusDlg').hidden = true; }
+// gate a feature: true when Plus is on, otherwise explain and offer it
+function needPlus(feature){ if(PLUS) return true; plusOpen(feature); return false; }
+async function plusInit(){ const k = LS.get('plusKey', ''); PLUS = k ? await plusVerify(k) : null; plusShow(); }
+$('#plusOpen').onclick = () => plusOpen('');
+$('#footPlus').onclick = e => { e.preventDefault(); plusOpen(''); };
+$('#plusClose').onclick = () => popLayer('plus');
+$('#plusDlg').addEventListener('click', e => { if(e.target === $('#plusDlg')) popLayer('plus'); });
+$('#plusApply').onclick = async () => {
+  const st = $('#plusSt'), key = $('#plusKey').value.trim();
+  if(!key){ st.textContent = 'Paste your licence key first.'; $('#plusKey').focus(); return; }
+  const p = await plusVerify(key);
+  if(!p){ st.textContent = 'That key isn’t valid. Check it was copied in full, starting with VSP1-.'; return; }
+  PLUS = p; LS.set('plusKey', key.replace(/\s+/g, '')); $('#plusKey').value = ''; plusShow(); toast('Velvet Scroll Plus is unlocked. Thank you!', 4000);
+  if(gdOn) gdSync(false);
+};
+$('#plusRemove').onclick = () => { LS.set('plusKey', ''); PLUS = null; plusShow(); $('#plusSt').textContent = 'The key was removed from this device. You can enter it again at any time.'; };
+
 /* ---------- Google Drive sync: places, shelves, details, notes and settings in one small file in the reader's own Drive ----------
    Uses the drive.file permission, so Velvet Scroll can only see files it created. Books are never uploaded.
    Website: Google Identity Services (a pop-up). Extension: the browser's identity API. Tokens last about an hour and stay in memory only. */
@@ -3173,6 +3260,7 @@ async function gdMerge(remote){
 }
 async function gdSync(interactive){
   if(!gdOn || gdBusy) return;
+  if(!PLUS){ gdShow('Google Drive sync is part of Velvet Scroll Plus. Your sync file is still in your Drive, ready when you unlock Plus.'); return; }
   gdBusy = true; gdShow('Syncing with Google Drive…');
   try{
     let id = await gdFindFile(interactive), remote = null;
@@ -3217,10 +3305,11 @@ function gdShow(msg){ if(msg !== undefined) gdMsg = msg;
   $('#gdConnect').hidden = gdOn; $('#gdNow').hidden = $('#gdOff').hidden = !gdOn;
   $('#gdSt').textContent = gdOn ? gdMsg || 'Connected to Google Drive.' : ''; }
 $('#gdConnect').onclick = async () => {
+  if(!needPlus('Google Drive sync')) return;
   try{ await gdToken(true); }catch(e){ gdOn = false; gdShow(); $('#gdSt').textContent = e.message === 'popup' ? 'Your browser blocked the Google sign-in window. Allow pop-ups for this site, then try again.' : e.message === 'noidentity' ? 'This browser doesn’t support signing in to Google from extensions. Use velvetscroll.net instead.' : 'Google Drive wasn’t connected. Make sure the Google Drive box is ticked when you sign in.'; return; }
   gdOn = true; LS.set('gdOn', true); gdShow('Connected.'); await gdSync(true);
 };
-$('#gdNow').onclick = () => gdSync(true);
+$('#gdNow').onclick = () => { if(needPlus('Google Drive sync')) gdSync(true); };
 $('#gdOff').onclick = async () => {
   const t = gdTok; gdOn = false; gdTok = ''; gdExp = 0; LS.set('gdTok', null); LS.set('gdOn', false); LS.set('gdFile', ''); gdShow();
   if(t) try{ await fetch('https://oauth2.googleapis.com/revoke?token=' + encodeURIComponent(t), {method:'POST'}); }catch(e){}
@@ -3876,6 +3965,7 @@ async function ocrNeeded(doc){
 }
 async function ocrStart(){
   if(!pdfDoc || !cur) return;
+  if(!needPlus('Recognising text in scanned PDFs')) return;
   if(!pdfDoc.textAllowed){ toast('This PDF’s settings don’t allow its text to be extracted, so its text can’t be recognised either.', 6000); return; }
   if(OCR.run){ toast('Already recognising text. Watch the progress at the bottom of the page.'); return; }
   const doc = pdfDoc, todo = await ocrNeeded(doc);
@@ -4799,6 +4889,7 @@ async function noteGo(nt){
   scroller.scrollTop += rc.top - (st.top + readY()); pgTops = null; updateStatus();
 }
 $('#notesExport').onclick = () => {
+  if(!needPlus('Exporting your notes')) return;
   const list = notesSorted(); if(!cur || !list.length) return;
   let md = `# ${cur.title}${cur.author ? ' — ' + cur.author : ''}\n\nHighlights and notes from Velvet Scroll, ${new Date().toLocaleDateString(undefined, {day:'numeric', month:'long', year:'numeric'})}\n\n`;
   for(const nt of list){
@@ -5972,6 +6063,7 @@ async function hlQuads(doc, nt, cache){
 }
 async function pdfSaveHighlights(){
   if(!cur || !pdfDoc) return;
+  if(!needPlus('Downloading a PDF with your highlights')) return;
   const list = notesSorted(); if(!list.length){ toast('Highlight some text first, then save a copy with your highlights.', 5000); return; }
   if(pdfDoc.encrypted){ toast('This PDF is protected, so a copy with highlights can’t be made. Use Export notes in Contents → Notes instead.', 7000); return; }
   const buf = await dbGetFile(cur.id); if(!buf){ toast('Couldn’t find the original file.'); return; }
@@ -6175,6 +6267,7 @@ setupDonate();
   if(!ok){ const n=$('#notice'); n.hidden=false; n.textContent='This browser isn’t allowing storage here, so books you add will only last until you close the page.'; }
   books = await dbAll(); await loadProgress();
   initSync();
+  await plusInit();
   initGd();
   syncCodeFromAddress();
   try{ navigator.storage?.persist?.(); }catch(e){}
@@ -6185,7 +6278,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 654ab72</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 29704fe</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

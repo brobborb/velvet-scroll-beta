@@ -12,7 +12,7 @@
   --bg:#f2e5c9; --fg:#3a2e1d; --glow:#ffcf7a; --ink-mix:78%; --art:.85;
   /* the stencil is 1536 × 1024; s is how many CSS pixels one stencil pixel takes */
   /* each drawing describes itself: size, where to cut the side pieces and centre bands, and where its lights are */
-  --W:1536; --H:1024; --lw:560; --rx:980; --tx:560; --tw:420; --th:150; --by:760; --bh:264; --cx:1454; --cy:592; --mx:1335; --my:78; --mr:70; --img:url(story/gothic-light.webp);
+  --W:1536; --H:1024; --sw:calc(var(--W) * .586); --tt:var(--th); --tb:var(--bh); --lw:560; --rx:980; --tx:560; --tw:420; --th:150; --by:760; --bh:264; --cx:1454; --cy:592; --mx:1335; --my:78; --mr:70; --img:url(story/gothic-light.webp);
   --s:calc(100dvh / var(--H));
   --ink:color-mix(in srgb,var(--fg) var(--ink-mix),var(--bg));
   color-scheme:light;
@@ -44,20 +44,29 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
 
 /* portrait phones: no room at the sides, so only a band at the top and bottom, scaled to the width */
 @media (max-aspect-ratio:1/1){
-  :root{--s:calc(100vw / (var(--W) * .586))}
+  :root{--s:calc(100vw / var(--sw))}
+  /* upright tablets: don't let the bands grow past about a third of the screen; the drawing stays centred */
+  html.port{--s:calc(min(calc(100vw / var(--W)), calc(100dvh / (var(--H) * 1.3))) * var(--fs,1))}
+  html.port .pc.t,html.port .pc.b{left:50%;width:calc(var(--W) * var(--s));transform:translateX(-50%)}
+  html.port .glow.candle{right:calc(50vw - (var(--W) / 2 - (var(--W) - var(--cx)) + 40) * var(--s))}
+  html.port .glow.moon{right:calc(50vw - (var(--W) / 2 - (var(--W) - var(--mx)) + var(--mr)) * var(--s))}
   .pc.l,.pc.r{display:none}
   .pc.t{width:100%;height:calc((var(--th) + 40) * var(--s));-webkit-mask-position:50% 0,0 0;mask-position:50% 0,0 0;--fade:linear-gradient(#000 60%,transparent)}
   .pc.b{width:100%;height:calc((var(--bh) + 0) * var(--s));-webkit-mask-position:50% 100%,0 0;mask-position:50% 100%,0 0;--fade:linear-gradient(transparent,#000 40%)}
-  .glow{display:none}
+  html:not(.port) .glow{display:none}
+  /* a drawing made for portrait: full-width bands that keep their side vines */
+  html.port .pc.t{height:calc(var(--th) * var(--s));--fade:linear-gradient(#000,#000)}
+  html.port .pc.b{height:calc(var(--bh) * var(--s));--fade:linear-gradient(#000,#000)}
+  html.port .glow.candle{top:auto;bottom:calc((var(--H) - var(--cy) - 40) * var(--s))}
 }
 
 /* ---------- the reading column ---------- */
 .read{position:fixed;inset:0;overflow-y:auto;scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(transparent calc((var(--th) - 30) * var(--s)),#000 calc((var(--th) + 40) * var(--s)),#000 calc(100% - (var(--bh) + 70) * var(--s)),transparent calc(100% - (var(--bh) - 5) * var(--s)));
-  mask-image:linear-gradient(transparent calc((var(--th) - 30) * var(--s)),#000 calc((var(--th) + 40) * var(--s)),#000 calc(100% - (var(--bh) + 70) * var(--s)),transparent calc(100% - (var(--bh) - 5) * var(--s)))}
+  -webkit-mask-image:linear-gradient(transparent calc((var(--tt) - 30) * var(--s)),#000 calc((var(--tt) + 40) * var(--s)),#000 calc(100% - (var(--tb) + 70) * var(--s)),transparent calc(100% - (var(--tb) - 5) * var(--s)));
+  mask-image:linear-gradient(transparent calc((var(--tt) - 30) * var(--s)),#000 calc((var(--tt) + 40) * var(--s)),#000 calc(100% - (var(--tb) + 70) * var(--s)),transparent calc(100% - (var(--tb) - 5) * var(--s)))}
 .read::-webkit-scrollbar{display:none}
-.col{max-width:min(36em,calc(100vw - 2 * (var(--lw) - 90) * var(--s)));min-width:min(30em,92vw);margin:0 auto;padding:calc((var(--th) + 50) * var(--s)) 0 calc((var(--bh) + 80) * var(--s));font:19px/1.75 Literata,Georgia,serif}
-@media (max-aspect-ratio:1/1){.col{min-width:0;max-width:92vw;font-size:17px}}
+.col{max-width:min(36em,calc(100vw - 2 * (var(--lw) - 90) * var(--s)));min-width:min(30em,92vw);margin:0 auto;padding:calc((var(--tt) + 50) * var(--s)) 0 calc((var(--tb) + 80) * var(--s));font:19px/1.75 Literata,Georgia,serif}
+@media (max-aspect-ratio:1/1){.col{min-width:0;max-width:92vw;font-size:17px} html.port .col{max-width:min(86vw,calc(var(--W) * var(--s) * .84))}}
 .col h1{font:400 2.1em/1.1 'VS Gothic',Literata,serif;text-align:center;margin:0 0 .2em}
 .col .sub{text-align:center;font-style:italic;opacity:.75;margin:0 0 2em}
 .col p{margin:0 0 1em;text-align:justify;hyphens:auto}
@@ -104,9 +113,10 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
-  <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">Pencil sketch</option><option value="dark">Engraving</option></select></label>
+  <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
+  <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
   <button id="hide">Hide</button>
 </div>
@@ -127,19 +137,28 @@ function set(bg, fg){
 // each Story theme has two drawings of the same scene: a pencil sketch for light pages and an engraving for dark ones
 const FRAMES = {
   light: {img:'story/gothic-light.webp', W:1536, H:1024, lw:560, rx:980, tx:560, tw:420, th:150, by:760, bh:264, cx:1454, cy:592, mx:1335, my:78, mr:70, moonGlow:.55},
-  dark:  {img:'story/gothic-dark.webp',  W:1672, H:940,  lw:470, rx:1215, tx:470, tw:745, th:112, by:828, bh:112, cx:1568, cy:598, mx:1535, my:105, mr:64, moonGlow:.3}
+  dark:  {img:'story/gothic-dark.webp',  W:1672, H:940,  lw:470, rx:1215, tx:470, tw:745, th:112, by:828, bh:112, cx:1568, cy:598, mx:1535, my:105, mr:64, moonGlow:.3},
+  // portrait drawings for phones: a band across the top and a scene across the bottom (tt/tb: where the text may start and end)
+  'light-port': {img:'story/gothic-port-light.webp', W:1411, H:2508, port:true, th:820, bh:1190, tt:360, tb:760, cx:1268, cy:1887, mx:1170, my:117, mr:85, moonGlow:.5},
+  'dark-port':  {img:'story/gothic-port-dark.webp',  W:1411, H:2508, port:true, th:820, bh:1190, tt:360, tb:760, cx:1268, cy:1887, mx:1170, my:117, mr:85, moonGlow:.75}
 };
 let isDark = false;
+const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
 function frame(){
-  const pick = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, f = FRAMES[pick];
-  for(const k of ['W','H','lw','rx','tx','tw','th','by','bh','cx','cy','mx','my','mr']) R.setProperty('--' + k, f[k]);
+  const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value;
+  // phones and tablets held upright get the portrait drawing when the theme has one
+  const f = (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
+  for(const k of ['W','H','lw','rx','tx','tw','th','by','bh','cx','cy','mx','my','mr']) if(f[k] !== undefined) R.setProperty('--' + k, f[k]);
+  R.setProperty('--tt', f.tt ?? f.th); R.setProperty('--tb', f.tb ?? f.bh); R.setProperty('--sw', f.port ? f.W : f.W * .586);
+  document.documentElement.classList.toggle('port', !!f.port);
   R.setProperty('--img', `url(${f.img})`); R.setProperty('--moon-glow', f.moonGlow);
 }
-$('#draw').onchange = frame;
+$('#draw').onchange = frame; portMQ.addEventListener('change', frame);
 document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...P[b.dataset.p]); });
 $('#cBg').oninput = $('#cFg').oninput = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', 'false')); set($('#cBg').value, $('#cFg').value); };
 $('#cGlow').oninput = e => R.setProperty('--glow', e.target.value);
 $('#art').oninput = e => R.setProperty('--art', e.target.value / 100);
+$('#fsz').oninput = e => R.setProperty('--fs', e.target.value / 100);
 let raf = 0, last = 0;
 $('#scroll').onclick = e => { const on = e.target.getAttribute('aria-pressed') !== 'true'; e.target.setAttribute('aria-pressed', String(on));
   cancelAnimationFrame(raf); if(on){ last = performance.now(); const step = t => { $('#read').scrollTop += (t - last) * 0.035; last = t; raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); } };

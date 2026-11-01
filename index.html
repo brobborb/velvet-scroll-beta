@@ -267,6 +267,21 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #dlg .drow2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:10px}
 #dlg .isbnmsg:empty,#dlg #dModesHint:empty{display:none}
 #dlg .isbnmsg{margin:-4px 0 0}
+.bkwhich{display:flex;flex-wrap:wrap;gap:4px 20px}
+.bkpick[hidden]{display:none}
+.bkpick{display:flex;flex-direction:column;gap:8px}
+.bkpick-top{display:flex;gap:8px;flex-wrap:wrap}
+.bkpick-top input{flex:1;min-width:160px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);color:var(--fg);font:inherit;font-size:15px}
+.bkpick-top .btn{padding:6px 12px}
+.bklist{max-height:240px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:4px 0;background:var(--bg)}
+.bklist label{display:flex;align-items:center;gap:10px;padding:6px 12px;cursor:pointer;font-size:14px;line-height:1.3}
+.bklist label:hover{background:var(--accent-soft)}
+.bklist label[hidden]{display:none}
+.bklist .bt{flex:1;min-width:0}
+.bklist .bt b{font-weight:600}
+.bklist .bt span,.bklist .bz{color:var(--muted);font-size:12.5px}
+.bklist .bz{white-space:nowrap}
+html.ax-hc .bklist{border:2px solid var(--fg)}
 .dbio{display:flex;flex-direction:column;gap:4px;margin:-3px 0 2px;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--accent) 6%,var(--bg));font-size:13.5px;line-height:1.45}
 .dbio[hidden]{display:none}
 .dbio p{margin:0}
@@ -1221,6 +1236,15 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <div class="grp">
       <span class="lbl">Save a backup</span>
       <p class="hint">One file with your books, covers, reading positions, shelves and settings. Keep it on a USB drive or in your own cloud storage, then restore it in Velvet Scroll on another computer or browser.</p>
+      <div class="bkwhich" role="radiogroup" aria-label="Which books to back up">
+        <label class="check"><input type="radio" name="bkWhich" id="bkAll" value="all" checked> All books <span id="bkAllN" class="muted"></span></label>
+        <label class="check"><input type="radio" name="bkWhich" id="bkSome" value="some"> Choose books…</label>
+      </div>
+      <div id="bkPick" class="bkpick" hidden>
+        <div class="bkpick-top"><input type="search" id="bkFind" placeholder="Filter by title or author" aria-label="Filter the list of books">
+          <button type="button" class="btn" id="bkSelAll">Select all</button><button type="button" class="btn" id="bkSelNone">Select none</button></div>
+        <div class="bklist" id="bkList" role="group" aria-label="Books to include"></div>
+      </div>
       <label class="check"><input type="checkbox" id="bkBooks" checked> Include the books themselves <span id="bkSize" class="muted"></span></label>
       <div class="pwrow">
         <label for="bkPw">Password (optional)<input type="password" id="bkPw" autocomplete="new-password"></label>
@@ -2750,18 +2774,42 @@ async function decryptBytes(u8, pw){
   try{ return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM', iv}, await keyFrom(pw, salt, iter), ct)); }
   catch(e){ throw new Error('badpw'); }
 }
+let bkChosen = null;   // ids picked for a backup, or null for all of them
+const bkBooksList = () => bkChosen ? books.filter(b => bkChosen.has(b.id)) : books;
+function bkSummary(){
+  const list = bkBooksList(), total = list.reduce((a, b) => a + (b.size || 0), 0);
+  $('#bkSize').textContent = list.length ? `(${list.length === books.length ? '' : list.length + ' of '}${books.length} book${books.length === 1 ? '' : 's'}, about ${fmtMB(total)})` : '(no books chosen)';
+  $('#bkAllN').textContent = `(${books.length})`;
+}
+function bkRenderList(){
+  const q = $('#bkFind').value.trim().toLowerCase();
+  const sorted = [...books].sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  $('#bkList').replaceChildren(...sorted.map(b => { const cb = el('input', {type:'checkbox'}); cb.checked = bkChosen.has(b.id);
+    cb.onchange = () => { cb.checked ? bkChosen.add(b.id) : bkChosen.delete(b.id); bkSummary(); };
+    const lab = el('label', {}, cb, el('span', {class:'bt'}, el('b', {text:b.title || 'Untitled'}), b.author ? el('span', {text:' · ' + b.author}) : null), el('span', {class:'bz', text: b.size ? fmtMB(b.size) : ''}));
+    lab.hidden = !!q && !((b.title || '') + ' ' + (b.author || '')).toLowerCase().includes(q); lab.dataset.id = b.id; return lab; }));
+}
+document.querySelectorAll('input[name="bkWhich"]').forEach(r => r.addEventListener('change', () => {
+  const some = $('#bkSome').checked; $('#bkPick').hidden = !some;
+  if(some){ if(!bkChosen) bkChosen = new Set(); bkRenderList(); $('#bkFind').focus(); } else bkChosen = null;
+  bkSummary();
+}));
+$('#bkFind').addEventListener('input', () => { const q = $('#bkFind').value.trim().toLowerCase(); $('#bkList').querySelectorAll('label').forEach(l => { const b = books.find(x => x.id === l.dataset.id); l.hidden = !!q && !((b.title || '') + ' ' + (b.author || '')).toLowerCase().includes(q); }); });
+// select all/none act on the books showing (so a filter can pick, say, one author's books)
+$('#bkSelAll').onclick = () => { $('#bkList').querySelectorAll('label:not([hidden])').forEach(l => { bkChosen.add(l.dataset.id); l.querySelector('input').checked = true; }); bkSummary(); };
+$('#bkSelNone').onclick = () => { $('#bkList').querySelectorAll('label:not([hidden])').forEach(l => { bkChosen.delete(l.dataset.id); l.querySelector('input').checked = false; }); bkSummary(); };
 async function buildBackup(withBooks, pw, onStep){
-  const zip = new JSZip(), metas = [];
+  const zip = new JSZip(), metas = [], list = bkBooksList(), ids = new Set(list.map(b => b.id));
   let i = 0;
-  for(const b of books){
-    onStep && onStep(++i, books.length);
+  for(const b of list){
+    onStep && onStep(++i, list.length);
     await ensureFp(b);
     const m = {...b}; delete m.coverBuf;
     if(b.coverBuf){ zip.file('covers/' + b.id, b.coverBuf); m.hasCover = true; }
     if(withBooks){ const f = await dbGetFile(b.id); if(f){ zip.file('books/' + b.id, f); m.hasFile = true; } }
     metas.push(m);
   }
-  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes, notes:notesAll, authors:authorsAll}));
+  zip.file('library.json', JSON.stringify({app:'Velvet Scroll', format:1, exported:new Date().toISOString(), withBooks, books:metas, progress: bkChosen ? Object.fromEntries(Object.entries(progress).filter(([k]) => ids.has(k))) : progress, settings:S, settingsT:LS.get('settingsT',0), pdfModes, notes: bkChosen ? Object.fromEntries(Object.entries(notesAll).filter(([k]) => ids.has(k))) : notesAll, authors:authorsAll}));
   let out = await zip.generateAsync({type:'uint8array', compression:'STORE'});
   if(pw){
     const z = new JSZip();
@@ -2791,8 +2839,8 @@ async function openBackup(){
   $('#syncGrp').hidden = !SY; if(SY){ $('#syncOn').checked = syncOn; showSyncStatus(); }
   $('#bkSize').textContent = ''; $('#scSt').textContent = ''; $('#scInSt').textContent = ''; $('#scOut').hidden = true; $('#scPw').value = '';
   for(const b of books) if(!b.size){ const f = await dbGetFile(b.id); if(f){ b.size = f.byteLength; await dbPutMeta(b); } }
-  const total = books.reduce((a, b) => a + (b.size || 0), 0);
-  $('#bkSize').textContent = books.length ? `(${books.length} book${books.length===1?'':'s'}, about ${fmtMB(total)})` : '';
+  bkChosen = null; $('#bkAll').checked = true; $('#bkPick').hidden = true; $('#bkFind').value = '';
+  bkSummary(); if(!books.length) $('#bkSize').textContent = '';
 }
 function closeBackupNow(){ $('#bk').hidden = true; pendingRestore = null; $('#bkInPw').value = ''; }
 function closeBackup(){ popLayer('backup'); }
@@ -2802,6 +2850,7 @@ $('#bk').addEventListener('click', e => { if(e.target === $('#bk')) closeBackup(
 $('#bkSave').onclick = async () => {
   const st = $('#bkSaveSt'), pw = $('#bkPw').value;
   if(!books.length){ st.textContent = 'Your library is empty, so there’s nothing to back up yet.'; return; }
+  if(bkChosen && !bkChosen.size){ st.textContent = 'Choose at least one book to back up, or choose All books.'; return; }
   if(pw !== $('#bkPw2').value){ st.textContent = 'The two passwords don’t match.'; return; }
   if(pw && pw.length < 8){ st.textContent = 'Use a password of at least 8 characters.'; return; }
   $('#bkSave').disabled = true;
@@ -2810,7 +2859,8 @@ $('#bkSave').onclick = async () => {
     if(pw) st.textContent = 'Encrypting…';
     const d = new Date(), stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     st.textContent = 'Saving…';
-    const ok = await saveFile(`Velvet Scroll backup ${stamp}${pw ? ' (encrypted)' : ''}.zip`, bytes);
+    const part = bkChosen ? ` (${bkChosen.size} book${bkChosen.size === 1 ? '' : 's'})` : '';
+    const ok = await saveFile(`Velvet Scroll backup ${stamp}${part}${pw ? ' (encrypted)' : ''}.zip`, bytes);
     st.textContent = ok ? `Backup saved (${fmtMB(bytes.length)}).` : 'Save cancelled.';
   }catch(e){
     st.textContent = e.message === 'toolarge' ? 'The backup is too large to save here. Try saving it without the books.' :
@@ -6134,7 +6184,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 1e71468</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 2171598</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

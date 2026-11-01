@@ -303,6 +303,54 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .leather[data-style=space] .lt-rule{width:22cqw;height:1cqw;background:var(--l2)}
 .leather[data-style=space] .lt-author{font:400 4.8cqw/1.25 'VS Space',var(--f-ui);text-transform:uppercase;letter-spacing:.14em;font-variant:normal;color:var(--l3,#f3e6c8);text-shadow:none}
 .leather[data-style=space] .lt-year{font:400 4.2cqw/1 'VS Space',var(--f-ui);letter-spacing:.2em;color:var(--l2);opacity:1}
+@font-face{font-family:'VS Romance';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/great-vibes-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'VS Noir';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/bebas-neue-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'VS Story';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/grandstander-latin-700-normal.woff2) format('woff2')}
+.leather[data-style=romance]{gap:3.5cqw;padding:20cqw 17cqw 20cqw 19cqw;color:#f2c6a8;
+  background:linear-gradient(90deg,rgb(0 0 0 / .4) 0 3.5cqw,rgb(255 255 255 / .10) 3.5cqw 4.5cqw,rgb(0 0 0 / .16) 4.5cqw 7cqw,transparent 7cqw),
+    radial-gradient(50% 36% at 52% 46%,rgb(255 214 196 / .16),transparent 75%),
+    radial-gradient(120% 85% at 30% 15%,color-mix(in srgb,var(--l1) 78%,#fff 22%),transparent 62%),
+    radial-gradient(120% 90% at 70% 100%,var(--l2),transparent 70%),var(--l1)}
+.leather[data-style=romance]::before{opacity:.35}
+.leather[data-style=romance]::after{inset:6cqw 6cqw 6cqw 10cqw;border-color:rgb(242 198 168 / .7);border-radius:3cqw}
+.leather[data-style=romance] .lt-frame{inset:11cqw 10cqw 11cqw 14cqw;border-color:rgb(242 198 168 / .55);border-radius:50%;box-shadow:inset 0 0 0 1.4cqw rgb(255 255 255 / .03),inset 0 0 0 calc(1.4cqw + 1px) rgb(242 198 168 / .3)}
+.leather[data-style=romance] .lt-orn{width:60cqw;height:16cqw;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 34'%3E %3Cg fill='none' stroke='%23f2c6a8' stroke-width='1.2' stroke-linecap='round'%3E %3Cpath d='M52 20C40 22 28 16 12 18M68 20c12 2 24-4 40-2'/%3E %3Cpath d='M22 17c2-6 8-7 11-5-3 4-7 6-11 5zM36 21c4-5 10-4 12-1-4 3-9 3-12 1zM98 17c-2-6-8-7-11-5 3 4 7 6 11 5zM84 21c-4-5-10-4-12-1 4 3 9 3 12 1z' fill='%23f2c6a8' fill-opacity='.35'/%3E %3Ccircle cx='60' cy='18' r='8' fill='%23f2c6a8' fill-opacity='.18'/%3E %3Cpath d='M60 18c2-1 2-4-1-4-4 0-5 5-2 7 4 3 10-1 9-6-1-6-10-8-14-3-4 6 1 13 8 12'/%3E %3C/g%3E%3Ccircle cx='8' cy='18' r='1.3' fill='%23f2c6a8'/%3E%3Ccircle cx='112' cy='18' r='1.3' fill='%23f2c6a8'/%3E%3C/svg%3E") center/contain no-repeat;opacity:1}
+.leather[data-style=romance] .lt-orn:last-child{height:10cqw;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24'%3E %3Cg fill='none' stroke='%23f2c6a8' stroke-width='1.2' stroke-linecap='round'%3E %3Cpath d='M50 12C40 4 28 4 20 10c-4 3-8 3-10 0M70 12c10-8 22-8 30-2 4 3 8 3 10 0'/%3E%3C/g%3E %3Cpath d='M60 19c-6-4-9-7-9-10a4.5 4.5 0 0 1 9-1.5A4.5 4.5 0 0 1 69 9c0 3-3 6-9 10z' fill='%23f2c6a8' fill-opacity='.9'/%3E%3C/svg%3E")}
+.leather[data-style=romance] .lt-title{font-family:'VS Romance',var(--f-display);text-transform:none;letter-spacing:0;line-height:1.05;color:#fbe1cf;text-shadow:0 1px 0 rgb(0 0 0 / .45),0 0 4cqw rgb(255 200 180 / .35)}
+.leather[data-style=romance] .lt-rule{width:30cqw;background:linear-gradient(90deg,transparent,#f2c6a8,transparent)}
+.leather[data-style=romance] .lt-author{font-style:italic;color:#f0cdb6}
+.leather[data-style=romance] .lt-year{color:#e3b9a0}
+
+.leather[data-style=noir]{justify-content:flex-start;align-items:flex-start;text-align:left;gap:2.5cqw;padding:14cqw 10cqw 0 13cqw;color:#ece6d6;
+  background:radial-gradient(70% 55% at 78% 24%,transparent 0,var(--l1) 78%),
+    repeating-linear-gradient(162deg,rgb(255 248 220 / .13) 0 3.4cqw,transparent 3.4cqw 7.4cqw),
+    repeating-linear-gradient(104deg,rgb(255 255 255 / .035) 0 .3cqw,transparent .3cqw 5cqw),
+    linear-gradient(180deg,color-mix(in srgb,var(--l1) 85%,#fff 15%),var(--l1) 60%)}
+.leather[data-style=noir]::before{background:linear-gradient(90deg,rgb(0 0 0 / .5) 0 2.5cqw,rgb(255 255 255 / .06) 2.5cqw 3.2cqw,transparent 3.2cqw);opacity:1;mix-blend-mode:normal}
+.leather[data-style=noir]::after{inset:auto 0 0 0;height:4cqw;border:0;border-radius:0;background:var(--l2)}
+.leather[data-style=noir] .lt-frame{display:none}
+.leather[data-style=noir] .lt-frame + .lt-orn{width:22cqw;height:2.2cqw;background:var(--l2);opacity:1;margin-bottom:2cqw}
+.leather[data-style=noir] .lt-orn:last-child{position:absolute;left:2cqw;bottom:4cqw;width:33cqw;height:66cqw;opacity:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 160'%3E %3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff4c8' stop-opacity='.42'/%3E%3Cstop offset='1' stop-color='%23fff4c8' stop-opacity='0'/%3E%3C/linearGradient%3E %3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23fff4c8' stop-opacity='.9'/%3E%3Cstop offset='1' stop-color='%23fff4c8' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E %3Cpath d='M14 30L-6 160H66L34 30z' fill='url(%23c)'/%3E %3Ccircle cx='24' cy='27' r='14' fill='url(%23g)'/%3E %3Cg fill='%23050506'%3E%3Crect x='22.5' y='34' width='3' height='126'/%3E%3Cpath d='M17 160h14l-2-8h-10z'/%3E%3Cpath d='M16 20h16l-3 9H19z'/%3E%3Crect x='23' y='15' width='2' height='5'/%3E %3Ccircle cx='61' cy='110' r='4.2'/%3E %3Cpath d='M47 160l1-30c0-8 4-11 9-12h8c5 1 9 4 9 12l1 30z'/%3E %3Cpath d='M58 118l3 9 3-9z' fill='%232a2a2e'/%3E %3Cellipse cx='61' cy='106.5' rx='9' ry='1.8'/%3E%3Cpath d='M55.5 106.5v-5c0-3 2.5-4 5.5-4s5.5 1 5.5 4v5z'/%3E%3C/g%3E %3Crect x='20' y='26' width='8' height='3' fill='%23fff4c8'/%3E%3C/svg%3E") left bottom/contain no-repeat}
+.leather[data-style=noir] .lt-title{font-family:'VS Noir',var(--f-ui);text-transform:uppercase;letter-spacing:.02em;line-height:.95;color:var(--l2);text-wrap:balance;text-shadow:.6cqw .6cqw 0 rgb(0 0 0 / .55)}
+.leather[data-style=noir] .lt-rule{display:none}
+.leather[data-style=noir] .lt-author{font:400 7cqw/1.1 'VS Noir',var(--f-ui);letter-spacing:.14em;text-transform:uppercase;font-variant:normal;color:#ece6d6;text-shadow:none}
+.leather[data-style=noir] .lt-year{font:400 5.6cqw/1 'VS Noir',var(--f-ui);letter-spacing:.2em;color:var(--l2);opacity:.85}
+
+.leather[data-style=story]{gap:3cqw;padding:33cqw 19cqw 40cqw 21cqw;color:#3a2a1e;
+  background:linear-gradient(90deg,rgb(0 0 0 / .35) 0 3.5cqw,rgb(255 255 255 / .12) 3.5cqw 4.5cqw,rgb(0 0 0 / .14) 4.5cqw 7cqw,transparent 7cqw),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 .5h6M0 3.5h6' stroke='%23000' stroke-opacity='.10'/%3E%3Cpath d='M.5 0v6M3.5 0v6' stroke='%23fff' stroke-opacity='.06'/%3E%3C/svg%3E"),
+    radial-gradient(120% 85% at 35% 20%,color-mix(in srgb,var(--l1) 85%,#fff 15%),transparent 62%),
+    radial-gradient(120% 90% at 70% 100%,var(--l2),transparent 70%),var(--l1);background-size:auto,6px 6px,auto,auto,auto}
+.leather[data-style=story]::before{opacity:.3}
+.leather[data-style=story]::after{inset:5cqw 5cqw 5cqw 9cqw;border:.8cqw dotted rgb(251 243 220 / .7);border-radius:2cqw}
+.leather[data-style=story] .lt-frame{inset:27cqw 12cqw 34cqw 15cqw;border:0;border-radius:4cqw;background:linear-gradient(170deg,#fffaf0,#f3e6c4);
+  box-shadow:0 .8cqw 1.6cqw rgb(0 0 0 / .3),inset 0 0 0 1.6cqw #fbf3dc,inset 0 0 0 2.1cqw var(--l2)}
+.leather[data-style=story] .lt-frame + .lt-orn{position:absolute;top:8cqw;left:15cqw;width:76cqw;height:15cqw;opacity:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30'%3E %3Cpath d='M64 4a11 11 0 1 0 6 20 9 9 0 1 1-6-20z' fill='%23fbf3dc'/%3E %3Cg fill='%23fbf3dc'%3E%3Cpath d='M30 10l1.5 3.5 3.5 1.5-3.5 1.5L30 20l-1.5-3.5L25 15l3.5-1.5z'/%3E%3Cpath d='M92 8l1.2 2.8 2.8 1.2-2.8 1.2L92 16l-1.2-2.8L88 12l2.8-1.2z'/%3E %3Ccircle cx='14' cy='20' r='1.3'/%3E%3Ccircle cx='44' cy='6' r='1'/%3E%3Ccircle cx='104' cy='22' r='1.3'/%3E%3Ccircle cx='82' cy='24' r='1'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+.leather[data-style=story] .lt-orn:last-child{position:absolute;bottom:6cqw;left:9cqw;width:86cqw;height:22cqw;opacity:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30'%3E %3Cg fill='%23fbf3dc'%3E%3Cpath d='M0 30c14-14 30-16 46-8 12-10 30-12 44-2 10-6 22-6 30 0v10z' fill-opacity='.9'/%3E %3Cpath d='M78 21v-7l6-5 6 5v6z'/%3E%3Crect x='30' y='14' width='2' height='8'/%3E%3Ccircle cx='31' cy='12' r='5'/%3E%3C/g%3E %3Cg fill='currentColor'%3E%3Crect x='82' y='16' width='4' height='5' fill='%237a4b2a'/%3E%3Crect x='82.5' y='12' width='3' height='2.5' fill='%237a4b2a'/%3E%3C/g%3E%3C/svg%3E") center bottom/100% auto no-repeat}
+.leather[data-style=story] .lt-title{font-family:'VS Story',var(--f-display);font-weight:700;text-transform:none;letter-spacing:0;line-height:1.08;color:var(--l2);text-shadow:none}
+.leather[data-style=story] .lt-rule{width:24cqw;height:1.4cqw;background:radial-gradient(circle,var(--l1) 0 .6cqw,transparent .7cqw) 0 0/4cqw 1.4cqw repeat-x}
+.leather[data-style=story] .lt-author{font-style:italic;font-variant:normal;letter-spacing:.02em;font-size:6.6cqw;color:#4a3826;text-shadow:none}
+.leather[data-style=story] .lt-year{color:#6a5640;font-size:5.4cqw}
 .au .yr{font-variant-numeric:tabular-nums}
 .pill.check{background:transparent;border:1px solid var(--accent);cursor:pointer;color:var(--fg)}
 .row2{display:flex;justify-content:space-between;gap:6px}
@@ -396,8 +444,8 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
   #dlg .dfields,#dlg .ddb{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
   #dlg .dcov{border-top:1px solid var(--line);padding-top:12px}
   .dcovrow{flex-direction:row;align-items:flex-start;gap:24px}
-  #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:96px;overflow-x:auto;padding-bottom:4px}
-  .dcovside{flex:0 0 min(480px,42%)}
+  #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:86px;overflow-x:auto;padding-bottom:4px}
+  .dcovside{flex:0 0 min(440px,36%)}
   .dprev .seg{flex-direction:row}
 }
 @media (min-width:1000px) and (max-height:740px){ #dlg .dcov .covers{grid-auto-columns:66px} #dlg .sheet{gap:8px;padding-top:12px} #dlg .dfields{gap:6px} #dlg .dbody{row-gap:10px}
@@ -1454,7 +1502,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="pluscol"><span class="lbl">Free for everyone, always</span>
         <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
       <div class="pluscol plus"><span class="lbl">Plus</span>
-        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy and 1960s science fiction</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
+        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance, mystery and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
     </div>
     <p class="hint">One payment, no subscription. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
@@ -3786,7 +3834,10 @@ function clipCover(b){
 const COVER_STYLES = {
   gothic: {label:'Horror', pal:[['#24090c','#060203'],['#17161d','#040405'],['#1c1226','#060309'],['#0e1a16','#030706']]},
   fantasy: {label:'Fantasy', pal:[['#173a2a','#08180f'],['#1b2a5a','#0a1028'],['#48183a','#1b0815'],['#123a3f','#061a1d']]},
-  space: {label:'Science fiction', pal:[['#13294b','#e4572e','#f3e6c8','#2a9d8f'],['#0f3b3a','#f2a541','#f3e6c8','#e4572e'],['#1d1b2e','#e8c547','#f3e6c8','#d1495b'],['#3d1c2b','#2a9d8f','#f3e6c8','#f2a541']]}
+  space: {label:'Science fiction', pal:[['#13294b','#e4572e','#f3e6c8','#2a9d8f'],['#0f3b3a','#f2a541','#f3e6c8','#e4572e'],['#1d1b2e','#e8c547','#f3e6c8','#d1495b'],['#3d1c2b','#2a9d8f','#f3e6c8','#f2a541']]},
+  romance: {label:'Romance', pal:[['#7e3b4f','#4a1e2c'],['#5d4a7a','#33284a'],['#55705f','#2f4236'],['#2c3a5e','#161e36']]},
+  noir: {label:'Mystery & noir', pal:[['#16171a','#f2c230'],['#121821','#e0443a'],['#1a1714','#ece6d6'],['#0f1716','#7fc8a9']]},
+  story: {label:'Children’s classic', pal:[['#c4472f','#7e2716'],['#c99417','#6e4a06'],['#3f6fb0','#1f3f73'],['#4f8a4a','#2b5528']]}
 };
 const coverStyleOf = (b, force) => b.coverStyle && COVER_STYLES[b.coverStyle] && (force || PLUS) ? b.coverStyle : '';
 function classicCover(b, force){
@@ -3798,7 +3849,7 @@ function classicCover(b, force){
   const size = lv[t.length > 42 ? 3 : t.length > 24 ? 2 : t.length > 11 ? 1 : 0];
   // the lettering area is about 68% of the cover's width; capitals here run about 0.95em each
   // genre typefaces differ in width: blackletter is narrow and set larger, Michroma is very wide
-  const [mul, cw] = {gothic:[1.3, 0.47], fantasy:[0.95, 0.86], space:[0.8, 1.08]}[st] || [1, 0.95];
+  const [mul, cw] = {gothic:[1.3, 0.47], fantasy:[0.95, 0.86], space:[0.8, 1.08], romance:[1.4, 0.44], noir:[1.5, 0.44], story:[1, 0.7]}[st] || [1, 0.95];
   const fit = Math.min({l:14, m:11, s:8.8, xs:7.2}[size] * mul, 66 / (lw * cw));
   const d = el('div', {class:'leather', 'data-size':size},
     el('span', {class:'lt-frame'}), el('span', {class:'lt-orn'}), el('strong', {class:'lt-title', text:t}), el('span', {class:'lt-rule'}),
@@ -6500,7 +6551,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 39fc900</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · f73980b</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

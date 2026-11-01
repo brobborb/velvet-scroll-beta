@@ -247,6 +247,62 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .lt-rule{width:34cqw;height:1px;flex:none;background:linear-gradient(90deg,transparent,#d9b660,transparent)}
 .lt-author{position:relative;font-family:var(--f-read);font-variant:small-caps;letter-spacing:.09em;font-size:7.6cqw;line-height:1.2;color:#d9b866;text-shadow:0 1px 0 rgb(0 0 0 / .55);text-wrap:balance}
 .lt-year{position:relative;font-family:var(--f-read);font-size:6cqw;letter-spacing:.12em;color:#cfae5f;opacity:.85;font-variant-numeric:oldstyle-nums}
+/* genre cover designs (Plus): horror, fantasy and 1960s science fiction */
+@font-face{font-family:'VS Gothic';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/unifrakturmaguntia-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'VS Fantasy';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/cinzel-decorative-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'VS Space';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/michroma-latin-400-normal.woff2) format('woff2')}
+.leather[data-style=gothic]{padding:34cqw 17cqw 20cqw 19cqw;gap:3.5cqw;color:#e4ddcc;
+  background:linear-gradient(90deg,rgb(0 0 0 / .6) 0 3.5cqw,rgb(255 255 255 / .07) 3.5cqw 4.5cqw,rgb(0 0 0 / .25) 4.5cqw 7cqw,transparent 7cqw),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .06' numOctaves='2' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
+    radial-gradient(60% 40% at 52% 40%,color-mix(in srgb,var(--l1) 70%,#7a1a20 30%),transparent 75%),
+    radial-gradient(90% 45% at 50% 108%,rgb(120 10 18 / .45),transparent 70%),
+    radial-gradient(130% 100% at 50% 45%,var(--l1),var(--l2) 85%);background-size:auto,300px 300px,auto,auto,auto}
+.leather[data-style=gothic]::after{inset:5cqw 5cqw 5cqw 9cqw;border-color:rgb(196 195 204 / .55);box-shadow:inset 0 0 0 1.2cqw rgb(0 0 0 / .25)}
+.leather[data-style=gothic] .lt-frame{inset:9cqw 9cqw 9cqw 12.5cqw;border:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150' preserveAspectRatio='none'%3E %3Cg fill='none' stroke='%23c4c3cc' vector-effect='non-scaling-stroke'%3E %3Cpath d='M4 148V56C4 30 24 12 50 3C76 12 96 30 96 56V148Z' stroke-opacity='.75' vector-effect='non-scaling-stroke'/%3E %3Cpath d='M8 144V58C8 35 26 18 50 9C74 18 92 35 92 58V144Z' stroke-opacity='.4' vector-effect='non-scaling-stroke'/%3E %3C/g%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.leather[data-style=gothic] .lt-orn{width:58cqw;height:14cqw;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 32'%3E %3Cg fill='none' stroke='%23c4c3cc' stroke-width='1.3' stroke-linecap='round'%3E %3Ccircle cx='60' cy='9' r='5.5'/%3E%3Ccircle cx='60' cy='23' r='5.5'/%3E%3Ccircle cx='53' cy='16' r='5.5'/%3E%3Ccircle cx='67' cy='16' r='5.5'/%3E %3Cpath d='M60 1v30M45 16h30' stroke-opacity='.6'/%3E %3Cpath d='M44 16H8M76 16h36'/%3E %3Cpath d='M14 16l-3-4M22 16l-3 4M30 16l-3-4M38 16l-3 4M82 16l3 4M90 16l3-4M98 16l3 4M106 16l3-4'/%3E %3C/g%3E%3Ccircle cx='60' cy='16' r='2.2' fill='%238c1a1f'/%3E%3C/svg%3E") center/contain no-repeat}
+.leather[data-style=gothic] .lt-orn:last-child{height:12cqw;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30'%3E %3Cg fill='none' stroke='%23c4c3cc' stroke-width='1.2' stroke-linecap='round'%3E %3Cpath d='M6 12c12-8 22 8 34 0s22 8 34 0 22 8 40 0'/%3E %3Cpath d='M16 9l-2-5M28 12l2 5M46 9l-2-5M58 12l2 5M76 9l-2-5M88 12l2 5M104 9l-2-5'/%3E %3C/g%3E %3Cpath d='M60 14c0 0-4 6-4 9a4 4 0 0 0 8 0c0-3-4-9-4-9z' fill='%238c1a1f'/%3E %3Cpath d='M60 14c0 0-4 6-4 9a4 4 0 0 0 8 0c0-3-4-9-4-9z' fill='none' stroke='%23c4c3cc' stroke-width='.8' stroke-opacity='.6'/%3E %3C/svg%3E")}
+.leather[data-style=gothic] .lt-title{font-family:'VS Gothic',var(--f-display);text-transform:none;letter-spacing:.01em;line-height:1.02;color:#e8e1d0;
+  text-shadow:0 0 3cqw rgb(170 20 30 / .55),0 1px 0 rgb(0 0 0 / .8)}
+.leather[data-style=gothic] .lt-rule{background:linear-gradient(90deg,transparent,#8c1a1f,transparent);height:2px}
+.leather[data-style=gothic] .lt-author{color:#c9c7cf;text-shadow:0 1px 0 rgb(0 0 0 / .7)}
+.leather[data-style=gothic] .lt-year{color:#a9a6b0}
+
+.leather[data-style=fantasy]{gap:4cqw;padding:18cqw 15cqw 18cqw 17cqw;color:#ecd08a;
+  background:linear-gradient(90deg,rgb(0 0 0 / .45) 0 3.5cqw,rgb(255 255 255 / .10) 3.5cqw 4.5cqw,rgb(0 0 0 / .18) 4.5cqw 7cqw,transparent 7cqw),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .06' numOctaves='2' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
+    radial-gradient(55% 32% at 50% 30%,rgb(255 226 150 / .18),transparent 70%),
+    radial-gradient(120% 85% at 38% 22%,color-mix(in srgb,var(--l1) 82%,#fff 18%),transparent 62%),
+    radial-gradient(120% 90% at 70% 100%,var(--l2),transparent 70%),var(--l1);background-size:auto,300px 300px,auto,auto,auto,auto}
+.leather[data-style=fantasy]::after{inset:5.5cqw 5.5cqw 5.5cqw 9.5cqw;border:1.6px solid rgb(231 197 111 / .85);box-shadow:inset 0 0 0 1.4cqw rgb(0 0 0 / .12),inset 0 0 0 calc(1.4cqw + 1px) rgb(231 197 111 / .45)}
+.leather[data-style=fantasy] .lt-frame{inset:10cqw 10cqw 10cqw 13.5cqw;border-color:rgb(231 197 111 / .45);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg transform='rotate(0 20 20)' fill='none' stroke='%23e7c56f' stroke-width='1.4' stroke-linecap='round'%3E %3Cpath d='M2 38V12C2 6 6 2 12 2H38'/%3E%3Cpath d='M7 30c0-12 6-20 18-22'/%3E%3Cpath d='M7 30c4-1 7-4 7-8-4 0-7 3-7 8z' fill='%23e7c56f' fill-opacity='.35'/%3E %3Cpath d='M25 8c-1 4 1 7 5 7 0-4-2-7-5-7z' fill='%23e7c56f' fill-opacity='.35'/%3E%3Ccircle cx='10' cy='10' r='2.2' fill='%23e7c56f'/%3E%3C/g%3E%3C/svg%3E") 0 0/15cqw no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg transform='rotate(90 20 20)' fill='none' stroke='%23e7c56f' stroke-width='1.4' stroke-linecap='round'%3E %3Cpath d='M2 38V12C2 6 6 2 12 2H38'/%3E%3Cpath d='M7 30c0-12 6-20 18-22'/%3E%3Cpath d='M7 30c4-1 7-4 7-8-4 0-7 3-7 8z' fill='%23e7c56f' fill-opacity='.35'/%3E %3Cpath d='M25 8c-1 4 1 7 5 7 0-4-2-7-5-7z' fill='%23e7c56f' fill-opacity='.35'/%3E%3Ccircle cx='10' cy='10' r='2.2' fill='%23e7c56f'/%3E%3C/g%3E%3C/svg%3E") 100% 0/15cqw no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg transform='rotate(180 20 20)' fill='none' stroke='%23e7c56f' stroke-width='1.4' stroke-linecap='round'%3E %3Cpath d='M2 38V12C2 6 6 2 12 2H38'/%3E%3Cpath d='M7 30c0-12 6-20 18-22'/%3E%3Cpath d='M7 30c4-1 7-4 7-8-4 0-7 3-7 8z' fill='%23e7c56f' fill-opacity='.35'/%3E %3Cpath d='M25 8c-1 4 1 7 5 7 0-4-2-7-5-7z' fill='%23e7c56f' fill-opacity='.35'/%3E%3Ccircle cx='10' cy='10' r='2.2' fill='%23e7c56f'/%3E%3C/g%3E%3C/svg%3E") 100% 100%/15cqw no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg transform='rotate(270 20 20)' fill='none' stroke='%23e7c56f' stroke-width='1.4' stroke-linecap='round'%3E %3Cpath d='M2 38V12C2 6 6 2 12 2H38'/%3E%3Cpath d='M7 30c0-12 6-20 18-22'/%3E%3Cpath d='M7 30c4-1 7-4 7-8-4 0-7 3-7 8z' fill='%23e7c56f' fill-opacity='.35'/%3E %3Cpath d='M25 8c-1 4 1 7 5 7 0-4-2-7-5-7z' fill='%23e7c56f' fill-opacity='.35'/%3E%3Ccircle cx='10' cy='10' r='2.2' fill='%23e7c56f'/%3E%3C/g%3E%3C/svg%3E") 0 100%/15cqw no-repeat}
+.leather[data-style=fantasy] .lt-orn{width:62cqw;height:16cqw;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 36'%3E %3Cg fill='none' stroke='%23e7c56f' stroke-width='1.3' stroke-linecap='round'%3E %3Cpath d='M48 18C40 10 26 10 16 18M72 18c8-8 22-8 32 0M16 18H4M104 18h12'/%3E %3Cpath d='M30 13c-2-5 1-8 5-8 0 4-2 7-5 8zM90 13c2-5-1-8-5-8 0 4 2 7 5 8zM30 23c-2 5 1 8 5 8 0-4-2-7-5-8zM90 23c2 5-1 8-5 8 0-4 2-7 5-8z' fill='%23e7c56f' fill-opacity='.3'/%3E %3C/g%3E %3Cpath d='M60 3l3.2 10.3L73 10l-6.3 8L73 26l-9.8-3.3L60 33l-3.2-10.3L47 26l6.3-8L47 10l9.8 3.3z' fill='%23e7c56f' fill-opacity='.85'/%3E %3Ccircle cx='60' cy='18' r='3' fill='%23fff3cf'/%3E%3C/svg%3E") center/contain no-repeat;opacity:1}
+.leather[data-style=fantasy] .lt-orn:last-child{height:11cqw;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24'%3E %3Cg fill='none' stroke='%23e7c56f' stroke-width='1.3' stroke-linecap='round'%3E %3Cpath d='M8 12c14-9 24 9 38 0 5-3 9-3 14 0 5-3 9-3 14 0 14 9 24-9 38 0'/%3E %3Cpath d='M22 8c-1-5 3-7 6-6-1 3-3 6-6 6zM98 8c1-5-3-7-6-6 1 3 3 6 6 6zM36 15c0 5 4 6 6 5-1-3-3-5-6-5zM84 15c0 5-4 6-6 5 1-3 3-5 6-5z' fill='%23e7c56f' fill-opacity='.3'/%3E %3C/g%3E%3Ccircle cx='60' cy='12' r='2.4' fill='%23e7c56f'/%3E%3C/svg%3E")}
+.leather[data-style=fantasy] .lt-title{font-family:'VS Fantasy',var(--f-display);font-weight:700;text-transform:none;letter-spacing:.02em;line-height:1.14;color:#f0d68e;
+  font-variant-ligatures:none;font-feature-settings:'liga' 0,'dlig' 0;text-shadow:0 1px 0 rgb(0 0 0 / .65),0 0 4cqw rgb(255 220 140 / .25)}
+.leather[data-style=fantasy] .lt-rule{width:40cqw;background:linear-gradient(90deg,transparent,#e7c56f,transparent)}
+.leather[data-style=fantasy] .lt-author{font-style:italic;color:#e3c77e}
+
+.leather[data-style=space]{justify-content:flex-start;gap:3.2cqw;padding:15cqw 11cqw 0 13cqw;color:#f3e6c8;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .35 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 67% 77%,color-mix(in srgb,var(--l2) 78%,#fff 22%) 0 25cqw,transparent 25.4cqw),
+    radial-gradient(circle at 70% 80%,var(--l2) 0 29.6cqw,transparent 30cqw),
+    radial-gradient(circle at 70% 80%,rgb(243 230 200 / .10) 0 36cqw,transparent 36.5cqw),
+    repeating-conic-gradient(from -8deg at 70% 80%,rgb(243 230 200 / .07) 0 4deg,transparent 4deg 10deg),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E %3Cg fill='%23f3e6c8'%3E%3Ccircle cx='12' cy='18' r='.9'/%3E%3Ccircle cx='57' cy='9' r='.6'/%3E%3Ccircle cx='96' cy='30' r='1.1'/%3E%3Ccircle cx='140' cy='14' r='.7'/%3E %3Ccircle cx='30' cy='70' r='.6'/%3E%3Ccircle cx='78' cy='58' r='.8'/%3E%3Ccircle cx='124' cy='80' r='.6'/%3E%3Ccircle cx='150' cy='52' r='1'/%3E %3Ccircle cx='18' cy='120' r='1'/%3E%3Ccircle cx='64' cy='104' r='.6'/%3E%3Ccircle cx='108' cy='132' r='.9'/%3E%3Ccircle cx='146' cy='150' r='.6'/%3E%3Ccircle cx='44' cy='150' r='.7'/%3E%3C/g%3E %3Cpath d='M96 26v8M92 30h8' stroke='%23f3e6c8' stroke-width='.5'/%3E%3C/svg%3E"),
+    linear-gradient(180deg,var(--l1),color-mix(in srgb,var(--l1) 70%,#000 30%));
+  background-size:160px 160px,auto,auto,auto,auto,160px 160px,auto}
+.leather[data-style=space]::before{background:linear-gradient(90deg,rgb(0 0 0 / .35) 0 2.5cqw,rgb(255 255 255 / .08) 2.5cqw 3.2cqw,transparent 3.2cqw);opacity:1;mix-blend-mode:normal}
+.leather[data-style=space]::after{inset:auto auto 20cqw 18cqw;width:104cqw;height:20cqw;border:1.3cqw solid var(--l3,#f3e6c8);border-radius:50%;transform:rotate(-14deg);opacity:.95;
+  -webkit-mask:linear-gradient(180deg,transparent 50%,#000 50%);mask:linear-gradient(180deg,transparent 50%,#000 50%)}
+.leather[data-style=space] .lt-frame{inset:4.5cqw 4.5cqw 4.5cqw 6.5cqw;border:.9cqw solid rgb(243 230 200 / .85);border-radius:3.5cqw}
+.leather[data-style=space] .lt-frame + .lt-orn{width:76cqw;height:4.2cqw;margin-bottom:2cqw;opacity:1;background:linear-gradient(180deg,var(--l2) 0 30%,transparent 30% 40%,var(--l3,#f3e6c8) 40% 65%,transparent 65% 75%,var(--l4,#2a9d8f) 75%)}
+.leather[data-style=space] .lt-orn:last-child{position:absolute;left:8cqw;bottom:40cqw;width:26cqw;height:26cqw;opacity:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E %3Cpath d='M6 56C14 46 22 40 30 34' fill='none' stroke='%23f3e6c8' stroke-width='1.6' stroke-dasharray='1 4' stroke-linecap='round'/%3E %3Cg transform='rotate(45 38 24)'%3E %3Cpath d='M38 4c6 6 8 14 8 24H30c0-10 2-18 8-24z' fill='%23f3e6c8'/%3E %3Cpath d='M38 4c3 3 5 6 6 10H32c1-4 3-7 6-10z' fill='%23e4572e'/%3E %3Ccircle cx='38' cy='18' r='3' fill='%2313294b' stroke='%23e4572e' stroke-width='1.2'/%3E %3Cpath d='M30 22l-6 10h6zM46 22l6 10h-6z' fill='%23e4572e'/%3E %3Cpath d='M33 28h10l-2 4h-6z' fill='%239aa7b8'/%3E %3Cpath d='M35 32c0 6 3 10 3 10s3-4 3-10z' fill='%23ffb340'/%3E%3Cpath d='M36.5 32c0 4 1.5 6 1.5 6s1.5-2 1.5-6z' fill='%23fff3c4'/%3E %3C/g%3E%3C/svg%3E") center/contain no-repeat}
+.leather[data-style=space] .lt-title{font-family:'VS Space',var(--f-ui);text-transform:uppercase;letter-spacing:.03em;line-height:1.2;color:#f6ead0;
+  text-shadow:.5cqw .5cqw 0 rgb(0 0 0 / .35)}
+.leather[data-style=space] .lt-rule{width:22cqw;height:1cqw;background:var(--l2)}
+.leather[data-style=space] .lt-author{font:400 4.8cqw/1.25 'VS Space',var(--f-ui);text-transform:uppercase;letter-spacing:.14em;font-variant:normal;color:var(--l3,#f3e6c8);text-shadow:none}
+.leather[data-style=space] .lt-year{font:400 4.2cqw/1 'VS Space',var(--f-ui);letter-spacing:.2em;color:var(--l2);opacity:1}
 .au .yr{font-variant-numeric:tabular-nums}
 .pill.check{background:transparent;border:1px solid var(--accent);cursor:pointer;color:var(--fg)}
 .row2{display:flex;justify-content:space-between;gap:6px}
@@ -257,7 +313,6 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .sh-head,.sh-foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .sh-foot{justify-content:flex-end}
 .sheet h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:0}
-.dgrid{display:grid;grid-template-columns:128px minmax(0,1fr);gap:18px;align-items:start}
 .dcover{aspect-ratio:2/3;max-width:100%;border-radius:3px 7px 7px 3px;overflow:hidden;box-shadow:0 8px 20px -10px rgb(0 0 0 / .5);background:var(--line)}
 .dcover img{width:100%;height:100%;object-fit:cover;display:block}
 .dfields{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -267,7 +322,6 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #dModesHint{margin:-6px 0 0}
 /* Book details: compact, with Save always in view */
 #dlg .sheet{gap:12px;padding:16px 20px 0;width:min(700px,100%)}
-#dlg .dgrid{gap:16px}
 #dlg .dfields{gap:9px}
 #dlg .dfields label{gap:3px}
 #dlg .dfields input{padding:6px 10px}
@@ -323,6 +377,39 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
 #dlg .hint{font-size:12.5px;margin:0}
 #dlg .sh-foot{position:sticky;bottom:0;z-index:2;background:var(--surface);margin:0 -20px;padding:10px 20px 14px;border-top:1px solid var(--line)}
 @media (max-width:480px){ #dlg .drow2{grid-template-columns:minmax(0,1fr)} #dlg .sheet{padding:14px 14px 0} #dlg .sh-foot{margin:0 -14px;padding:10px 14px 12px} }
+/* layout: cover preview | fields, then cover choices, then public databases; wide screens use three columns so nothing scrolls */
+#dlg .dbody{display:grid;grid-template-columns:128px minmax(0,1fr);grid-template-areas:"prev fields" "cov cov" "db db";gap:14px 16px;align-items:start}
+.dprev{grid-area:prev;display:flex;flex-direction:column;gap:8px;min-width:0}
+#dlg .dfields{grid-area:fields}
+#dlg .dcov{grid-area:cov;min-width:0}
+#dlg .ddb{grid-area:db;min-width:0}
+.dcovrow{display:flex;flex-direction:column;gap:8px;min-width:0}
+.dcovside{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dprev .seg{flex-direction:column}
+.dprev .seg button{font-size:12.5px;padding:5px 8px}
+#dlg .dplusnote{color:var(--fg)}
+.ctile .plustag{margin-left:4px;padding:0 5px;font-size:9px}
+@media (min-width:1000px) and (min-height:560px){
+  #dlg .sheet{width:min(1240px,100%);overflow:hidden}
+  #dlg .dbody{flex:0 1 auto;min-height:0;overflow:hidden;grid-template-columns:clamp(170px,16vw,210px) minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;
+    grid-template-areas:"prev fields db" "cov cov cov";gap:16px 26px;align-items:stretch}
+  #dlg .dfields,#dlg .ddb{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+  #dlg .dcov{border-top:1px solid var(--line);padding-top:12px}
+  .dcovrow{flex-direction:row;align-items:flex-start;gap:24px}
+  #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:96px;overflow-x:auto;padding-bottom:4px}
+  .dcovside{flex:0 0 min(480px,42%)}
+  .dprev .seg{flex-direction:row}
+}
+@media (min-width:1000px) and (max-height:740px){ #dlg .dcov .covers{grid-auto-columns:66px} #dlg .sheet{gap:8px;padding-top:12px} #dlg .dfields{gap:6px} #dlg .dbody{row-gap:10px}
+  #dlg .dcov{padding-top:8px} #dlg #dCoverHint{display:none} #dlg .sh-foot{padding:8px 20px 10px} #dlg .dfields input{padding:5px 10px} }
+@media (max-width:640px){
+  #dlg.modal{padding:0}
+  #dlg .sheet{width:100%;height:100dvh;max-height:none;border-radius:0;padding-top:max(14px,env(safe-area-inset-top,0px))}
+  #dlg .dbody{grid-template-columns:96px minmax(0,1fr)}
+  #dlg .dcov .covers{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:74px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity}
+  #dlg .ctile{scroll-snap-align:start}
+  #dlg .sh-foot{padding-bottom:max(12px,env(safe-area-inset-bottom,0px))}
+}
 .dfields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:700}
 .dfields input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--fg);font-size:15px;font-weight:400;min-width:0}
 .cadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -344,7 +431,6 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
 .results strong{font-family:var(--f-read);font-weight:600;overflow-wrap:anywhere}
 .results .meta{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .results a{color:var(--accent)}
-@media (max-width:480px){ .dgrid{grid-template-columns:92px minmax(0,1fr)} }
 .modal.side{background:transparent;place-items:stretch end;pointer-events:none}
 .modal.side .sheet{pointer-events:auto;width:min(380px,100%);max-height:none;height:100%;border-radius:14px;box-shadow:0 10px 50px rgb(0 0 0 / .3);border:1px solid var(--line)}
 .swrow{display:flex;flex-wrap:wrap;gap:10px}
@@ -1093,8 +1179,14 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
 <div id="dlg" class="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dlgH">
     <header class="sh-head"><h2 id="dlgH">Book details</h2><button class="btn" id="dClose">Close</button></header>
-    <div class="dgrid">
+    <div class="dbody">
+    <div class="dprev">
       <div class="dcover" id="dCover"></div>
+      <div id="dFit" hidden>
+        <div class="seg" role="group" aria-label="How the image fits the cover"><button data-m="fill">Fill the cover</button><button data-m="fit">Show the whole image</button></div>
+        <p class="hint" id="dFitHint">Drag the large preview to choose which part of the image shows.</p>
+      </div>
+    </div>
       <div class="dfields">
         <label for="dTitle">Title<input id="dTitle" autocomplete="off"></label>
         <label for="dAuthor">Author<input id="dAuthor" autocomplete="off"></label>
@@ -1112,26 +1204,28 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
         </div>
         <p class="hint" id="dModesHint" aria-live="polite"></p>
       </div>
-    </div>
-    <div class="grp">
+
+    <div class="grp dcov">
       <span class="lbl">Cover</span>
+      <div class="dcovrow">
       <div class="covers" id="dCovers" role="group" aria-label="Choose a cover"></div>
+      <div class="dcovside">
       <div class="cadd">
         <label class="btn" for="dImg">Upload image</label><input type="file" id="dImg" accept="image/*" hidden>
         <div class="urlrow" id="dUrlRow"><input id="dUrl" type="url" inputmode="url" placeholder="Or paste an image’s web address" aria-label="Cover image web address" autocomplete="off"><button class="btn" id="dUrlGo">Use</button></div>
       </div>
-      <div id="dFit" hidden>
-        <div class="seg" role="group" aria-label="How the image fits the cover"><button data-m="fill">Fill the cover</button><button data-m="fit">Show the whole image</button></div>
-        <p class="hint" id="dFitHint">Drag the large preview to choose which part of the image shows.</p>
-      </div>
+      <p class="hint dplusnote" id="dPlusNote" hidden>Genre designs are part of Velvet Scroll Plus. Try them here as much as you like; saving one asks for Plus.</p>
       <p class="hint" id="dCoverHint">Images are shaped to a 2:3 cover. You can also paste an image, or drop one onto the preview.</p>
+      </div>
+      </div>
     </div>
-    <div class="grp">
+    <div class="grp ddb">
       <span class="lbl">Public databases</span>
       <p class="hint" id="dHint"></p>
       <div class="row"><button class="btn" id="dSearch">Search Open Library, Wikidata and Gutenberg</button></div>
       <p class="hint" id="dStatus" role="status"></p>
       <ul class="results" id="dResults"></ul>
+    </div>
     </div>
     <footer class="sh-foot"><button class="btn" id="dCancel">Cancel</button><button class="btn primary" id="dSave">Save</button></footer>
   </div>
@@ -1360,7 +1454,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="pluscol"><span class="lbl">Free for everyone, always</span>
         <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
       <div class="pluscol plus"><span class="lbl">Plus</span>
-        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
+        <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy and 1960s science fiction</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
     </div>
     <p class="hint">One payment, no subscription. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
@@ -2426,11 +2520,14 @@ function renderCoverChoices(){
   const b = dlg.b, tiles = [];
   if(dlg.custom) tiles.push({kind:'custom', label:'Your image', node:() => customCanvas(84, 126)});
   if(b.coverBuf) tiles.push({kind:'own', label: b.coverSrc==='custom' || b.prevSrc==='custom' ? 'Your cover' : b.coverSrc==='online' || b.prevSrc==='online' ? 'Current cover' : (b.coverSrc==='page' || b.prevSrc==='page') ? 'First page' : 'Book’s own cover', node:() => coverImg(b.coverBuf, b.coverType)});
-  tiles.push({kind:'classic', label:'Classic leather', node:() => classicCover(dlgPreview())});
+  tiles.push({kind:'classic', style:'', label:'Classic leather', node:() => classicCover(dlgPreview())});
+  for(const [k, v] of Object.entries(COVER_STYLES)) tiles.push({kind:'classic', style:k, label:v.label, plus:!PLUS, node:() => classicCover({...dlgPreview(), coverStyle:k}, true)});
   for(const r of dlg.results) if(r.thumb) tiles.push({kind:'online', url:r.cover, thumb:r.thumb, label: r.source + (r.year ? ` · ${r.year}` : '') + (r.openCover ? '' : ' (copyright may apply)'), node:() => el('img', {src:r.thumb, alt:'', loading:'lazy', referrerpolicy:'no-referrer', onerror:e => { const t = e.target.closest('.ctile'); if(t) t.hidden = true; }})});
-  const isSel = t => dlg.choice.kind === t.kind && (t.kind !== 'online' || dlg.choice.url === t.url);
-  $('#dCovers').replaceChildren(...tiles.map(t => el('button', {class:'ctile', 'aria-pressed':String(isSel(t)), onclick:() => { dlg.choice = {kind:t.kind, url:t.url, thumb:t.thumb}; renderCoverChoices(); }},
-    el('span', {class:'th', 'aria-hidden':'true'}, t.node()), el('span', {text:t.label}))));
+  const isSel = t => dlg.choice.kind === t.kind && (t.kind !== 'online' || dlg.choice.url === t.url) && (t.kind !== 'classic' || (dlg.choice.style || '') === t.style);
+  $('#dCovers').replaceChildren(...tiles.map(t => el('button', {class:'ctile', 'aria-pressed':String(isSel(t)), onclick:() => { dlg.choice = {kind:t.kind, url:t.url, thumb:t.thumb, style:t.style || ''}; renderCoverChoices(); }},
+    el('span', {class:'th', 'aria-hidden':'true'}, t.node()), el('span', {}, t.label, t.plus ? el('span', {class:'plustag', text:'Plus'}) : null))));
+  const pst = dlg.choice.kind === 'classic' && dlg.choice.style && !PLUS;
+  $('#dPlusNote').hidden = !pst;
   const sel = tiles.find(isSel) || tiles[0];
   if(sel.kind === 'custom'){ const box = $('#dCover'), w = box.clientWidth || 128, cv = customCanvas(w, w*1.5); box.replaceChildren(cv); wireCoverDrag(cv); }
   else $('#dCover').replaceChildren(sel.kind === 'online' ? el('img', {src:sel.url, alt:'', referrerpolicy:'no-referrer'}) : sel.node());
@@ -2463,7 +2560,7 @@ async function openDetails(b){
     $('#dStatus').replaceChildren('Saved from ', el('a', {href:b.source, target:'_blank', rel:'noopener', text:host}), '.'); } }, 0);
   $('#dUrl').value = ''; $('#dUrlRow').hidden = IN_CLAUDE;
   pushLayer('details');
-  dlg = {b, results:[], custom:null, choice: b.coverBuf && b.coverSrc !== 'classic' ? {kind:'own'} : {kind:'classic'}};
+  dlg = {b, results:[], custom:null, choice: b.coverBuf && b.coverSrc !== 'classic' ? {kind:'own'} : {kind:'classic', style: coverStyleOf(b)}};
   dModesSet(b.vis || '');
   $('#dTitle').value = b.title; $('#dAuthor').value = b.author || ''; $('#dYear').value = b.year || ''; $('#dIsbn').value = b.isbn || ''; isbnMsg();
   $('#dResults').replaceChildren(); $('#dStatus').textContent = '';
@@ -2533,7 +2630,10 @@ $('#dSave').onclick = async () => {
     const img = await fetchCover(ch.url) || (ch.thumb && await fetchCover(ch.thumb));
     if(!img){ $('#dStatus').textContent = 'Couldn’t download that cover. Choose another one.'; return; }
     b.coverBuf = img.buf; b.coverType = img.type; b.coverSrc = 'online'; b.prevSrc = undefined;
-  } else if(ch.kind === 'classic'){ if(b.coverSrc !== 'classic'){ b.prevSrc = b.coverSrc; b.coverSrc = 'classic'; } }
+  } else if(ch.kind === 'classic'){
+    if(ch.style && !needPlus('Keeping a genre cover design')) return;   // try them out freely; keeping one needs Plus
+    if(b.coverSrc !== 'classic'){ b.prevSrc = b.coverSrc; b.coverSrc = 'classic'; }
+    if(ch.style) b.coverStyle = ch.style; else delete b.coverStyle; }
   else if(b.coverSrc === 'classic'){ b.coverSrc = b.prevSrc || 'own'; }
   b.title = $('#dTitle').value.trim() || b.title; b.author = $('#dAuthor').value.trim(); b.isbn = isbnClean($('#dIsbn').value);
   const y = parseInt($('#dYear').value, 10); b.year = Number.isFinite(y) ? y : null;
@@ -2970,7 +3070,7 @@ async function restore(zip){
     if(local){
       if((m.upd || 0) > (local.upd || 0)){ for(const k of ['title','author','year','isbn','shelf','needsCheck','looked','upd']) if(k in m) local[k] = m[k]; }
       if(m.hasCover && (!local.coverBuf || ((m.upd||0) > (local.upd||0) && (m.coverSrc === 'online' || m.coverSrc === 'custom')))){ const c = zip.file('covers/' + m.id); if(c){ local.coverBuf = await c.async('arraybuffer'); local.coverType = m.coverType; local.coverSrc = m.coverSrc; } }
-      if(m.coverSrc === 'classic' && (m.upd||0) > (local.upd||0)){ local.prevSrc = local.coverSrc; local.coverSrc = 'classic'; }
+      if(m.coverSrc === 'classic' && (m.upd||0) > (local.upd||0)){ local.prevSrc = local.coverSrc; local.coverSrc = 'classic'; if(m.coverStyle) local.coverStyle = m.coverStyle; else delete local.coverStyle; }
       if(!local.fp && m.fp) local.fp = m.fp;
       await dbPutMeta(local);
       if(rp && (!progress[local.id] || (rp.t || 0) > (progress[local.id].t || 0))) setProgressRec(local.id, rp);
@@ -3209,10 +3309,10 @@ $('#plusApply').onclick = async () => {
   if(!key){ st.textContent = 'Paste your licence key first.'; $('#plusKey').focus(); return; }
   const p = await plusVerify(key);
   if(!p){ st.textContent = 'That key isn’t valid. Check it was copied in full, starting with VSP1-.'; return; }
-  PLUS = p; LS.set('plusKey', key.replace(/\s+/g, '')); $('#plusKey').value = ''; plusShow(); toast('Velvet Scroll Plus is unlocked. Thank you!', 4000);
+  PLUS = p; LS.set('plusKey', key.replace(/\s+/g, '')); $('#plusKey').value = ''; plusShow(); render(); if(dlg) renderCoverChoices(); toast('Velvet Scroll Plus is unlocked. Thank you!', 4000);
   if(gdOn) gdSync(false);
 };
-$('#plusRemove').onclick = () => { LS.set('plusKey', ''); PLUS = null; plusShow(); $('#plusSt').textContent = 'The key was removed from this device. You can enter it again at any time.'; };
+$('#plusRemove').onclick = () => { LS.set('plusKey', ''); PLUS = null; plusShow(); render(); $('#plusSt').textContent = 'The key was removed from this device. You can enter it again at any time.'; };
 
 /* ---------- Google Drive sync: places, shelves, details, notes and settings in one small file in the reader's own Drive ----------
    Uses the drive.file permission, so Velvet Scroll can only see files it created. Books are never uploaded.
@@ -3682,18 +3782,29 @@ function clipCover(b){
   d.style.setProperty('--clip', `hsl(${h} 45% 34%)`); d.style.setProperty('--ts', ts.toFixed(2) + 'cqw');
   return el('div', {class:'lbox'}, d);
 }
-function classicCover(b){
+// genre designs (Plus): [base, second, third, fourth] colours, chosen by the title so a shelf of them varies
+const COVER_STYLES = {
+  gothic: {label:'Horror', pal:[['#24090c','#060203'],['#17161d','#040405'],['#1c1226','#060309'],['#0e1a16','#030706']]},
+  fantasy: {label:'Fantasy', pal:[['#173a2a','#08180f'],['#1b2a5a','#0a1028'],['#48183a','#1b0815'],['#123a3f','#061a1d']]},
+  space: {label:'Science fiction', pal:[['#13294b','#e4572e','#f3e6c8','#2a9d8f'],['#0f3b3a','#f2a541','#f3e6c8','#e4572e'],['#1d1b2e','#e8c547','#f3e6c8','#d1495b'],['#3d1c2b','#2a9d8f','#f3e6c8','#f2a541']]}
+};
+const coverStyleOf = (b, force) => b.coverStyle && COVER_STYLES[b.coverStyle] && (force || PLUS) ? b.coverStyle : '';
+function classicCover(b, force){
   if(b.kind === 'article') return clipCover(b);
-  const t = b.title || 'Untitled', [c1, c2] = LEATHERS[hue(t + (b.author||'')) % LEATHERS.length];
+  const st = coverStyleOf(b, force), pals = st ? COVER_STYLES[st].pal : LEATHERS;
+  const t = b.title || 'Untitled', [c1, c2, c3, c4] = pals[hue(t + (b.author||'')) % pals.length];
   // size by overall length and by the longest word, so long words never break
   const lw = Math.max(...t.split(/[\s\-–—/]+/).map(w => w.length)), lv = ['l','m','s','xs'];
   const size = lv[t.length > 42 ? 3 : t.length > 24 ? 2 : t.length > 11 ? 1 : 0];
   // the lettering area is about 68% of the cover's width; capitals here run about 0.95em each
-  const fit = Math.min({l:14, m:11, s:8.8, xs:7.2}[size], 66 / (lw * 0.95));
+  // genre typefaces differ in width: blackletter is narrow and set larger, Michroma is very wide
+  const [mul, cw] = {gothic:[1.3, 0.47], fantasy:[0.95, 0.86], space:[0.8, 1.08]}[st] || [1, 0.95];
+  const fit = Math.min({l:14, m:11, s:8.8, xs:7.2}[size] * mul, 66 / (lw * cw));
   const d = el('div', {class:'leather', 'data-size':size},
     el('span', {class:'lt-frame'}), el('span', {class:'lt-orn'}), el('strong', {class:'lt-title', text:t}), el('span', {class:'lt-rule'}),
     b.author ? el('span', {class:'lt-author', text:b.author}) : null, b.year ? el('span', {class:'lt-year', text:String(b.year)}) : null, el('span', {class:'lt-orn'}));
   d.style.setProperty('--l1', c1); d.style.setProperty('--l2', c2); d.style.setProperty('--ts', fit.toFixed(2) + 'cqw');
+  if(st){ d.dataset.style = st; if(c3) d.style.setProperty('--l3', c3); if(c4) d.style.setProperty('--l4', c4); }
   return el('div', {class:'lbox'}, d);
 }
 function render(){
@@ -6389,7 +6500,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 849c550</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 39fc900</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

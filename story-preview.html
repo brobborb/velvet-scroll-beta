@@ -46,7 +46,7 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
 @media (max-aspect-ratio:1/1){
   :root{--s:calc(100vw / var(--sw))}
   /* upright tablets: don't let the bands grow past about a third of the screen; the drawing stays centred */
-  html.port{--s:calc(min(calc(100vw / var(--W)), calc(100dvh / (var(--H) * 1.3))) * var(--fs,1))}
+  html.port{--s:calc(min(calc(100vw / var(--W)), calc(100dvh / var(--H))) * var(--fs,1))}
   html.port .pc.t,html.port .pc.b{left:50%;width:calc(var(--W) * var(--s));transform:translateX(-50%)}
   html.port .glow.candle{right:calc(50vw - (var(--W) / 2 - (var(--W) - var(--cx)) + 40) * var(--s))}
   html.port .glow.moon{right:calc(50vw - (var(--W) / 2 - (var(--W) - var(--mx)) + var(--mr)) * var(--s))}
@@ -139,8 +139,8 @@ const FRAMES = {
   light: {img:'story/gothic-light.webp', W:1536, H:1024, lw:560, rx:980, tx:560, tw:420, th:150, by:760, bh:264, cx:1454, cy:592, mx:1335, my:78, mr:70, moonGlow:.55},
   dark:  {img:'story/gothic-dark.webp',  W:1672, H:940,  lw:470, rx:1215, tx:470, tw:745, th:112, by:828, bh:112, cx:1568, cy:598, mx:1535, my:105, mr:64, moonGlow:.3},
   // portrait drawings for phones: a band across the top and a scene across the bottom (tt/tb: where the text may start and end)
-  'light-port': {img:'story/gothic-port-light.webp', W:1411, H:2508, port:true, th:820, bh:1190, tt:360, tb:760, cx:1268, cy:1887, mx:1170, my:117, mr:85, moonGlow:.5},
-  'dark-port':  {img:'story/gothic-port-dark.webp',  W:1411, H:2508, port:true, th:820, bh:1190, tt:360, tb:760, cx:1268, cy:1887, mx:1170, my:117, mr:85, moonGlow:.75}
+  'light-port': {img:'story/gothic-port-light.webp', W:1411, H:2508, port:true, th:1060, bh:760, tt:360, tb:380, cx:1257, cy:2193, mx:1173, my:128, mr:87, moonGlow:.5},
+  'dark-port':  {img:'story/gothic-port-dark.webp',  W:1411, H:2508, port:true, th:1060, bh:760, tt:360, tb:380, cx:1257, cy:2193, mx:1173, my:128, mr:87, moonGlow:.75}
 };
 let isDark = false;
 const portMQ = matchMedia('(max-aspect-ratio: 1/1)');

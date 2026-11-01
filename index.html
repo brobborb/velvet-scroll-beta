@@ -595,6 +595,11 @@ html.ax-hc .rail,html.ax-hc .rail-show{border:2px solid var(--rfg)}
 .sweep-head{position:absolute;left:0;right:0;top:0;z-index:2;pointer-events:none;background:var(--rbg)}
 .sweep-head[hidden]{display:none}
 .sweep-next[hidden],.sweep-line[hidden],.sweep-foot[hidden]{display:none}
+/* Pages: the text holds still and turns a page at a time; it can't be scrolled by hand */
+.reader.paged .scroller{overflow:hidden;scrollbar-width:none}
+.reader.paged .scroller::-webkit-scrollbar{display:none}
+.pg-prog{position:absolute;left:0;bottom:0;height:3px;width:0;z-index:3;pointer-events:none;background:var(--accent);opacity:.55;border-radius:0 2px 2px 0}
+.pg-prog[hidden]{display:none}
 .dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:4}
 
 .panel{position:absolute;top:0;bottom:0;width:min(370px,94vw);z-index:6;background:var(--surface);color:var(--fg);overflow-y:auto;box-shadow:0 0 40px rgb(0 0 0 / .3);font-family:var(--f-ui);display:flex;flex-direction:column;gap:18px;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
@@ -844,6 +849,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   <div class="r-stage" id="stage">
     <div id="scroller" class="scroller" tabindex="-1" role="region" aria-label="Book text"><article id="page" class="page"></article></div>
     <div id="sweepFoot" class="sweep-foot" hidden></div>
+    <div id="pgProg" class="pg-prog" hidden></div>
     <div id="sweepHead" class="sweep-head" hidden></div>
     <div id="sweepLine" class="sweep-line" hidden><span class="sweep-mark"></span></div>
     <div id="sweepCover" class="sweep-cover" hidden></div>
@@ -1017,7 +1023,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
 
     <div class="grp">
       <span class="lbl">Scroll style</span>
-      <div class="seg" id="styles" role="group" aria-label="Scroll style"><button data-v="cinema">Cinema (free scroll)</button><button data-v="sweep">Page sweep</button></div>
+      <div class="seg" id="styles" role="group" aria-label="Scroll style"><button data-v="cinema">Cinema (free scroll)</button><button data-v="sweep">Page sweep</button><button data-v="pages">Pages</button></div>
       <label class="check" id="bookRow"><input type="checkbox" id="sBook"> Book layout: keep every line on the same grid</label>
       <p class="hint" id="styleHint"></p>
     </div>
@@ -3871,7 +3877,8 @@ if(S.guideAuto === undefined) S.guideAuto = S.guide === '#e0a72e';
 const R = $('#reader'), stage = $('#stage'), scroller = $('#scroller'), page = $('#page'), guide = $('#guide');
 const swNext = $('#sweepNext'), swClip = swNext.firstElementChild, swContent = swClip.firstElementChild, swLine = $('#sweepLine'), swMark = swLine.firstElementChild, swCover = $('#sweepCover'), swFoot = $('#sweepFoot'), swHead = $('#sweepHead');
 let sw = null, swMO = null;   // the page sweep in progress
-function isSweep(){ return S.style === 'sweep'; }
+function isSweep(){ return S.style === 'sweep' || S.style === 'pages'; }   // pages share the sweep's page layout
+function isPages(){ return S.style === 'pages'; }
 function sweepPad(){ return Math.max(10, Math.round(lineH() * 0.4)); }
 // where the reader's eyes are: the guide in cinema mode; the sweep line (or the top of the page) in page sweep
 function readY(){ if(!isSweep()) return guideY(); return Math.round(Math.max(sw && Math.abs(scroller.scrollTop - sw.start) <= 1 ? sw.y : 0, sweepPad())); }
@@ -4212,7 +4219,9 @@ function applySettings(save=true){
   document.querySelectorAll('#styles button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (S.style || 'cinema'))));
   $('#bookRow').hidden = !isSweep(); $('#sBook').checked = S.book !== false;
   page.classList.toggle("bookgrid", gridOn()); gridSnapSoon();
-  $('#styleHint').textContent = isSweep() ? 'The page stays still. A blank band, with a line along its top, drifts down at your reading speed and the next page appears above it. Read the new page above the line, or the rest of this page below the band. Smooth motion and refresh rate only apply to Cinema.'
+  R.classList.toggle('paged', isPages()); $('#pgProg').hidden = true;
+  $('#styleHint').textContent = isPages() ? 'Turn the pages like a book: tap or click the right side of the page, swipe, or press → or Page Down. The left side, ← or Page Up goes back. Play turns the pages for you at your reading speed.'
+    : isSweep() ? 'The page stays still. A blank band, with a line along its top, drifts down at your reading speed and the next page appears above it. Read the new page above the line, or the rest of this page below the band. Smooth motion and refresh rate only apply to Cinema.'
     : 'The text glides up the screen past the reading guide.';
   if(!S.smooth || isSweep()) clearShift(); else if(playing) page.style.willChange='transform';
   $('#sTrim').checked = !!S.trim; $('#mTrim').setAttribute('aria-checked', String(!!S.trim)); $('#sPgw').value=S.pgw; $('#oPgw').value=S.pgw+'%'; $('#sTint').checked=!!S.tint;
@@ -5032,7 +5041,7 @@ function pause(){
 }
 function tick(t){
   if(!playing) return;
-  if(isSweep()) return sweepTick(t);
+  if(isSweep()) return isPages() ? pagesTick(t) : sweepTick(t);
   const fm = frameMs();
   let dt = t - last; last = t;
   dt = Math.min(6, Math.max(1, Math.round(dt / fm))) * fm;   // whole frames only
@@ -5147,8 +5156,9 @@ function sweepBegin(){
   if(imagePages() && pg){ const q = pg.getBoundingClientRect(); swMark.style.left = (q.left - sr.left) + 'px'; swMark.style.width = q.width + 'px'; }
   else { const pl = parseFloat(cs.paddingLeft), pw = pr.width - pl - parseFloat(cs.paddingRight); swMark.style.left = Math.max(0, pr.left - sr.left + pl - 16) + 'px'; swMark.style.width = Math.min(sr.width, pw + 32) + 'px'; }
   swLine.style.height = Math.round(lh) + 'px';
-  swNext.hidden = last; swLine.hidden = false; swCover.hidden = false;
-  sweepClone();
+  const pagesOnly = isPages(); if(pagesOnly) pgElapsed = 0;
+  swNext.hidden = last || pagesOnly; swLine.hidden = pagesOnly; swCover.hidden = pagesOnly;
+  if(!pagesOnly) sweepClone();
   // a line cut off at the bottom belongs to the next page: hide it here
   swHead.hidden = !grid; swHead.style.height = Math.max(0, m - 1) + 'px';   // the foot of the row above the page
   swFoot.hidden = last || !(lines.length || grid); swFoot.style.height = Math.max(0, H - (grid ? m + rows * lh : next - s)) + 'px';
@@ -5191,10 +5201,65 @@ function sweepTick(t){
   if(lensOn) lensDraw();
   raf = requestAnimationFrame(tick);
 }
+/* ---------- Pages: turning a page at a time (manually, or automatically at reading speed) ---------- */
+let pgStack = [], pgTurning = false, pgElapsed = 0, pgWheel = 0, pgWheelT = 0, pgAlignT = 0;
+function pagesEnsure(){ if(!sw || Math.abs(scroller.scrollTop - sw.start) > 1 || sw.sig !== sweepSig()){ pgStack = []; sweepBegin(); } return !!sw; }
+function pagesAnim(dir){
+  if(stillOn() || !page.animate) return;
+  try{ page.animate([{transform:`translateX(${dir * 26}px)`, opacity:0}, {transform:'none', opacity:1}], {duration:200, easing:'cubic-bezier(.2,.7,.3,1)'}); }catch(e){}
+}
+function pagesTurn(dir){
+  if(R.hidden || !cur || !pagesEnsure()) return false;
+  if(dir > 0){
+    if(sw.last){ toast('End of book.'); return false; }
+    pgStack.push(sw.start); pgTurning = true; scroller.scrollTop = sw.next;
+  } else {
+    if(sw.start <= 1){ toast('This is the first page.'); return false; }
+    const back = pgStack.length ? pgStack.pop() : Math.max(0, sw.start - (sw.next - sw.start));
+    pgTurning = true; scroller.scrollTop = back;
+  }
+  sweepBegin(); pgTurning = false; pgElapsed = 0; pagesAnim(dir); saveCur(); noteAnchor(); updateStatus();
+  return true;
+}
+function pagesSecs(){ if(!sw) return 1; const lines = Math.max(1, Math.round((sw.next - sw.start) / sw.lh)); return lines * 60 / Math.max(1, S.lpm); }
+function pagesTick(t){
+  const dt = Math.min(250, t - last); last = t;
+  if(!pagesEnsure()){ pause(); return; }
+  pgElapsed += dt / 1000;
+  const total = pagesSecs(), bar = $('#pgProg');
+  bar.hidden = false; bar.style.width = Math.min(100, pgElapsed / total * 100) + '%';
+  if(pgElapsed >= total){
+    if(sw.last){ bar.hidden = true; pause(); toast('End of book.'); return; }
+    pagesTurn(1);
+  }
+  if(lensOn) lensDraw();
+  raf = requestAnimationFrame(tick);
+}
+// a jump (search, contents, the slider) lands mid-page: line the page up again once it settles
+function pagesAlignSoon(){ clearTimeout(pgAlignT); pgAlignT = setTimeout(() => { if(isPages() && !R.hidden && cur && !pgTurning){ pgStack = []; sweepBegin(); } }, 180); }
+// the wheel and trackpad turn pages instead of scrolling
+scroller.addEventListener('wheel', e => {
+  if(!isPages() || e.ctrlKey) return;
+  e.preventDefault(); const now = performance.now();
+  if(now - pgWheelT > 400) pgWheel = 0;
+  pgWheel += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if(Math.abs(pgWheel) > 40 && now - pgWheelT > 350){ pgWheelT = now; const d = Math.sign(pgWheel); pgWheel = 0; pause(); if(pagesTurn(d) && tts.on) ttsUserMoved(); }
+}, {passive:false});
+// swipes on touch screens
+let pgTouch = null;
+scroller.addEventListener('pointerdown', e => { if(isPages() && e.pointerType === 'touch') pgTouch = {x:e.clientX, y:e.clientY, t:performance.now()}; });
+scroller.addEventListener('pointerup', e => {
+  if(!pgTouch || e.pointerType !== 'touch') return; const dx = e.clientX - pgTouch.x, dy = e.clientY - pgTouch.y, fast = performance.now() - pgTouch.t < 700; pgTouch = null;
+  if(!fast || (Math.abs(dx) < 45 && Math.abs(dy) < 60)) return;
+  const d = Math.abs(dx) > Math.abs(dy) ? -Math.sign(dx) : -Math.sign(dy);
+  suppressClick = true; setTimeout(() => suppressClick = false, 350); pause(); if(pagesTurn(d) && tts.on) ttsUserMoved();
+});
+
 // a typeface finishing loading moves the text: measure the page again
 try{ document.fonts?.addEventListener('loadingdone', () => { if(sw){ sw.sig = ''; if(!playing) sweepEnd(); } }); }catch(e){}
 // scrolling by hand while stopped puts the page back to normal; play starts a new sweep from there
-scroller.addEventListener('scroll', () => { if(sw && !playing && !tts.on && Math.abs(scroller.scrollTop - sw.start) > 1) sweepEnd(); }, {passive:true});
+scroller.addEventListener('scroll', () => { if(isPages()){ if(!pgTurning && sw && Math.abs(scroller.scrollTop - sw.start) > 1) pagesAlignSoon(); return; }
+  if(sw && !playing && !tts.on && Math.abs(scroller.scrollTop - sw.start) > 1) sweepEnd(); }, {passive:true});
 
 /* ---------- Read aloud (the browser's own speech voices) ---------- */
 const synth = window.speechSynthesis || null;
@@ -5734,6 +5799,8 @@ scroller.addEventListener('click', e=>{
       const node = c && (c.offsetNode || c.startContainer), off = c ? (c.offset ?? c.startOffset) : 0;
       if(node && node.nodeType === 3 && page.contains(node) && ttsBlockOf(node)){ ttsFromTap(node, off); return; } }catch(_){}
     ttsStop(); return; }
+  if(isPages() && !S.hand){ const r = scroller.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width;
+    if(fx < .28 || fx > .72){ pause(); pagesTurn(fx > .5 ? 1 : -1); return; } }
   toggle();
 });
 
@@ -6213,11 +6280,13 @@ addEventListener('keydown', e=>{
   if(e.key===' ' || e.code==='Space'){ if(tag==='BUTTON') return; e.preventDefault(); toggle(); }
   else if(tag==='INPUT') return;
   else if(e.key==='PageDown' || e.key==='PageUp'){ e.preventDefault();
-    if(e.key==='PageDown' && isSweep()){ if(!sw || Math.abs(scroller.scrollTop - sw.start) > 1) sweepBegin(); if(sw && !sw.last) sweepFlip(); }
+    if(isPages()){ pause(); pagesTurn(e.key==='PageDown' ? 1 : -1); }
+    else if(e.key==='PageDown' && isSweep()){ if(!sw || Math.abs(scroller.scrollTop - sw.start) > 1) sweepBegin(); if(sw && !sw.last) sweepFlip(); }
     else scroller.scrollTop += (e.key==='PageDown' ? 1 : -1) * Math.max(lineH(), scroller.clientHeight - lineH() * 2);
     if(tts.on) ttsUserMoved(); }
   else if((e.key==='ArrowLeft' || e.key==='ArrowRight') && tts.on){ e.preventDefault(); ttsSkip(e.key==='ArrowRight' ? 1 : -1); }
   else if((e.key==='ArrowLeft' || e.key==='ArrowRight') && R.classList.contains('has-pages') && !e.ctrlKey && !e.metaKey && !e.altKey){ e.preventDefault(); pause(); pageStep(e.key==='ArrowRight' ? 1 : -1); }
+  else if((e.key==='ArrowLeft' || e.key==='ArrowRight') && isPages() && !e.ctrlKey && !e.metaKey && !e.altKey){ e.preventDefault(); pause(); pagesTurn(e.key==='ArrowRight' ? 1 : -1); }
   else if((e.key==='Home' || e.key==='End') && R.classList.contains('has-pages')){ e.preventDefault(); pause(); goToPage(e.key==='Home' ? 1 : pageTotal()); }
   else if((e.ctrlKey || e.metaKey) && imagePages() && (e.key==='=' || e.key==='+' || e.key==='-' || e.key==='0')){ e.preventDefault();
     if(e.key==='0') $('#railFitW').click(); else keepPagePlace(() => setPgw(S.pgw + (e.key==='-' ? -10 : 10))); }
@@ -6278,7 +6347,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 29704fe</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 45f71b4</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

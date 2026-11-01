@@ -11,7 +11,9 @@
 :root{
   --bg:#f2e5c9; --fg:#3a2e1d; --glow:#ffcf7a; --ink-mix:78%; --art:.85;
   /* the stencil is 1536 × 1024; s is how many CSS pixels one stencil pixel takes */
-  --s:calc(100dvh / 1024);
+  /* each drawing describes itself: size, where to cut the side pieces and centre bands, and where its lights are */
+  --W:1536; --H:1024; --lw:560; --rx:980; --tx:560; --tw:420; --th:150; --by:760; --bh:264; --cx:1454; --cy:592; --mx:1335; --my:78; --mr:70; --img:url(story/gothic-light.webp);
+  --s:calc(100dvh / var(--H));
   --ink:color-mix(in srgb,var(--fg) var(--ink-mix),var(--bg));
   color-scheme:light;
 }
@@ -22,39 +24,39 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
 /* ---------- the stencil frame: five pieces cut from one drawing, tinted with the theme's ink ---------- */
 .frame{position:fixed;inset:0;pointer-events:none;opacity:var(--art);transition:opacity .3s}
 .pc{position:absolute;background:var(--ink);transition:background .4s;
-  -webkit-mask-image:url(story/gothic.webp),var(--fade,linear-gradient(#000,#000));mask-image:url(story/gothic.webp),var(--fade,linear-gradient(#000,#000));
+  -webkit-mask-image:var(--img),var(--fade,linear-gradient(#000,#000));mask-image:var(--img),var(--fade,linear-gradient(#000,#000));
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  mask-size:calc(1536 * var(--s)) calc(1024 * var(--s)),100% 100%;-webkit-mask-size:calc(1536 * var(--s)) calc(1024 * var(--s)),100% 100%;
+  mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--s)),100% 100%;-webkit-mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--s)),100% 100%;
   mask-composite:intersect;-webkit-mask-composite:source-in}
 /* left: raven, key, the house on the hill */
-.pc.l{left:0;top:0;width:calc(560 * var(--s));height:100%;-webkit-mask-position:0 0,0 0;mask-position:0 0,0 0;--fade:linear-gradient(90deg,#000 80%,transparent)}
+.pc.l{left:0;top:0;width:calc(var(--lw) * var(--s));height:100%;-webkit-mask-position:0 0,0 0;mask-position:0 0,0 0;--fade:linear-gradient(90deg,#000 80%,transparent)}
 /* right: moon, raven in flight, candle on books */
-.pc.r{right:0;top:0;width:calc(556 * var(--s));height:100%;-webkit-mask-position:calc(-980 * var(--s)) 0,0 0;mask-position:calc(-980 * var(--s)) 0,0 0;--fade:linear-gradient(270deg,#000 80%,transparent)}
+.pc.r{right:0;top:0;width:calc((var(--W) - var(--rx)) * var(--s));height:100%;-webkit-mask-position:calc(-1 * var(--rx) * var(--s)) 0,0 0;mask-position:calc(-1 * var(--rx) * var(--s)) 0,0 0;--fade:linear-gradient(270deg,#000 80%,transparent)}
 /* top: the pointed arch; bottom: the gate */
-.pc.t{left:50%;top:0;width:calc(420 * var(--s));height:calc(150 * var(--s));transform:translateX(-50%);-webkit-mask-position:calc(-560 * var(--s)) 0,0 0;mask-position:calc(-560 * var(--s)) 0,0 0;--fade:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.pc.b{left:50%;bottom:0;width:calc(420 * var(--s));height:calc(264 * var(--s));transform:translateX(-50%);-webkit-mask-position:calc(-560 * var(--s)) calc(-760 * var(--s)),0 0;mask-position:calc(-560 * var(--s)) calc(-760 * var(--s)),0 0;--fade:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.pc.t{left:50%;top:0;width:calc(var(--tw) * var(--s));height:calc(var(--th) * var(--s));transform:translateX(-50%);-webkit-mask-position:calc(-1 * var(--tx) * var(--s)) 0,0 0;mask-position:calc(-1 * var(--tx) * var(--s)) 0,0 0;--fade:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.pc.b{left:50%;bottom:0;width:calc(var(--tw) * var(--s));height:calc(var(--bh) * var(--s));transform:translateX(-50%);-webkit-mask-position:calc(-1 * var(--tx) * var(--s)) calc(-1 * var(--by) * var(--s)),0 0;mask-position:calc(-1 * var(--tx) * var(--s)) calc(-1 * var(--by) * var(--s)),0 0;--fade:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
 /* light sources: the candle flame and the moon glow softly in the accent colour */
 .glow{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,var(--glow) 0,color-mix(in srgb,var(--glow) 35%,transparent) 30%,transparent 70%);mix-blend-mode:var(--glow-blend,screen);opacity:var(--glow-on,1);transition:opacity .4s}
-.glow.candle{right:calc((1536 - 1454) * var(--s) - 40 * var(--s));top:calc((592 - 40) * var(--s));width:calc(80 * var(--s));height:calc(80 * var(--s));animation:flicker 3.2s ease-in-out infinite}
-.glow.moon{right:calc((1536 - 1335) * var(--s) - 70 * var(--s));top:calc((78 - 70) * var(--s));width:calc(140 * var(--s));height:calc(140 * var(--s));opacity:calc(var(--glow-on,1) * .55)}
+.glow.candle{right:calc((var(--W) - var(--cx) - 40) * var(--s));top:calc((var(--cy) - 40) * var(--s));width:calc(80 * var(--s));height:calc(80 * var(--s));animation:flicker 3.2s ease-in-out infinite}
+.glow.moon{right:calc((var(--W) - var(--mx) - var(--mr)) * var(--s));top:calc((var(--my) - var(--mr)) * var(--s));width:calc(2 * var(--mr) * var(--s));height:calc(2 * var(--mr) * var(--s));opacity:calc(var(--glow-on,1) * var(--moon-glow,.55))}
 @keyframes flicker{0%,100%{transform:scale(1);opacity:1}30%{transform:scale(1.08);opacity:.85}55%{transform:scale(.95);opacity:1}80%{transform:scale(1.04);opacity:.9}}
 @media (prefers-reduced-motion:reduce){.glow.candle{animation:none}}
 
 /* portrait phones: no room at the sides, so only a band at the top and bottom, scaled to the width */
 @media (max-aspect-ratio:1/1){
-  :root{--s:calc(100vw / 900)}
+  :root{--s:calc(100vw / (var(--W) * .586))}
   .pc.l,.pc.r{display:none}
-  .pc.t{width:100%;height:calc(190 * var(--s));-webkit-mask-position:calc(50% + 0px) 0,0 0;mask-position:50% 0,0 0;--fade:linear-gradient(#000 60%,transparent)}
-  .pc.b{width:100%;height:calc(250 * var(--s));-webkit-mask-position:50% 100%,0 0;mask-position:50% 100%,0 0;--fade:linear-gradient(transparent,#000 40%)}
+  .pc.t{width:100%;height:calc((var(--th) + 40) * var(--s));-webkit-mask-position:50% 0,0 0;mask-position:50% 0,0 0;--fade:linear-gradient(#000 60%,transparent)}
+  .pc.b{width:100%;height:calc((var(--bh) + 0) * var(--s));-webkit-mask-position:50% 100%,0 0;mask-position:50% 100%,0 0;--fade:linear-gradient(transparent,#000 40%)}
   .glow{display:none}
 }
 
 /* ---------- the reading column ---------- */
 .read{position:fixed;inset:0;overflow-y:auto;scrollbar-width:none;
-  -webkit-mask-image:linear-gradient(transparent calc(110 * var(--s)),#000 calc(190 * var(--s)),#000 calc(100% - 330 * var(--s)),transparent calc(100% - 255 * var(--s)));
-  mask-image:linear-gradient(transparent calc(110 * var(--s)),#000 calc(190 * var(--s)),#000 calc(100% - 330 * var(--s)),transparent calc(100% - 255 * var(--s)))}
+  -webkit-mask-image:linear-gradient(transparent calc((var(--th) - 30) * var(--s)),#000 calc((var(--th) + 40) * var(--s)),#000 calc(100% - (var(--bh) + 70) * var(--s)),transparent calc(100% - (var(--bh) - 5) * var(--s)));
+  mask-image:linear-gradient(transparent calc((var(--th) - 30) * var(--s)),#000 calc((var(--th) + 40) * var(--s)),#000 calc(100% - (var(--bh) + 70) * var(--s)),transparent calc(100% - (var(--bh) - 5) * var(--s)))}
 .read::-webkit-scrollbar{display:none}
-.col{max-width:min(36em,calc(100vw - 2 * 470 * var(--s)));min-width:min(30em,92vw);margin:0 auto;padding:calc(200 * var(--s)) 0 calc(340 * var(--s));font:19px/1.75 Literata,Georgia,serif}
+.col{max-width:min(36em,calc(100vw - 2 * (var(--lw) - 90) * var(--s)));min-width:min(30em,92vw);margin:0 auto;padding:calc((var(--th) + 50) * var(--s)) 0 calc((var(--bh) + 80) * var(--s));font:19px/1.75 Literata,Georgia,serif}
 @media (max-aspect-ratio:1/1){.col{min-width:0;max-width:92vw;font-size:17px}}
 .col h1{font:400 2.1em/1.1 'VS Gothic',Literata,serif;text-align:center;margin:0 0 .2em}
 .col .sub{text-align:center;font-style:italic;opacity:.75;margin:0 0 2em}
@@ -69,6 +71,7 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
 .ctl label{display:flex;align-items:center;gap:6px}
 .ctl input[type=color]{width:28px;height:24px;border:0;padding:0;background:none}
 .ctl input[type=range]{width:90px}
+.ctl select{font:inherit;background:#2a2c2e;color:#eee;border:1px solid #555;border-radius:8px;padding:3px 6px}
 .ctl .sep{width:1px;height:20px;background:#555}
 .ctl[hidden]{display:none}
 #show{position:fixed;right:12px;bottom:12px;z-index:5;font:13px system-ui;border:0;border-radius:999px;padding:6px 12px;background:rgb(20 22 24 / .7);color:#eee;cursor:pointer}
@@ -101,6 +104,7 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
+  <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">Pencil sketch</option><option value="dark">Engraving</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
@@ -118,7 +122,20 @@ function set(bg, fg){
   // on dark pages the drawing reads like silverpoint on black paper; on light pages like pencil on cream
   R.setProperty('--ink-mix', dark ? '62%' : '78%'); R.setProperty('--glow-blend', dark ? 'screen' : 'multiply'); R.setProperty('--glow-on', dark ? '1' : '.45');
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  isDark = dark; frame();
 }
+// each Story theme has two drawings of the same scene: a pencil sketch for light pages and an engraving for dark ones
+const FRAMES = {
+  light: {img:'story/gothic-light.webp', W:1536, H:1024, lw:560, rx:980, tx:560, tw:420, th:150, by:760, bh:264, cx:1454, cy:592, mx:1335, my:78, mr:70, moonGlow:.55},
+  dark:  {img:'story/gothic-dark.webp',  W:1672, H:940,  lw:470, rx:1215, tx:470, tw:745, th:112, by:828, bh:112, cx:1568, cy:598, mx:1535, my:105, mr:64, moonGlow:.3}
+};
+let isDark = false;
+function frame(){
+  const pick = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, f = FRAMES[pick];
+  for(const k of ['W','H','lw','rx','tx','tw','th','by','bh','cx','cy','mx','my','mr']) R.setProperty('--' + k, f[k]);
+  R.setProperty('--img', `url(${f.img})`); R.setProperty('--moon-glow', f.moonGlow);
+}
+$('#draw').onchange = frame;
 document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...P[b.dataset.p]); });
 $('#cBg').oninput = $('#cFg').oninput = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', 'false')); set($('#cBg').value, $('#cFg').value); };
 $('#cGlow').oninput = e => R.setProperty('--glow', e.target.value);

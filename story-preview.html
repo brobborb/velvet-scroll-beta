@@ -60,6 +60,21 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
   html.port .glow.candle{top:auto;bottom:calc((var(--H) - var(--cy) - 40) * var(--s))}
 }
 
+/* ---------- 'page' frames: an illustration across the top, slim borders down the sides that stretch to any height,
+   and a small flourish at the bottom; the drawing keeps its shape and sits centred like a page ---------- */
+.pc.m{display:none}
+html.page .pc.l,html.page .pc.r{display:none}
+html.page{--s:calc(min(calc(100vw / var(--W)), calc(100dvh / var(--H))) * var(--fs,1))}
+html.page .pc.t,html.page .pc.m,html.page .pc.b{display:block;left:50%;width:calc(var(--W) * var(--s));transform:translateX(-50%);--fade:linear-gradient(#000,#000)}
+html.page .pc.t{top:0;height:calc(var(--th) * var(--s));-webkit-mask-position:0 0,0 0;mask-position:0 0,0 0}
+html.page .pc.b{bottom:0;height:calc(var(--bh) * var(--s));-webkit-mask-position:0 100%,0 0;mask-position:0 100%,0 0}
+html.page .pc.m{top:calc(var(--th) * var(--s));bottom:calc(var(--bh) * var(--s));
+  --ky:calc((100dvh - (var(--th) + var(--bh)) * var(--s)) / (var(--H) - var(--th) - var(--bh)));
+  -webkit-mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--ky)),100% 100%;mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--ky)),100% 100%;
+  -webkit-mask-position:0 calc(-1 * var(--th) * var(--ky)),0 0;mask-position:0 calc(-1 * var(--th) * var(--ky)),0 0}
+html.page .glow{display:none}
+html.page .col{min-width:0;max-width:min(92vw,calc(var(--W) * var(--s) * .84));font-size:clamp(16px,calc(var(--W) * var(--s) / 34),19px)}
+
 /* ---------- the reading column ---------- */
 .read{position:fixed;inset:0;overflow-y:auto;scrollbar-width:none;
   -webkit-mask-image:linear-gradient(transparent calc((var(--tt) - 30) * var(--s)),#000 calc((var(--tt) + 40) * var(--s)),#000 calc(100% - (var(--tb) + 70) * var(--s)),transparent calc(100% - (var(--tb) - 5) * var(--s)));
@@ -90,7 +105,7 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
 <body>
 <div class="tag">STORY MODE PROTOTYPE</div>
 <div class="frame" aria-hidden="true">
-  <div class="pc l"></div><div class="pc r"></div><div class="pc t"></div><div class="pc b"></div>
+  <div class="pc l"></div><div class="pc r"></div><div class="pc t"></div><div class="pc m"></div><div class="pc b"></div>
   <div class="glow candle"></div><div class="glow moon"></div>
 </div>
 
@@ -113,6 +128,7 @@ body{font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
+  <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy-slim">Fantasy: slim</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
@@ -144,16 +160,21 @@ const FRAMES = {
 };
 let isDark = false;
 const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
+// slim frames: top band height (th) and bottom flourish height (bh) in drawing pixels; the side borders between them stretch
+const SLIM = {gothic:530, fantasy:411, sea:377, witch:417};
+for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
+  FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
 function frame(){
-  const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value;
-  // phones and tablets held upright get the portrait drawing when the theme has one
-  const f = (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
+  const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
+  // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
+  const f = theme !== 'gothic' ? FRAMES[`${theme}-${tone}`] : (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
+  document.documentElement.classList.toggle('page', !!f.page);
   for(const k of ['W','H','lw','rx','tx','tw','th','by','bh','cx','cy','mx','my','mr']) if(f[k] !== undefined) R.setProperty('--' + k, f[k]);
   R.setProperty('--tt', f.tt ?? f.th); R.setProperty('--tb', f.tb ?? f.bh); R.setProperty('--sw', f.port ? f.W : f.W * .586);
   document.documentElement.classList.toggle('port', !!f.port);
   R.setProperty('--img', `url(${f.img})`); R.setProperty('--moon-glow', f.moonGlow);
 }
-$('#draw').onchange = frame; portMQ.addEventListener('change', frame);
+$('#draw').onchange = frame; $('#theme').onchange = frame; portMQ.addEventListener('change', frame);
 document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...P[b.dataset.p]); });
 $('#cBg').oninput = $('#cFg').oninput = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', 'false')); set($('#cBg').value, $('#cFg').value); };
 $('#cGlow').oninput = e => R.setProperty('--glow', e.target.value);

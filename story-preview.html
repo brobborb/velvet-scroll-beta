@@ -135,7 +135,7 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
-  <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy">Fantasy: from one landscape drawing</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
+  <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy">Fantasy: from one landscape drawing</option><option value="quixote">Don Quixote: from one landscape drawing</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
@@ -170,11 +170,11 @@ const FRAMES = {
 let isDark = false;
 const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
 // slim frames: top band height (th) and bottom flourish height (bh) in drawing pixels; the side borders between them stretch
-const SLIM = {gothic:530, fantasy:430, sea:377, witch:417};
+const SLIM = {gothic:530, fantasy:430, quixote:355, sea:377, witch:417};
 for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
 // themes made by source/tools/story_theme.py from one landscape drawing: the whole drawing on wide screens, the slim page on tall ones
-const LAND = {fantasy:{W:2560, H:1440, lw:897, rx:1662, tx:779, tw:994, th:264, by:1177, bh:263}};
+const LAND = {fantasy:{W:2560, H:1440, lw:889, rx:1670, tx:787, tw:978, th:256, by:1185, bh:255}, quixote:{W:2560, H:1440, lw:809, rx:1745, tx:630, tw:1325, th:305, by:1171, bh:269}};
 for(const [k, L] of Object.entries(LAND)) for(const tone of ['light', 'dark']) FRAMES[`${k}-land-${tone}`] = {img:`story/${k}-land-${tone}.webp`, ...L, moonGlow:0};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;

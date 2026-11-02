@@ -72,7 +72,7 @@ html.page .pc.m{top:calc(var(--th) * var(--s));bottom:calc(var(--bh) * var(--s))
   --ky:calc((100dvh - (var(--th) + var(--bh)) * var(--s)) / (var(--H) - var(--th) - var(--bh)));
   -webkit-mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--ky)),100% 100%;mask-size:calc(var(--W) * var(--s)) calc(var(--H) * var(--ky)),100% 100%;
   -webkit-mask-position:0 calc(-1 * var(--th) * var(--ky)),0 0;mask-position:0 calc(-1 * var(--th) * var(--ky)),0 0}
-html.page .glow{display:none}
+html.page .glow,html.noglow .glow{display:none}
 html.page .col{min-width:0;max-width:min(92vw,calc(var(--W) * var(--s) * .84));font-size:clamp(16px,calc(var(--W) * var(--s) / 34),19px)}
 
 /* ---------- the reading column ---------- */
@@ -128,7 +128,7 @@ html.page .col{min-width:0;max-width:min(92vw,calc(var(--W) * var(--s) * .84));f
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
-  <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy-slim">Fantasy: slim</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
+  <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy">Fantasy: from one landscape drawing</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
@@ -161,14 +161,19 @@ const FRAMES = {
 let isDark = false;
 const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
 // slim frames: top band height (th) and bottom flourish height (bh) in drawing pixels; the side borders between them stretch
-const SLIM = {gothic:530, fantasy:411, sea:377, witch:417};
+const SLIM = {gothic:530, fantasy:430, sea:377, witch:417};
 for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
+// themes made by source/tools/story_theme.py from one landscape drawing: the whole drawing on wide screens, the slim page on tall ones
+const LAND = {fantasy:{W:2560, H:1440, lw:897, rx:1662, tx:779, tw:994, th:264, by:1177, bh:263}};
+for(const [k, L] of Object.entries(LAND)) for(const tone of ['light', 'dark']) FRAMES[`${k}-land-${tone}`] = {img:`story/${k}-land-${tone}.webp`, ...L, moonGlow:0};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
   // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
-  const f = theme !== 'gothic' ? FRAMES[`${theme}-${tone}`] : (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
+  const f = LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]
+    : theme !== 'gothic' ? FRAMES[`${theme}-${tone}`] : (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
   document.documentElement.classList.toggle('page', !!f.page);
+  document.documentElement.classList.toggle('noglow', !f.cx);   // only drawings with a candle or moon get lights
   for(const k of ['W','H','lw','rx','tx','tw','th','by','bh','cx','cy','mx','my','mr']) if(f[k] !== undefined) R.setProperty('--' + k, f[k]);
   R.setProperty('--tt', f.tt ?? f.th); R.setProperty('--tb', f.tb ?? f.bh); R.setProperty('--sw', f.port ? f.W : f.W * .586);
   document.documentElement.classList.toggle('port', !!f.port);

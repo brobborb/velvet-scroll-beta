@@ -75,6 +75,13 @@ html.page .pc.m{top:calc(var(--th) * var(--s));bottom:calc(var(--bh) * var(--s))
 html.page .glow,html.noglow .glow{display:none}
 html.page .col{min-width:0;max-width:min(92vw,calc(var(--W) * var(--s) * .84));font-size:clamp(16px,calc(var(--W) * var(--s) / 34),19px)}
 
+/* ---------- dark pages: the drawing as foil stamped into a cloth binding, with a soft sheen and a pressed-in shadow ---------- */
+:root{--f1:#ecd194;--f2:#a9823f}
+html[data-finish=silver]{--f1:#e6ebf3;--f2:#97a3b8}
+html[data-finish=ink]{--f1:color-mix(in srgb,var(--fg) 80%,var(--bg));--f2:color-mix(in srgb,var(--fg) 55%,var(--bg))}
+html.dark .pc{background:linear-gradient(168deg,var(--f1) 0%,var(--f2) 38%,var(--f1) 62%,var(--f2) 100%)}
+html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
+
 /* ---------- the reading column ---------- */
 .read{position:fixed;inset:0;overflow-y:auto;scrollbar-width:none;
   -webkit-mask-image:linear-gradient(transparent calc((var(--tt) - 30) * var(--s)),#000 calc((var(--tt) + 40) * var(--s)),#000 calc(100% - (var(--tb) + 70) * var(--s)),transparent calc(100% - (var(--tb) - 5) * var(--s)));
@@ -130,6 +137,7 @@ html.page .col{min-width:0;max-width:min(92vw,calc(var(--W) * var(--s) * .84));f
   <span class="sep"></span>
   <label title="Which story theme">Theme <select id="theme"><option value="gothic">Gothic: full scene</option><option value="gothic-slim">Gothic: slim</option><option value="fantasy">Fantasy: from one landscape drawing</option><option value="sea-slim">Sea: slim</option><option value="witch-slim">Witchcraft: slim</option></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
+  <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
   <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
@@ -146,6 +154,7 @@ function set(bg, fg){
   R.setProperty('--bg', bg); R.setProperty('--fg', fg); $('#cBg').value = bg; $('#cFg').value = fg;
   const dark = lum(bg) < .45;
   // on dark pages the drawing reads like silverpoint on black paper; on light pages like pencil on cream
+  document.documentElement.classList.toggle('dark', dark);
   R.setProperty('--ink-mix', dark ? '62%' : '78%'); R.setProperty('--glow-blend', dark ? 'screen' : 'multiply'); R.setProperty('--glow-on', dark ? '1' : '.45');
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
   isDark = dark; frame();
@@ -179,6 +188,7 @@ function frame(){
   document.documentElement.classList.toggle('port', !!f.port);
   R.setProperty('--img', `url(${f.img})`); R.setProperty('--moon-glow', f.moonGlow);
 }
+$('#finish').onchange = e => document.documentElement.dataset.finish = e.target.value;
 $('#draw').onchange = frame; $('#theme').onchange = frame; portMQ.addEventListener('change', frame);
 document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...P[b.dataset.p]); });
 $('#cBg').oninput = $('#cFg').oninput = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', 'false')); set($('#cBg').value, $('#cFg').value); };

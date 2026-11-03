@@ -140,7 +140,7 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
   <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
-  <label title="On phones: which scenes show">Phone scenes <select id="pscenes"><option value="alt">Alternate each chapter</option><option value="top">Top</option><option value="bottom">Bottom</option></select></label>
+  <label title="On phones: which scenes show">Phone scenes <select id="pscenes"><option value="alt">Alternate each chapter</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="centre">Centre ornaments</option></select></label>
   <button id="nextch" title="Pretend to turn to the next chapter">Next chapter</button>
   <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
@@ -199,12 +199,18 @@ const FOOT = {fantasy:420, quixote:392, moor:420, river:420, alice:420, sea:357,
 for(const [k, b] of Object.entries(FOOT)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-foot-${tone}`] = {img:`story/${k}-foot-${tone}.webp`, W:1440, H:2560, page:true, th:200, bh:b + 10, tt:190, tb:b - 30, moonGlow:0};
 let chapter = 0;   // in the reader this is the chapter number; here the Next chapter button advances it
-function phoneScenes(){ const m = $('#pscenes').value; return m === 'alt' ? (chapter % 2 ? 'bottom' : 'top') : m; }
+// themes with distinct centre ornaments also have a third phone layout: the top ornament as a header, the bottom one as a footer
+const MID = {rome:[299, 245]};
+for(const [k, [t, b]] of Object.entries(MID)) for(const tone of ['light', 'dark'])
+  FRAMES[`${k}-mid-${tone}`] = {img:`story/${k}-mid-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 30, moonGlow:0};
+function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;
+  if(m !== 'alt') return m;
+  const cycle = MID[th] ? ['top', 'bottom', 'centre'] : ['top', 'bottom']; return cycle[chapter % cycle.length]; }
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
   // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
-  const useFoot = portMQ.matches && FOOT[theme] && phoneScenes() === 'bottom';
-  const f = useFoot ? FRAMES[`${theme}-foot-${tone}`] : LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]
+  const ps = portMQ.matches ? phoneScenes() : 'top', useFoot = FOOT[theme] && ps === 'bottom', useMid = MID[theme] && ps === 'centre';
+  const f = useMid ? FRAMES[`${theme}-mid-${tone}`] : useFoot ? FRAMES[`${theme}-foot-${tone}`] : LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]
     : theme !== 'gothic' ? FRAMES[`${theme}-${tone}`] : (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
   document.documentElement.classList.toggle('page', !!f.page);
   document.documentElement.classList.toggle('noglow', !f.cx);   // only drawings with a candle or moon get lights

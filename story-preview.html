@@ -183,8 +183,8 @@ for(const [k, [t, b]] of Object.entries(SLIM_FOOT)) for(const tone of ['light', 
 const LAND = {scifi:{W:2560, H:1440, lw:522, rx:2039, tx:685, tw:1187, th:167, by:1323, bh:117}, noir:{W:2560, H:1440, lw:475, rx:2034, tx:849, tw:871, th:162, by:1257, bh:183}, fantasy:{W:2560, H:1440, lw:640, rx:1904, tx:676, tw:1209, th:203, by:1199, bh:241}, quixote:{W:2560, H:1440, lw:809, rx:1745, tx:630, tw:1325, th:305, by:1171, bh:269}, moor:{W:2560, H:1440, lw:553, rx:1930, tx:648, tw:1264, th:178, by:1228, bh:212}, river:{W:2560, H:1440, lw:568, rx:1945, tx:694, tw:1171, th:183, by:1226, bh:214}, alice:{W:2560, H:1440, lw:551, rx:2005, tx:744, tw:1066, th:168, by:1212, bh:228}, sea:{W:2560, H:1440, lw:629, rx:1994, tx:464, tw:1632, th:254, by:1212, bh:228}};
 // themes drawn twice (dark-on-light for light pages, light-on-black with its own lighting for dark pages) have numbers for each
 Object.assign(LAND, {
-  greece:{W:2560, H:1441, lw:639, rx:1920, tx:684, tw:1191, th:288, by:1144, bh:297},
-  rome:{W:2560, H:1441, lw:626, rx:1928, tx:775, tw:1011, th:293, by:1172, bh:269},
+  greece:{W:2560, H:1440, lw:639, rx:1920, tx:684, tw:1191, th:288, by:1144, bh:296},
+  rome:{W:2560, H:1440, lw:626, rx:1928, tx:775, tw:1011, th:293, by:1171, bh:269},
   flight:{light:{W:2560, H:1440, lw:457, rx:2126, tx:655, tw:1251, th:225, by:1290, bh:150}, dark:{W:2560, H:1440, lw:456, rx:2128, tx:659, tw:1243, th:225, by:1290, bh:150}},
   harbour:{light:{W:2560, H:1440, lw:536, rx:2030, tx:564, tw:1433, th:196, by:1248, bh:192}, dark:{W:2560, H:1440, lw:473, rx:2061, tx:610, tw:1342, th:167, by:1258, bh:182}},
   jazz:{light:{W:2560, H:1440, lw:467, rx:2085, tx:651, tw:1251, th:146, by:1255, bh:185}, dark:{W:2560, H:1440, lw:453, rx:2100, tx:757, tw:1045, th:148, by:1248, bh:192}},
@@ -201,7 +201,7 @@ for(const [k, b] of Object.entries(FOOT)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-foot-${tone}`] = {img:`story/${k}-foot-${tone}.webp`, W:1440, H:2560, page:true, th:200, bh:b + 10, tt:190, tb:b - 30, moonGlow:0};
 let chapter = 0;   // in the reader this is the chapter number; here the Next chapter button advances it
 // themes with distinct centre ornaments also have a third phone layout: the top ornament as a header, the bottom one as a footer
-const MID = {rome:[299, 245], greece:[256, 245]};
+const MID = {rome:[301, 245], greece:[257, 245]};
 for(const [k, [t, b]] of Object.entries(MID)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-mid-${tone}`] = {img:`story/${k}-mid-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 30, moonGlow:0};
 function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;

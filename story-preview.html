@@ -173,6 +173,10 @@ const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
 const SLIM = {scifi:268, noir:430, gothic:530, fantasy:430, quixote:355, moor:430, river:430, alice:430, sea:382, witch:417};
 for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
+// phone layouts with the scenes as a footer: [header height, footer height]
+const SLIM_FOOT = {scifi:[200, 430]};
+for(const [k, [t, b]] of Object.entries(SLIM_FOOT)) for(const tone of ['light', 'dark'])
+  FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 40, moonGlow:0};
 // themes made by source/tools/story_theme.py from one landscape drawing: the whole drawing on wide screens, the slim page on tall ones
 const LAND = {scifi:{W:2560, H:1441, lw:940, rx:1601, tx:630, tw:1299, th:218, by:1301, bh:140}, noir:{W:2560, H:1440, lw:475, rx:2034, tx:849, tw:871, th:162, by:1257, bh:183}, fantasy:{W:2560, H:1440, lw:640, rx:1904, tx:676, tw:1209, th:203, by:1199, bh:241}, quixote:{W:2560, H:1440, lw:809, rx:1745, tx:630, tw:1325, th:305, by:1171, bh:269}, moor:{W:2560, H:1440, lw:553, rx:1930, tx:648, tw:1264, th:178, by:1228, bh:212}, river:{W:2560, H:1440, lw:568, rx:1945, tx:694, tw:1171, th:183, by:1226, bh:214}, alice:{W:2560, H:1440, lw:551, rx:2005, tx:744, tw:1066, th:168, by:1212, bh:228}, sea:{W:2560, H:1440, lw:629, rx:1994, tx:464, tw:1632, th:254, by:1212, bh:228}};
 // themes drawn twice (dark-on-light for light pages, light-on-black with its own lighting for dark pages) have numbers for each

@@ -174,7 +174,7 @@ const SLIM = {gothic:530, fantasy:430, quixote:355, moor:430, river:430, alice:4
 for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
 // themes made by source/tools/story_theme.py from one landscape drawing: the whole drawing on wide screens, the slim page on tall ones
-const LAND = {fantasy:{W:2560, H:1440, lw:889, rx:1670, tx:787, tw:978, th:256, by:1185, bh:255}, quixote:{W:2560, H:1440, lw:809, rx:1745, tx:630, tw:1325, th:305, by:1171, bh:269}, moor:{W:2560, H:1440, lw:553, rx:1930, tx:648, tw:1264, th:178, by:1228, bh:212}, river:{W:2560, H:1440, lw:568, rx:1945, tx:694, tw:1171, th:183, by:1226, bh:214}, alice:{W:2560, H:1440, lw:551, rx:2005, tx:744, tw:1066, th:168, by:1212, bh:228}, sea:{W:2560, H:1440, lw:629, rx:1994, tx:464, tw:1632, th:254, by:1212, bh:228}};
+const LAND = {fantasy:{W:2560, H:1440, lw:640, rx:1904, tx:676, tw:1209, th:203, by:1199, bh:241}, quixote:{W:2560, H:1440, lw:809, rx:1745, tx:630, tw:1325, th:305, by:1171, bh:269}, moor:{W:2560, H:1440, lw:553, rx:1930, tx:648, tw:1264, th:178, by:1228, bh:212}, river:{W:2560, H:1440, lw:568, rx:1945, tx:694, tw:1171, th:183, by:1226, bh:214}, alice:{W:2560, H:1440, lw:551, rx:2005, tx:744, tw:1066, th:168, by:1212, bh:228}, sea:{W:2560, H:1440, lw:629, rx:1994, tx:464, tw:1632, th:254, by:1212, bh:228}};
 for(const [k, L] of Object.entries(LAND)) for(const tone of ['light', 'dark']) FRAMES[`${k}-land-${tone}`] = {img:`story/${k}-land-${tone}.webp`, ...L, moonGlow:0};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;

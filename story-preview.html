@@ -185,13 +185,13 @@ const LAND = {scifi:{W:2560, H:1440, lw:522, rx:2039, tx:685, tw:1187, th:167, b
 Object.assign(LAND, {
   boudoir:{W:2560, H:1442, lw:486, rx:2062, tx:514, tw:1532, th:152, by:1298, bh:144},
   deco:{W:2560, H:1440, lw:533, rx:2027, tx:517, tw:1528, th:201, by:1248, bh:192},
-  greece:{W:2560, H:1440, lw:639, rx:1920, tx:684, tw:1191, th:288, by:1144, bh:296},
-  rome:{W:2560, H:1440, lw:626, rx:1928, tx:775, tw:1011, th:293, by:1171, bh:269},
+  greece:{light:{W:2560, H:1440, lw:579, rx:1966, tx:586, tw:1392, th:250, by:1167, bh:273}, dark:{W:2560, H:1440, lw:626, rx:1926, tx:563, tw:1457, th:223, by:1169, bh:271}},
+  rome:{light:{W:2560, H:1440, lw:578, rx:1984, tx:650, tw:1266, th:259, by:1193, bh:247}, dark:{W:2560, H:1440, lw:507, rx:2058, tx:522, tw:1516, th:266, by:1181, bh:259}},
   flight:{light:{W:2560, H:1440, lw:457, rx:2126, tx:655, tw:1251, th:225, by:1290, bh:150}, dark:{W:2560, H:1440, lw:456, rx:2128, tx:659, tw:1243, th:225, by:1290, bh:150}},
   harbour:{light:{W:2560, H:1440, lw:536, rx:2030, tx:564, tw:1433, th:196, by:1248, bh:192}, dark:{W:2560, H:1440, lw:473, rx:2061, tx:610, tw:1342, th:167, by:1258, bh:182}},
   jazz:{light:{W:2560, H:1440, lw:467, rx:2085, tx:651, tw:1251, th:146, by:1255, bh:185}, dark:{W:2560, H:1440, lw:453, rx:2100, tx:757, tw:1045, th:148, by:1248, bh:192}},
   tokyo:{light:{W:2560, H:1440, lw:476, rx:2048, tx:646, tw:1279, th:142, by:1276, bh:164}, dark:{W:2560, H:1440, lw:501, rx:2050, tx:628, tw:1306, th:160, by:1263, bh:177}}});
-Object.assign(SLIM, {boudoir:430, deco:430, greece:395, rome:422, harbour:430, jazz:430, tokyo:430});
+Object.assign(SLIM, {boudoir:430, deco:430, greece:408, rome:430, harbour:430, jazz:430, tokyo:430});
 for(const k of ['harbour', 'jazz', 'tokyo', 'rome', 'greece', 'deco', 'boudoir']) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:SLIM[k], bh:200, tt:SLIM[k] - 20, tb:170, moonGlow:0};
 for(const [k, L] of Object.entries(LAND)) for(const tone of ['light', 'dark']) FRAMES[`${k}-land-${tone}`] = {img:`story/${k}-land-${tone}.webp`, ...(L[tone] || L), moonGlow:0};
@@ -203,7 +203,7 @@ for(const [k, b] of Object.entries(FOOT)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-foot-${tone}`] = {img:`story/${k}-foot-${tone}.webp`, W:1440, H:2560, page:true, th:200, bh:b + 10, tt:190, tb:b - 30, moonGlow:0};
 let chapter = 0;   // in the reader this is the chapter number; here the Next chapter button advances it
 // themes with distinct centre ornaments also have a third phone layout: the top ornament as a header, the bottom one as a footer
-const MID = {rome:[301, 245], greece:[257, 245], deco:[167, 250]};
+const MID = {rome:[233, 255], greece:[210, 255], deco:[167, 250]};
 for(const [k, [t, b]] of Object.entries(MID)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-mid-${tone}`] = {img:`story/${k}-mid-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 30, moonGlow:0};
 function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;

@@ -140,7 +140,7 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
   <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
-  <label title="On phones: which scenes show">Phone scenes <select id="pscenes"><option value="alt">Alternate each chapter</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="centre">Centre ornaments</option></select></label>
+  <label title="On phones: which scenes show">Phone scenes <select id="pscenes"><option value="alt">Four-step cycle each chapter</option><option value="swap">Top / bottom swap each chapter</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="centre">Centre ornaments</option></select></label>
   <button id="nextch" title="Pretend to turn to the next chapter">Next chapter</button>
   <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
@@ -218,14 +218,20 @@ let chapter = 0;   // in the reader this is the chapter number; here the Next ch
 const MID = {nursery:[299, 245], rome:[233, 255], greece:[210, 255], deco:[167, 250]};
 for(const [k, [t, b]] of Object.entries(MID)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-mid-${tone}`] = {img:`story/${k}-mid-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 30, moonGlow:0};
+// the four-step phone cycle, one layout per chapter (made by source/tools/story_cycle.py): top-left and bottom-right scenes,
+// the top centre ornament alone, top-right and bottom-left scenes, the bottom centre ornament alone. [header, footer] heights
+const CYC = {noir:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 332]}, fantasy:{d1:[356, 356], d2:[356, 356], ct:[330, 160], cb:[160, 218]}, nursery:{d1:[356, 356], d2:[356, 356], ct:[316, 160], cb:[160, 262]}, boudoir:{d1:[356, 356], d2:[356, 356], ct:[130, 160], cb:[160, 124]}, quixote:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 290]}, moor:{d1:[356, 356], d2:[356, 356], ct:[288, 160], cb:[160, 192]}, river:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 279]}, alice:{d1:[356, 356], d2:[356, 356], ct:[250, 160], cb:[160, 218]}, sea:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 275]}, scifi:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 332]}, cyber:{d1:[356, 356], d2:[356, 356], ct:[256, 160], cb:[160, 332]}, witch:{d1:[313, 356], d2:[310, 356], ct:[332, 160], cb:[160, 201]}, pirate:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 332]}, haunt:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 321]}, deco:{d1:[356, 356], d2:[356, 356], ct:[173, 160], cb:[160, 168]}, jungle:{d1:[356, 356], d2:[356, 356], ct:[332, 160]}, greece:{d1:[356, 356], d2:[356, 356], ct:[212, 160], cb:[160, 332]}, rome:{d1:[356, 356], d2:[356, 356], ct:[332, 160], cb:[160, 332]}, flight:{d1:[356, 356], d2:[356, 356], ct:[206, 160], cb:[160, 332]}, harbour:{d1:[356, 356], d2:[356, 356], ct:[174, 160], cb:[160, 180]}, jazz:{d1:[356, 356], d2:[356, 356], ct:[144, 160], cb:[160, 196]}, tokyo:{d1:[356, 356], d2:[356, 356], ct:[160, 160], cb:[160, 179]}};
+for(const [k, c] of Object.entries(CYC)) for(const [v, [t, b]] of Object.entries(c)) for(const tone of ['light', 'dark'])
+  FRAMES[`${k}-${v}-${tone}`] = {img:`story/${k}-${v}-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 30, moonGlow:0};
 function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;
-  if(m !== 'alt') return m;
+  if(m === 'alt' && CYC[th]){ const cycle = ['d1', 'ct', 'd2', 'cb'].filter(v => CYC[th][v]); return cycle[chapter % cycle.length]; }
+  if(m !== 'alt' && m !== 'swap') return m;
   const cycle = MID[th] ? ['top', 'bottom', 'centre'] : ['top', 'bottom']; return cycle[chapter % cycle.length]; }
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
   // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
   const ps = portMQ.matches ? phoneScenes() : 'top', useFoot = FOOT[theme] && ps === 'bottom', useMid = MID[theme] && ps === 'centre';
-  const f = useMid ? FRAMES[`${theme}-mid-${tone}`] : useFoot ? FRAMES[`${theme}-foot-${tone}`] : LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]
+  const f = CYC[theme]?.[ps] ? FRAMES[`${theme}-${ps}-${tone}`] : useMid ? FRAMES[`${theme}-mid-${tone}`] : useFoot ? FRAMES[`${theme}-foot-${tone}`] : LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]
     : theme !== 'gothic' ? FRAMES[`${theme}-${tone}`] : (portMQ.matches && FRAMES[tone + '-port']) || FRAMES[tone];
   document.documentElement.classList.toggle('page', !!f.page);
   document.documentElement.classList.toggle('noglow', !f.cx);   // only drawings with a candle or moon get lights

@@ -172,15 +172,15 @@ const FRAMES = {
 let isDark = false;
 const portMQ = matchMedia('(max-aspect-ratio: 1/1)');
 // slim frames: top band height (th) and bottom flourish height (bh) in drawing pixels; the side borders between them stretch
-const SLIM = {scifi:268, noir:430, gothic:530, fantasy:430, quixote:400, moor:420, river:420, alice:420, sea:387};
+const SLIM = {noir:430, gothic:530, fantasy:430, quixote:400, moor:420, river:420, alice:420, sea:387};
 for(const [k, t] of Object.entries(SLIM)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:200, tt:t - 20, tb:170, moonGlow:0};
 // phone layouts with the scenes as a footer: [header height, footer height]
-const SLIM_FOOT = {scifi:[200, 430], flight:[200, 430]};
+const SLIM_FOOT = {flight:[200, 430]};
 for(const [k, [t, b]] of Object.entries(SLIM_FOOT)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:t, bh:b, tt:t - 10, tb:b - 40, moonGlow:0};
 // themes made by source/tools/story_theme.py from one landscape drawing: the whole drawing on wide screens, the slim page on tall ones
-const LAND = {scifi:{W:2560, H:1440, lw:522, rx:2039, tx:685, tw:1187, th:167, by:1323, bh:117}, noir:{W:2560, H:1440, lw:475, rx:2034, tx:849, tw:871, th:162, by:1257, bh:183}, fantasy:{W:2560, H:1440, lw:640, rx:1904, tx:676, tw:1209, th:203, by:1199, bh:241}};
+const LAND = {noir:{W:2560, H:1440, lw:475, rx:2034, tx:849, tw:871, th:162, by:1257, bh:183}, fantasy:{W:2560, H:1440, lw:640, rx:1904, tx:676, tw:1209, th:203, by:1199, bh:241}};
 // themes drawn twice (dark-on-light for light pages, light-on-black with its own lighting for dark pages) have numbers for each
 Object.assign(LAND, {
   jungle:{light:{W:2560, H:1440, lw:641, rx:1913, tx:623, tw:1314, th:183, by:1331, bh:109}, dark:{W:2560, H:1440, lw:641, rx:1913, tx:559, tw:1445, th:200, by:1326, bh:114}},
@@ -191,6 +191,7 @@ Object.assign(LAND, {
   river:{W:2560, H:1440, lw:593, rx:1905, tx:863, tw:825, th:189, by:1191, bh:249},
   alice:{W:2560, H:1440, lw:551, rx:2005, tx:744, tw:1066, th:168, by:1212, bh:228},
   sea:{W:2560, H:1440, lw:608, rx:1991, tx:695, tw:1171, th:275, by:1143, bh:297},
+  scifi:{W:2560, H:1440, lw:706, rx:1838, tx:630, tw:1299, th:253, by:1136, bh:304},
   witch:{W:2560, H:1440, lw:778, rx:1783, tx:630, tw:1299, th:259, by:1290, bh:150},
   pirate:{W:2560, H:1440, lw:563, rx:2011, tx:973, tw:609, th:233, by:1202, bh:238},
   haunt:{W:2560, H:1440, lw:547, rx:2056, tx:915, tw:721, th:168, by:1212, bh:228},
@@ -201,14 +202,14 @@ Object.assign(LAND, {
   harbour:{light:{W:2560, H:1440, lw:536, rx:2030, tx:564, tw:1433, th:196, by:1248, bh:192}, dark:{W:2560, H:1440, lw:473, rx:2061, tx:610, tw:1342, th:167, by:1258, bh:182}},
   jazz:{light:{W:2560, H:1440, lw:467, rx:2085, tx:651, tw:1251, th:146, by:1255, bh:185}, dark:{W:2560, H:1440, lw:453, rx:2100, tx:757, tw:1045, th:148, by:1248, bh:192}},
   tokyo:{light:{W:2560, H:1440, lw:476, rx:2048, tx:646, tw:1279, th:142, by:1276, bh:164}, dark:{W:2560, H:1440, lw:501, rx:2050, tx:628, tw:1306, th:160, by:1263, bh:177}}});
-Object.assign(SLIM, {witch:310, pirate:394, haunt:386, jungle:430, nursery:420, boudoir:420, deco:430, greece:408, rome:430, harbour:430, jazz:430, tokyo:430});
-for(const k of ['witch', 'pirate', 'haunt', 'harbour', 'jazz', 'tokyo', 'rome', 'greece', 'deco', 'boudoir', 'nursery', 'jungle']) for(const tone of ['light', 'dark'])
+Object.assign(SLIM, {scifi:420, witch:310, pirate:394, haunt:386, jungle:430, nursery:420, boudoir:420, deco:430, greece:408, rome:430, harbour:430, jazz:430, tokyo:430});
+for(const k of ['scifi', 'witch', 'pirate', 'haunt', 'harbour', 'jazz', 'tokyo', 'rome', 'greece', 'deco', 'boudoir', 'nursery', 'jungle']) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:SLIM[k], bh:200, tt:SLIM[k] - 20, tb:170, moonGlow:0};
 for(const [k, L] of Object.entries(LAND)) for(const tone of ['light', 'dark']) FRAMES[`${k}-land-${tone}`] = {img:`story/${k}-land-${tone}.webp`, ...(L[tone] || L), moonGlow:0};
 // each theme's suggested finish on dark pages (the reader can change it)
 const FINISH = {deco:'gold', flight:'silver', scifi:'silver', noir:'silver', jazz:'silver', harbour:'silver', tokyo:'silver', gothic:'silver', 'gothic-slim':'silver', haunt:'silver', witch:'silver'};
 // four-corner themes also have a phone layout with the bottom scenes as a footer; the reader can alternate them
-const FOOT = {witch:420, pirate:399, haunt:420, jungle:420, nursery:420, boudoir:420, deco:420, greece:420, fantasy:420, quixote:420, moor:420, river:420, alice:420, sea:420, noir:420, harbour:420, jazz:420, tokyo:420, rome:420};
+const FOOT = {scifi:420, witch:420, pirate:399, haunt:420, jungle:420, nursery:420, boudoir:420, deco:420, greece:420, fantasy:420, quixote:420, moor:420, river:420, alice:420, sea:420, noir:420, harbour:420, jazz:420, tokyo:420, rome:420};
 for(const [k, b] of Object.entries(FOOT)) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-foot-${tone}`] = {img:`story/${k}-foot-${tone}.webp`, W:1440, H:2560, page:true, th:200, bh:b + 10, tt:190, tb:b - 30, moonGlow:0};
 let chapter = 0;   // in the reader this is the chapter number; here the Next chapter button advances it

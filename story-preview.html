@@ -146,6 +146,7 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
   <button id="nextch" title="Pretend to turn to the next chapter">Next chapter</button>
   <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
+  <button id="fs" title="Fill the whole screen (Esc to leave)">Full screen</button>
   <button id="hide">Hide</button>
 </div>
 <button id="show" hidden>Settings</button>
@@ -257,6 +258,13 @@ $('#fsz').oninput = e => R.setProperty('--fs', e.target.value / 100);
 let raf = 0, last = 0;
 $('#scroll').onclick = e => { const on = e.target.getAttribute('aria-pressed') !== 'true'; e.target.setAttribute('aria-pressed', String(on));
   cancelAnimationFrame(raf); if(on){ last = performance.now(); const step = t => { $('#read').scrollTop += (t - last) * 0.035; last = t; raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); } };
+// full screen: phones (Android), tablets and computers; iPhones don't allow it for web pages, so the button hides there
+{ const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen,
+    cur = () => document.fullscreenElement || document.webkitFullscreenElement, b = $('#fs');
+  if(!req) b.hidden = true;
+  b.onclick = () => cur() ? (document.exitFullscreen || document.webkitExitFullscreen).call(document) : req.call(el);
+  const upd = () => b.textContent = cur() ? 'Exit full screen' : 'Full screen';
+  document.addEventListener('fullscreenchange', upd); document.addEventListener('webkitfullscreenchange', upd); }
 $('#hide').onclick = () => { $('#ctl').hidden = true; $('#show').hidden = false; };
 $('#show').onclick = () => { $('#ctl').hidden = false; $('#show').hidden = true; };
 set(...P.Sepia);

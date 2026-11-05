@@ -128,6 +128,22 @@ html.wc .col{max-width:min(34em,52vw);padding:12vh 0 16vh}
   /* the text fades out before it reaches the painted header and footer */
   html.wc .read{-webkit-mask:linear-gradient(transparent 12vh,#000 21vh,#000 71vh,transparent 77vh);mask:linear-gradient(transparent 12vh,#000 21vh,#000 71vh,transparent 77vh)}
 }
+/* your own picture: the same painted-page treatment, with the reader's veil, dim and phone focus */
+.upctl{display:contents}
+.upctl[hidden]{display:none}
+.plusnote{font:700 10px/1 system-ui;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:#b0892f;color:#111}
+html.wc.wcuser .frame{background:var(--wcbg) var(--wcimg) var(--wcpos,center) / cover no-repeat;filter:brightness(var(--wcbright,1))}
+html.wc.wcuser .read::before{display:block;background:
+  radial-gradient(ellipse calc(30% + var(--veil) * .4%) calc(56% + var(--veil) * .4%) at 50% 50%,
+    color-mix(in srgb,var(--wcbg) calc(var(--veil) * 1%),transparent) 0%,color-mix(in srgb,var(--wcbg) calc(var(--veil) * .6%),transparent) 62%,transparent 100%),
+  color-mix(in srgb,var(--wcbg) calc(var(--veil) * .22%),transparent)}
+@media (max-aspect-ratio:1/1){
+  html.wc.wcuser .frame{background:var(--wcbg) var(--wcimg) var(--wcpos,center) / cover no-repeat}
+  html.wc.wcuser .frame::before,html.wc.wcuser .frame::after{display:none}
+  html.wc.wcuser .read{-webkit-mask:none;mask:none}
+  html.wc.wcuser .read::before{background:color-mix(in srgb,var(--wcbg) calc(32% + var(--veil) * .65%),transparent)}
+  html.wc.wcuser .col{padding:10vh 0 14vh}
+}
 .tag{position:fixed;left:12px;top:10px;z-index:5;font:600 11px/1.6 system-ui;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85}
 </style>
 </head>
@@ -157,12 +173,22 @@ html.wc .col{max-width:min(34em,52vw);padding:12vh 0 16vh}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
-  <label title="Which story theme">Theme <select id="theme"><optgroup label="From one landscape drawing (new style)"><option value="moor">Moorland: Wuthering Heights, Jane Eyre</option><option value="jungle">Jungle: Kipling, adventure, nature</option><option value="sea">Sea: Moby-Dick, sea stories</option><option value="pirate">Pirates: Treasure Island, swashbucklers</option><option value="river">River: Huckleberry Finn, Tom Sawyer</option><option value="western">Western: cowboys, outlaws, frontier towns</option><option value="plains">Plains: frontier and Native American stories</option><option value="quixote">La Mancha: Don Quixote</option><option value="nursery">Nursery: picture books, bedtime stories</option><option value="alice">Wonderland: Alice, Through the Looking-Glass</option><option value="fantasy">Fantasy: myths, legends, quests</option><option value="witch">Witchcraft: magic, spells, school stories</option><option value="haunt">Gothic: ghost stories, haunted houses</option></optgroup><optgroup label="History"><option value="rome">Ancient Rome: history, the classical world</option><option value="greece">Ancient Greece: history, myth, philosophy</option></optgroup><optgroup label="Modern"><option value="deco">Art Deco conservatory: 1920s–30s, romance, travel</option><option value="boudoir">Boudoir: romance, 1920s–50s glamour</option><option value="spy">Espionage: spies, Cold War thrillers</option><option value="noir">Noir: crime, detective stories</option><option value="harbour">Harbour noir: coastal mysteries</option><option value="jazz">Jazz Age: Gatsby, 1920s–40s</option><option value="scifi">Science fiction: space, the future</option><option value="flight">Flight: aviation, travel, adventure</option><option value="cyber">Cyberpunk: androids, neon futures</option><option value="tokyo">Neon city: cyberpunk, modern thrillers</option></optgroup><optgroup label="Watercolour (painted pages)"><option value="london">London by night: mysteries, detectives</option><option value="japan">Japan: classics, haiku, travel</option><option value="fantasy-wc">Fantasy: myths, legends, quests</option><option value="pirate-wc">Pirates: treasure, adventures at sea</option><option value="scifi-wc">Science fiction: other worlds, the future</option></optgroup><optgroup label="Earlier drawings"><option value="gothic">Gothic, full scene: Frankenstein, Dracula</option></optgroup></select></label>
+  <label title="Which story theme">Theme <select id="theme"><optgroup label="From one landscape drawing (new style)"><option value="moor">Moorland: Wuthering Heights, Jane Eyre</option><option value="jungle">Jungle: Kipling, adventure, nature</option><option value="sea">Sea: Moby-Dick, sea stories</option><option value="pirate">Pirates: Treasure Island, swashbucklers</option><option value="river">River: Huckleberry Finn, Tom Sawyer</option><option value="western">Western: cowboys, outlaws, frontier towns</option><option value="plains">Plains: frontier and Native American stories</option><option value="quixote">La Mancha: Don Quixote</option><option value="nursery">Nursery: picture books, bedtime stories</option><option value="alice">Wonderland: Alice, Through the Looking-Glass</option><option value="fantasy">Fantasy: myths, legends, quests</option><option value="witch">Witchcraft: magic, spells, school stories</option><option value="haunt">Gothic: ghost stories, haunted houses</option></optgroup><optgroup label="History"><option value="rome">Ancient Rome: history, the classical world</option><option value="greece">Ancient Greece: history, myth, philosophy</option></optgroup><optgroup label="Modern"><option value="deco">Art Deco conservatory: 1920s–30s, romance, travel</option><option value="boudoir">Boudoir: romance, 1920s–50s glamour</option><option value="spy">Espionage: spies, Cold War thrillers</option><option value="noir">Noir: crime, detective stories</option><option value="harbour">Harbour noir: coastal mysteries</option><option value="jazz">Jazz Age: Gatsby, 1920s–40s</option><option value="scifi">Science fiction: space, the future</option><option value="flight">Flight: aviation, travel, adventure</option><option value="cyber">Cyberpunk: androids, neon futures</option><option value="tokyo">Neon city: cyberpunk, modern thrillers</option></optgroup><optgroup label="Watercolour (painted pages)"><option value="custom">Your own picture… (Plus)</option><option value="london">London by night: mysteries, detectives</option><option value="japan">Japan: classics, haiku, travel</option><option value="fantasy-wc">Fantasy: myths, legends, quests</option><option value="pirate-wc">Pirates: treasure, adventures at sea</option><option value="scifi-wc">Science fiction: other worlds, the future</option></optgroup><optgroup label="Earlier drawings"><option value="gothic">Gothic, full scene: Frankenstein, Dracula</option></optgroup></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
   <label>Artwork <input type="range" id="art" min="0" max="100" value="85"></label>
   <label title="On phones: which scenes show">Phone scenes <select id="pscenes"><option value="alt">Four-step cycle each chapter</option><option value="swap">Top / bottom swap each chapter</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="centre">Centre ornaments</option></select></label>
+  <span id="upCtl" class="upctl" hidden>
+    <span class="plusnote" title="In the reader, trying a picture is free; keeping it needs Velvet Scroll Plus">PLUS</span>
+    <button type="button" id="upDay" title="A picture for light pages">Day picture…</button>
+    <button type="button" id="upNight" title="Optional: a picture for dark pages. Without one, the day picture is dimmed.">Night picture…</button>
+    <button type="button" id="upClear" title="Remove your pictures">Remove</button>
+    <label title="How strongly the page colour covers the picture behind the text">Veil <input type="range" id="upVeil" min="0" max="100" value="60"></label>
+    <label title="Darken the picture">Dim <input type="range" id="upDim" min="0" max="80" value="0"></label>
+    <label title="On phones: which part of the picture shows">Phone focus <input type="range" id="upPos" min="0" max="100" value="50"></label>
+    <input type="file" id="upFile" accept="image/*" hidden>
+  </span>
   <button id="nextch" title="Pretend to turn to the next chapter">Next chapter</button>
   <label title="On phones and upright tablets: how large the top and bottom drawings are">Frame size <input type="range" id="fsz" min="55" max="100" value="100"></label>
   <button id="scroll" aria-pressed="false">Auto-scroll</button>
@@ -253,6 +279,42 @@ function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;
   if(m === 'alt' && CYC[th]){ const cycle = ['d1', 'ct', 'd2', 'cb'].filter(v => CYC[th][v]); return cycle[chapter % cycle.length]; }
   if(m !== 'alt' && m !== 'swap') return m;
   const cycle = MID[th] ? ['top', 'bottom', 'centre'] : ['top', 'bottom']; return cycle[chapter % cycle.length]; }
+// ---- your own picture (Plus): kept only in this browser (IndexedDB), never uploaded ----
+const UP = {day:null, night:null, veil:60, dim:0, pos:50};   // day/night: {url, bg} with bg the colour of the picture's middle
+const upDB = () => new Promise((ok, no) => { try{ const r = indexedDB.open('vs-story-pictures', 1); r.onupgradeneeded = () => r.result.createObjectStore('p'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }catch(e){ no(e); } });
+async function upSave(){ try{ const db = await upDB(), tx = db.transaction('p', 'readwrite'), st = tx.objectStore('p');
+  st.put({veil:UP.veil, dim:UP.dim, pos:UP.pos}, 'settings'); for(const k of ['day', 'night']) UP[k] ? st.put({blob:UP[k].blob, bg:UP[k].bg}, k) : st.delete(k); }catch(e){} }
+async function upLoad(){ try{ const db = await upDB(), st = db.transaction('p').objectStore('p'), get = k => new Promise(ok => { const r = st.get(k); r.onsuccess = () => ok(r.result); r.onerror = () => ok(null); });
+  const s = await get('settings'); if(s) Object.assign(UP, s);
+  for(const k of ['day', 'night']){ const v = await get(k); if(v) UP[k] = {blob:v.blob, bg:v.bg, url:URL.createObjectURL(v.blob)}; }
+  $('#upVeil').value = UP.veil; $('#upDim').value = UP.dim; $('#upPos').value = UP.pos; }catch(e){} }
+// shrink to at most 2560 px wide and find the colour of the middle, where the text sits
+async function upPrepare(file){
+  const img = await createImageBitmap(file), k = Math.min(1, 2560 / img.width), w = Math.round(img.width * k), h = Math.round(img.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(img, 0, 0, w, h);
+  const d = g.getImageData(Math.round(w * .38), Math.round(h * .3), Math.max(1, Math.round(w * .24)), Math.max(1, Math.round(h * .4))).data;
+  let r = 0, gg = 0, b = 0, n = 0; for(let i = 0; i < d.length; i += 16){ r += d[i]; gg += d[i+1]; b += d[i+2]; n++; }
+  const hex = v => Math.round(v / n).toString(16).padStart(2, '0'), bg = '#' + hex(r) + hex(gg) + hex(b);
+  const blob = await new Promise(ok => c.toBlob(ok, 'image/webp', .82));
+  return {blob, bg, url:URL.createObjectURL(blob)};
+}
+function darker(hex, f){ const n = parseInt(hex.slice(1), 16); return '#' + [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(v * f).toString(16).padStart(2, '0')).join(''); }
+function userFrame(tone){
+  // dark pages: the night picture if there is one, otherwise the day picture dimmed well down
+  const night = tone === 'dark', pic = night && UP.night ? UP.night : UP.day;
+  if(!pic){ R.setProperty('--wcimg', 'none'); R.setProperty('--wcbg', P[night ? 'Night' : 'Sepia'][0]); R.setProperty('--wcfg', P[night ? 'Night' : 'Sepia'][1]); return; }
+  const dimmed = night && !UP.night, bright = (1 - UP.dim / 100) * (dimmed ? .38 : 1), bg = dimmed ? darker(pic.bg, .16) : darker(pic.bg, bright);
+  R.setProperty('--wcimg', `url(${pic.url})`); R.setProperty('--wcbright', bright); R.setProperty('--wcbg', bg);
+  R.setProperty('--wcfg', lum(bg) < .5 ? '#ece6da' : '#2a2622'); R.setProperty('--veil', UP.veil); R.setProperty('--wcpos', UP.pos + '% center');
+}
+let upWhich = 'day';
+const upPick = which => { upWhich = which; $('#upFile').value = ''; $('#upFile').click(); };
+$('#upDay').onclick = () => upPick('day'); $('#upNight').onclick = () => upPick('night');
+$('#upFile').onchange = async e => { const f = e.target.files[0]; if(!f) return;
+  try{ const p = await upPrepare(f); if(UP[upWhich]) URL.revokeObjectURL(UP[upWhich].url); UP[upWhich] = p; upSave(); frame(); }catch(err){ const b = $(upWhich === 'day' ? '#upDay' : '#upNight'), t = b.textContent; b.textContent = 'Couldn’t open that picture'; setTimeout(() => b.textContent = t, 3000); } };
+$('#upClear').onclick = () => { for(const k of ['day', 'night']) if(UP[k]){ URL.revokeObjectURL(UP[k].url); UP[k] = null; } upSave(); frame(); };
+for(const [id, k] of [['upVeil', 'veil'], ['upDim', 'dim'], ['upPos', 'pos']]) $('#' + id).oninput = e => { UP[k] = +e.target.value; frame(); clearTimeout(upSave.t); upSave.t = setTimeout(upSave, 400); };
+upLoad().then(() => { if($('#theme').value === 'custom') frame(); });
 // watercolour themes: a day painting and a night painting, each with its paper and text colours, and phone crops
 const WC = {london:{light:{bg:'#fdf1e6', fg:'#2f2a35'}, dark:{bg:'#0a2342', fg:'#e6e1d4'}},
   japan:{light:{bg:'#fdedd9', fg:'#33282a'}, dark:{bg:'#052347', fg:'#ebe3d6'}, tp:'center 12%', fp:'left 55%'},
@@ -261,7 +323,10 @@ const WC = {london:{light:{bg:'#fdf1e6', fg:'#2f2a35'}, dark:{bg:'#0a2342', fg:'
   'fantasy-wc':{file:'fantasy', light:{bg:'#fdedd6', fg:'#33272a'}, dark:{bg:'#002042', fg:'#ebe3d6', tp:'center 58%'}, tp:'center 28%', fp:'left 22%'}};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
-  document.documentElement.classList.toggle('wc', !!WC[theme]);
+  document.documentElement.classList.toggle('wc', !!WC[theme] || theme === 'custom');
+  document.documentElement.classList.toggle('wcuser', theme === 'custom');
+  $('#upCtl').hidden = theme !== 'custom';
+  if(theme === 'custom'){ userFrame(tone); document.documentElement.classList.remove('page', 'port'); return; }
   if(WC[theme]){ const c = WC[theme][tone], u = n => `url(story/wc/${WC[theme].file || theme}${n}-${tone}.webp)`;
     R.setProperty('--wcbg', c.bg); R.setProperty('--wcfg', c.fg); R.setProperty('--wcimg', u('')); R.setProperty('--wctop', u('-top')); R.setProperty('--wcfoot', u('-foot')); R.setProperty('--wctp', c.tp || WC[theme].tp || 'center 40%'); R.setProperty('--wcfp', c.fp || WC[theme].fp || 'left 65%');
     document.documentElement.classList.remove('page', 'port'); return; }
@@ -280,7 +345,7 @@ $('#finish').onchange = e => document.documentElement.dataset.finish = e.target.
 $('#draw').onchange = frame;
 $('#pscenes').onchange = frame;
 $('#nextch').onclick = () => { chapter++; document.querySelector('.col .sub').textContent = 'Chapter ' + (5 + chapter); frame(); };
-$('#theme').onchange = () => { const f = FINISH[$('#theme').value] || 'gold'; $('#finish').value = f; document.documentElement.dataset.finish = f; applyPreset(); frame(); }; portMQ.addEventListener('change', frame);
+$('#theme').onchange = () => { if($('#theme').value === 'custom' && !UP.day) setTimeout(() => upPick('day'), 0); const f = FINISH[$('#theme').value] || 'gold'; $('#finish').value = f; document.documentElement.dataset.finish = f; applyPreset(); frame(); }; portMQ.addEventListener('change', frame);
 // the noir themes have their own night drawings, made for pure black: with them, the Night background is #000
 const BLACK_NIGHT = new Set(['noir', 'harbour', 'jazz', 'tokyo']);
 function preset(name){ const [bg, fg] = P[name]; return name === 'Night' && BLACK_NIGHT.has($('#theme').value) ? ['#000000', fg] : [bg, fg]; }

@@ -1572,7 +1572,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     </a>
     <p class="hint"><strong>A$15, one payment, no subscription.</strong> 30-day no-questions <a href="https://velvetscroll.net/refunds.html" target="_blank" rel="noopener">refund</a>. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
-      <div class="row"><button class="btn primary" id="plusBuy" disabled>Buy Plus: coming soon</button></div>
+      <div class="row"><button class="btn primary" id="plusBuy">Buy Plus · A$15</button></div>
       <label for="plusKey" class="pluskeylbl">Have a licence key?<textarea id="plusKey" rows="2" spellcheck="false" placeholder="Paste your key, starting VSP1-"></textarea></label>
       <div class="row end"><button class="btn primary" id="plusApply">Unlock Plus</button></div>
       <p class="hint" id="plusSt" role="status"></p>
@@ -3484,6 +3484,44 @@ function plusOpen(feature){
   $('#plusSt').textContent = ''; plusShow(); $('#plusDlg').hidden = false; (PLUS ? $('#plusClose') : $('#plusKey')).focus();
 }
 function closePlusNow(){ $('#plusDlg').hidden = true; }
+/* ---------- buying Plus: Paddle checkout (Paddle.com is the reseller and Merchant of Record).
+   On the website, Paddle's checkout opens over the page. The extensions don't load outside code, so there the
+   button opens the website's checkout in a new tab. SANDBOX: Paddle's test environment (test cards, no real money). */
+const PADDLE = {env:'sandbox', token:'test_bb5e5ad9a4965e7c1ab4cd7ef75', price:'pri_01m6q111yt3w7wyxj12hfs8m3g',
+  site:'https://brobborb.github.io/velvet-scroll-beta/'};
+// the extensions get this stub: their checkout opens on the website instead (they never load outside code)
+function loadPaddle(){ return Promise.reject(new Error('The checkout opens on the website')); }
+/*WEB-ONLY{*/
+let paddleReady = null;
+function loadPaddle(){
+  return paddleReady ||= new Promise((ok, no) => {
+    const sc = document.createElement('script'); sc.src = 'https://cdn.paddle.com/paddle/v2/paddle.js'; sc.async = true;
+    sc.onload = () => { try{
+        if(PADDLE.env === 'sandbox') Paddle.Environment.set('sandbox');
+        Paddle.Initialize({token:PADDLE.token, eventCallback:paddleEvent}); ok(Paddle);
+      }catch(e){ no(e); } };
+    sc.onerror = () => { paddleReady = null; no(new Error('Paddle could not be reached')); };
+    document.head.append(sc);
+  });
+}
+/*}WEB-ONLY*/
+function paddleEvent(ev){
+  if(ev?.name !== 'checkout.completed') return;
+  const st = $('#plusSt'); st.textContent = 'Thank you! Your payment went through. Your licence key is on its way to your email; paste it in below when it arrives.';
+}
+async function buyPlus(){
+  const st = $('#plusSt');
+  if(IS_EXT){ window.open(PADDLE.site + '?buy=plus', '_blank', 'noopener'); return; }
+  st.textContent = 'Opening the secure checkout…';
+  try{ const P = await loadPaddle();
+    P.Checkout.open({items:[{priceId:PADDLE.price, quantity:1}],
+      settings:{displayMode:'overlay', theme:homeDark() ? 'dark' : 'light', locale:navigator.language || 'en', allowLogout:false}});
+    st.textContent = '';
+  }catch(e){ st.textContent = 'The checkout couldn’t open. Check you’re online, then try again.'; }
+}
+$('#plusBuy').onclick = buyPlus;
+// a link to the website with ?buy=plus (from the extensions or the Plus page) opens the Plus window and the checkout
+if(!IS_EXT && /[?&]buy=plus\b/.test(location.search)) setTimeout(() => { plusOpen(''); buyPlus(); history.replaceState(null, '', location.pathname); }, 600);
 // gate a feature: true when Plus is on, otherwise explain and offer it
 function needPlus(feature){ if(PLUS) return true; plusOpen(feature); return false; }
 async function plusInit(){ const k = LS.get('plusKey', ''); PLUS = k ? await plusVerify(k) : null; plusShow(); }
@@ -6690,7 +6728,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · ce6defc</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · bccc210</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

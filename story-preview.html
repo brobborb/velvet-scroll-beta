@@ -256,12 +256,12 @@ function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;
 // watercolour themes: a day painting and a night painting, each with its paper and text colours, and phone crops
 const WC = {london:{light:{bg:'#fdf1e6', fg:'#2f2a35'}, dark:{bg:'#0a2342', fg:'#e6e1d4'}},
   japan:{light:{bg:'#fdedd9', fg:'#33282a'}, dark:{bg:'#052347', fg:'#ebe3d6'}, tp:'center 12%', fp:'left 55%'},
-  'fantasy-wc':{file:'fantasy', light:{bg:'#fdedd6', fg:'#33272a'}, dark:{bg:'#032246', fg:'#ebe3d6'}, tp:'center 28%', fp:'left 22%'}};
+  'fantasy-wc':{file:'fantasy', light:{bg:'#fdedd6', fg:'#33272a'}, dark:{bg:'#002042', fg:'#ebe3d6', tp:'center 58%'}, tp:'center 28%', fp:'left 22%'}};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
   document.documentElement.classList.toggle('wc', !!WC[theme]);
   if(WC[theme]){ const c = WC[theme][tone], u = n => `url(story/wc/${WC[theme].file || theme}${n}-${tone}.webp)`;
-    R.setProperty('--wcbg', c.bg); R.setProperty('--wcfg', c.fg); R.setProperty('--wcimg', u('')); R.setProperty('--wctop', u('-top')); R.setProperty('--wcfoot', u('-foot')); R.setProperty('--wctp', WC[theme].tp || 'center 40%'); R.setProperty('--wcfp', WC[theme].fp || 'left 65%');
+    R.setProperty('--wcbg', c.bg); R.setProperty('--wcfg', c.fg); R.setProperty('--wcimg', u('')); R.setProperty('--wctop', u('-top')); R.setProperty('--wcfoot', u('-foot')); R.setProperty('--wctp', c.tp || WC[theme].tp || 'center 40%'); R.setProperty('--wcfp', c.fp || WC[theme].fp || 'left 65%');
     document.documentElement.classList.remove('page', 'port'); return; }
   // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
   const ps = portMQ.matches ? phoneScenes() : 'top', useFoot = FOOT[theme] && ps === 'bottom', useMid = MID[theme] && ps === 'centre';

@@ -381,6 +381,26 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #dlg .isbnmsg:empty,#dlg #dModesHint:empty{display:none}
 #dlg .isbnmsg{margin:-4px 0 0}
 .plussheet{width:min(720px,100%);gap:14px}
+/* Plus window: one column on small screens (introduction, lists, then price and key); on wide screens the
+   introduction, price and key on the left and the Free and Plus lists side by side on the right, like Book details */
+.plusbody,.plusside{display:contents}
+.plusside > .hint,#plusOff,#plusOnBox{order:2}
+@media (min-width:1000px){
+  .plussheet{width:min(1180px,100%)}
+  .plusbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);gap:24px 32px;align-items:start}
+  .plusside{display:flex;flex-direction:column;gap:14px}
+  .plusside > .hint,#plusOff,#plusOnBox{order:0}
+  #plusOff{display:flex;flex-direction:column;gap:10px}
+  .plusgrid{height:100%}
+}
+@media (min-width:1000px) and (max-height:760px), (min-width:1000px) and (max-width:1180px){
+  .plussheet{gap:10px;padding-top:14px;padding-bottom:16px}
+  .plusside{gap:10px}
+  .plussheet .pluslede{font-size:14.5px;line-height:1.5}
+  .plusmore{padding:9px 14px}
+  .plussheet #plusKey{height:42px;min-height:0}
+  .pluscol ul{font-size:14px;line-height:1.45}
+}
 .plussheet p{margin:0}
 .pluslede{line-height:1.55}
 .plusctx{padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-weight:600}
@@ -1543,17 +1563,13 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
   <div class="sheet plussheet" role="dialog" aria-modal="true" aria-labelledby="plusH">
     <header class="sh-head"><h2 id="plusH">Velvet Scroll Plus</h2><button class="btn" id="plusClose">Close</button></header>
     <p class="plusctx" id="plusCtx" hidden></p>
+    <div class="plusbody">
+    <div class="plusside">
     <p class="pluslede">Velvet Scroll has no ads and never will. The reader, read aloud and every accessibility setting are free for everyone. Velvet Scroll Plus is a one-time purchase that unlocks extra tools for study, syncing and atmosphere. It supports the time that goes into building and maintaining Velvet Scroll, and keeps it independent.</p>
     <a class="plusmore" id="plusMore" href="plus.html" target="_blank" rel="noopener">
       <span><strong>See everything in Plus</strong><span class="muted">Sync across your phone, tablet and computer, your own pictures as pages, Story mode, tools for study</span></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
-    <div class="plusgrid">
-      <div class="pluscol"><span class="lbl">Free for everyone, always</span>
-        <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
-      <div class="pluscol plus"><span class="lbl">Plus</span>
-        <ul><li class="plushl"><strong>Your own pictures</strong>: any photo or painting as your reading page <span class="newtag">New</span></li><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
-    </div>
     <p class="hint"><strong>A$15, one payment, no subscription.</strong> 30-day no-questions <a href="https://velvetscroll.net/refunds.html" target="_blank" rel="noopener">refund</a>. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
       <div class="row"><button class="btn primary" id="plusBuy" disabled>Buy Plus: coming soon</button></div>
@@ -1564,6 +1580,14 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <div id="plusOnBox" hidden>
       <p class="pluson"><strong>Plus is unlocked on this device.</strong> <span id="plusWho"></span> Thank you for supporting Velvet Scroll.</p>
       <div class="row"><button class="btn" id="plusRemove">Remove the key from this device</button></div>
+    </div>
+    </div>
+    <div class="plusgrid">
+      <div class="pluscol"><span class="lbl">Free for everyone, always</span>
+        <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
+      <div class="pluscol plus"><span class="lbl">Plus</span>
+        <ul><li class="plushl"><strong>Your own pictures</strong>: any photo or painting as your reading page <span class="newtag">New</span></li><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
+    </div>
     </div>
   </div>
 </div>
@@ -6666,7 +6690,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 09aa4fa</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 9fc754a</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

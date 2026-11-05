@@ -384,6 +384,12 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 .plussheet p{margin:0}
 .pluslede{line-height:1.55}
 .plusctx{padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-weight:600}
+.plusmore{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-radius:12px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--fg);text-decoration:none}
+.plusmore:hover{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
+.plusmore > span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.plusmore strong{font-size:16px;color:var(--accent)}
+.plusmore .muted{font-size:13.5px}
+.plusmore svg{width:22px;height:22px;flex:none;color:var(--accent)}
 .plusgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .pluscol{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .pluscol.plus{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
@@ -1536,13 +1542,16 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
     <header class="sh-head"><h2 id="plusH">Velvet Scroll Plus</h2><button class="btn" id="plusClose">Close</button></header>
     <p class="plusctx" id="plusCtx" hidden></p>
     <p class="pluslede">Velvet Scroll has no ads and never will. The reader, read aloud and every accessibility setting are free for everyone. Velvet Scroll Plus is a one-time purchase that unlocks extra tools for study, syncing and atmosphere. It supports the time that goes into building and maintaining Velvet Scroll, and keeps it independent.</p>
+    <a class="plusmore" id="plusMore" href="plus.html" target="_blank" rel="noopener">
+      <span><strong>See everything in Plus</strong><span class="muted">Sync across your phone, tablet and computer, Story mode, tools for study</span></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
     <div class="plusgrid">
       <div class="pluscol"><span class="lbl">Free for everyone, always</span>
         <ul><li>Auto-scrolling and the reading guide</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes in your books</li><li>Backups and sync codes</li></ul></div>
       <div class="pluscol plus"><span class="lbl">Plus</span>
         <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
     </div>
-    <p class="hint"><a id="plusMore" href="plus.html" target="_blank" rel="noopener">See everything Plus does</a>: sync across your phone, tablet and computer, Story mode and tools for study.</p>
     <p class="hint"><strong>A$15, one payment, no subscription.</strong> 30-day no-questions <a href="https://velvetscroll.net/refunds.html" target="_blank" rel="noopener">refund</a>. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
       <div class="row"><button class="btn primary" id="plusBuy" disabled>Buy Plus: coming soon</button></div>
@@ -6655,7 +6664,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 29bcd8d</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 3ed5753</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

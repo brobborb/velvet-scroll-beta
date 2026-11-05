@@ -395,6 +395,21 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #plusOpen.on{color:var(--accent)}
 @media (max-width:620px){ .plusgrid{grid-template-columns:minmax(0,1fr)} }
 .bkwhich{display:flex;flex-wrap:wrap;gap:4px 20px}
+/* Backup window: one column on small screens; on wide screens three columns (save | restore and syncing | sync codes),
+   like the Book details window, so nothing needs a long scroll */
+.bkcols,.bkc{display:contents}
+@media (min-width:1000px){
+  #bk .sheet{width:min(1180px,100%)}
+  #bk .bkcols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);align-items:stretch}
+  #bk .bkc{display:flex;flex-direction:column;gap:18px;min-width:0;padding-inline:24px}
+  #bk .bkc:first-child{padding-left:0}
+  #bk .bkc:last-child{padding-right:0}
+  #bk .bkc + .bkc{border-left:1px solid var(--line)}
+  #bk .bklist{max-height:min(300px,30vh)}
+  #bk .bkpick-top{flex-wrap:nowrap}
+  #bk .bkpick-top input{min-width:0}
+  #bk .bkc:first-child .pwrow{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 .bkpick[hidden]{display:none}
 .bkpick{display:flex;flex-direction:column;gap:8px}
 .bkpick-top{display:flex;gap:8px;flex-wrap:wrap}
@@ -1432,6 +1447,8 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
 <div id="bk" class="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bkH">
     <header class="sh-head"><h2 id="bkH">Backup and restore</h2><button class="btn" id="bkClose">Close</button></header>
+    <div class="bkcols">
+    <div class="bkc">
     <div class="grp">
       <span class="lbl">Save a backup</span>
       <p class="hint">One file with your books, covers, reading positions, shelves and settings. Keep it on a USB drive or in your own cloud storage, then restore it in Velvet Scroll on another computer or browser.</p>
@@ -1440,7 +1457,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
         <label class="check"><input type="radio" name="bkWhich" id="bkSome" value="some"> Choose books…</label>
       </div>
       <div id="bkPick" class="bkpick" hidden>
-        <div class="bkpick-top"><input type="search" id="bkFind" placeholder="Filter by title or author" aria-label="Filter the list of books">
+        <div class="bkpick-top"><input type="search" id="bkFind" placeholder="Filter books" aria-label="Filter the list of books by title or author">
           <button type="button" class="btn" id="bkSelAll">Select all</button><button type="button" class="btn" id="bkSelNone">Select none</button></div>
         <div class="bklist" id="bkList" role="group" aria-label="Books to include"></div>
       </div>
@@ -1453,6 +1470,8 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="row"><button class="btn primary" id="bkSave">Save backup</button></div>
       <p class="hint" id="bkSaveSt" role="status"></p>
     </div>
+    </div>
+    <div class="bkc">
     <div class="grp">
       <span class="lbl">Restore a backup</span>
       <p class="hint">Adds the books from a backup to this library. For books you already have, the most recent reading position and details are kept.</p>
@@ -1470,6 +1489,15 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <p class="hint" id="gdSt" role="status"></p>
       <div id="gdMissing" hidden><p class="hint">In your Google Drive sync but not in this library:</p><ul class="missing" id="gdList"></ul></div>
     </div>
+    <div class="grp" id="syncGrp" hidden>
+      <span class="lbl" id="syncLbl">Browser sync</span>
+      <label class="check"><input type="checkbox" id="syncOn"> Sync reading positions, shelves, book details and settings</label>
+      <p class="hint" id="syncHint">Uses your browser's own sync between computers where you're signed in to the browser with extension syncing turned on. The books themselves aren't synced: copy them once with a backup, and after that your place follows you.</p>
+      <p class="hint" id="syncSt" role="status"></p>
+      <div id="syncMissing" hidden><p class="hint">In your synced library but not on this computer:</p><ul class="missing" id="syncList"></ul></div>
+    </div>
+    </div>
+    <div class="bkc">
     <div class="grp" id="scGrp">
       <span class="lbl">Sync code</span>
       <p class="hint">Copy your reading places, shelves, book details and settings to another browser or device, with no account. The code is encrypted with a passphrase you choose. Books themselves aren’t included: copy them once with a backup, then use a sync code whenever you switch devices.</p>
@@ -1494,12 +1522,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div id="scMissing" hidden><p class="hint">In the code but not in this library (add them with a backup or the original files):</p><ul class="missing" id="scList"></ul></div>
       <p class="hint">Keep the passphrase separate from the code: anyone with both can see your reading list. A code is a snapshot, so make a new one each time you want to sync.</p>
     </div>
-    <div class="grp" id="syncGrp" hidden>
-      <span class="lbl" id="syncLbl">Browser sync</span>
-      <label class="check"><input type="checkbox" id="syncOn"> Sync reading positions, shelves, book details and settings</label>
-      <p class="hint" id="syncHint">Uses your browser's own sync between computers where you're signed in to the browser with extension syncing turned on. The books themselves aren't synced: copy them once with a backup, and after that your place follows you.</p>
-      <p class="hint" id="syncSt" role="status"></p>
-      <div id="syncMissing" hidden><p class="hint">In your synced library but not on this computer:</p><ul class="missing" id="syncList"></ul></div>
+    </div>
     </div>
   </div>
 </div>
@@ -6618,7 +6641,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 141e0b5</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · df6e183</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

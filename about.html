@@ -82,6 +82,20 @@ details p{margin:8px 0 0;color:var(--muted);max-width:68ch}
 .why p{margin:0 0 16px;font:400 clamp(19px,2.2vw,22px)/1.6 var(--f-display);color:var(--fg);text-wrap:pretty}
 .why p.last{font:400 17px/1.6 var(--f-ui);color:var(--muted)}
 .why .orn{display:block;width:120px;height:1px;margin:0 auto 26px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+/* Story mode: a band set apart from the page, text beside two phones, then a strip of wide screenshots */
+.story{background:var(--surface);border-block:1px solid var(--line);padding-block:44px 34px;margin-block:20px}
+.story-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px 44px;align-items:center}
+.story h2{font-size:clamp(28px,3.6vw,38px);margin-bottom:12px}
+.story .lede{max-width:52ch}
+.story-points{list-style:none;padding:0;margin:0 0 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 26px}
+.story-points li{border-top:2px solid var(--gold);padding-top:10px}
+.story-points strong{display:block}
+.story-points span{color:var(--muted);font-size:15.5px}
+.story .phones{margin:0}
+.story .phones img{display:block;width:100%;max-width:520px;height:auto;margin-inline:auto}
+.story .shots{margin-top:30px}
+@media (max-width:820px){ .story-grid{grid-template-columns:minmax(0,1fr)} .story .phones{order:-1} .story .phones img{max-width:380px} }
+@media (max-width:520px){ .story-points{grid-template-columns:minmax(0,1fr)} }
 footer.foot{border-top:1px solid var(--line);margin-top:30px}
 footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;font-size:14.5px;color:var(--muted)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -145,6 +159,35 @@ footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;fo
   </div>
 </section>
 
+<section class="story" id="story" aria-labelledby="stH">
+  <div class="wrap story-grid">
+    <div>
+      <p class="kicker">Coming to Velvet Scroll Plus</p>
+      <h2 id="stH">Story mode: every book in its own world</h2>
+      <p class="lede">Hand-drawn illustrations frame the page in the spirit of what you’re reading: windswept moors for <i>Wuthering Heights</i>, the Cheshire Cat and the White Rabbit for <i>Alice</i>, a moonlit manor for a ghost story, a treasure map for a tale of pirates.</p>
+      <ul class="story-points">
+        <li><strong>More than 20 themes</strong><span>Classics, the sea and adventure, fantasy, gothic, ancient history, Westerns, science fiction, noir, the Jazz Age and more.</span></li>
+        <li><strong>Drawn for day and night</strong><span>Engravings on Paper and Sepia, and moonlit, lamplit versions for dark pages, finished like gold or silver foil.</span></li>
+        <li><strong>Made for phones too</strong><span>On a phone the scenes take turns, a different corner or ornament each chapter, so the words always have room.</span></li>
+        <li><strong>Matched to each book</strong><span>A theme is suggested from the book’s genre, and you can choose any other, or none.</span></li>
+      </ul>
+      <div class="ctas">
+        <a class="btn primary" href="story-preview.html">Try the preview</a>
+        <a class="btn" href="#plus">About Plus</a>
+      </div>
+      <p class="small">The preview shows the themes on a sample page. Change the background, the theme and the drawing there, and on a phone press Next chapter to see the scenes change.</p>
+    </div>
+    <figure class="phones"><img src="media/story-phones.webp" width="1000" height="1000" alt="Two phones in Story mode: Moby-Dick on a sepia page with a lantern and spyglass above, and Alice in Wonderland on a dark page with the White Rabbit in gold" loading="lazy"></figure>
+  </div>
+  <div class="wrap shots" tabindex="0" aria-label="Story mode themes">
+    <figure><img src="media/story-moor.webp" width="1280" height="800" alt="Wuthering Heights on sepia, framed by a windswept tree, a moorland farmhouse and heather" loading="lazy"><figcaption>Moorland, for <i>Wuthering Heights</i> and <i>Jane Eyre</i></figcaption></figure>
+    <figure><img src="media/story-alice.webp" width="1280" height="800" alt="Alice in Wonderland on white paper, with the Cheshire Cat, the White Rabbit, Alice and a teapot in the corners" loading="lazy"><figcaption>Wonderland</figcaption></figure>
+    <figure><img src="media/story-haunt.webp" width="1280" height="800" alt="Frankenstein on a midnight-blue page, with a raven, a full moon, a manor house and a candle drawn in silver" loading="lazy"><figcaption>Gothic, at midnight</figcaption></figure>
+    <figure><img src="media/story-scifi.webp" width="1280" height="800" alt="The War of the Worlds on a black page, with the moon, a rocket, an astronaut and a lunar lander in silver" loading="lazy"><figcaption>Science fiction, at night</figcaption></figure>
+    <figure><img src="media/story-pirate.webp" width="1280" height="800" alt="Treasure Island on sepia, with a pirate flag, a palm island, a treasure chest and a map" loading="lazy"><figcaption>Pirates, for <i>Treasure Island</i></figcaption></figure>
+  </div>
+</section>
+
 <section class="wrap" aria-labelledby="wH">
   <h2 id="wH">Who it helps</h2>
   <p class="sub">Anyone who reads a lot, and especially readers for whom page-turning and small text get in the way.</p>
@@ -192,7 +235,7 @@ footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;fo
         <li>Download PDFs with your highlights</li>
         <li>Export all your notes</li>
         <li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li>
-        <li>Story mode: illustrated themes for your books <span class="soon">(coming soon)</span></li>
+        <li><a href="#story">Story mode</a>: illustrated themes for your books <span class="soon">(coming soon)</span></li>
       </ul>
       <p class="small">One key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Prices are in Australian dollars; you’ll see your own currency and any tax at checkout. 30-day no-questions refund: see the <a href="refunds.html">refund policy</a>. Plus will be available to buy soon.</p>
     </div>

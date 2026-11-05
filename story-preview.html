@@ -278,8 +278,12 @@ $('#finish').onchange = e => document.documentElement.dataset.finish = e.target.
 $('#draw').onchange = frame;
 $('#pscenes').onchange = frame;
 $('#nextch').onclick = () => { chapter++; document.querySelector('.col .sub').textContent = 'Chapter ' + (5 + chapter); frame(); };
-$('#theme').onchange = () => { const f = FINISH[$('#theme').value] || 'gold'; $('#finish').value = f; document.documentElement.dataset.finish = f; frame(); }; portMQ.addEventListener('change', frame);
-document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...P[b.dataset.p]); });
+$('#theme').onchange = () => { const f = FINISH[$('#theme').value] || 'gold'; $('#finish').value = f; document.documentElement.dataset.finish = f; applyPreset(); frame(); }; portMQ.addEventListener('change', frame);
+// the noir themes have their own night drawings, made for pure black: with them, the Night background is #000
+const BLACK_NIGHT = new Set(['noir', 'harbour', 'jazz', 'tokyo']);
+function preset(name){ const [bg, fg] = P[name]; return name === 'Night' && BLACK_NIGHT.has($('#theme').value) ? ['#000000', fg] : [bg, fg]; }
+function applyPreset(){ const on = document.querySelector('[data-p][aria-pressed="true"]'); if(on) set(...preset(on.dataset.p)); }
+document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...preset(b.dataset.p)); });
 $('#cBg').oninput = $('#cFg').oninput = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', 'false')); set($('#cBg').value, $('#cFg').value); };
 $('#cGlow').oninput = e => R.setProperty('--glow', e.target.value);
 $('#art').oninput = e => R.setProperty('--art', e.target.value / 100);

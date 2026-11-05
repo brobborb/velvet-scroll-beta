@@ -382,8 +382,10 @@ $('#draw').onchange = frame;
 $('#pscenes').onchange = frame;
 $('#nextch').onclick = () => { chapter++; document.querySelector('.col .sub').textContent = 'Chapter ' + (1 + chapter); frame(); };
 $('#theme').onchange = () => { if($('#theme').value === 'custom' && !UP.list.length) setTimeout(() => upPick('add'), 0); const f = FINISH[$('#theme').value] || 'gold'; $('#finish').value = f; document.documentElement.dataset.finish = f; applyPreset(); frame(); }; portMQ.addEventListener('change', frame);
-// the noir themes have their own night drawings, made for pure black: with them, the Night background is #000
-const BLACK_NIGHT = new Set(['noir', 'harbour', 'jazz', 'tokyo']);
+// themes with their own night drawing were made on pure black: with them, the Night background is #000.
+// Fantasy still uses the foil treatment of its day drawing, so it keeps the usual Night grey.
+const NO_NIGHT_DRAWING = new Set(['fantasy']);
+const BLACK_NIGHT = new Set(Object.keys(LAND).filter(k => !NO_NIGHT_DRAWING.has(k)));
 function preset(name){ const [bg, fg] = P[name]; return name === 'Night' && BLACK_NIGHT.has($('#theme').value) ? ['#000000', fg] : [bg, fg]; }
 function applyPreset(){ const on = document.querySelector('[data-p][aria-pressed="true"]'); if(on) set(...preset(on.dataset.p)); }
 document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); set(...preset(b.dataset.p)); });

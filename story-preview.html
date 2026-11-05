@@ -108,6 +108,26 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
 .ctl .sep{width:1px;height:20px;background:#555}
 .ctl[hidden]{display:none}
 #show{position:fixed;right:12px;bottom:12px;z-index:5;font:13px system-ui;border:0;border-radius:999px;padding:6px 12px;background:rgb(20 22 24 / .7);color:#eee;cursor:pointer}
+/* Watercolour themes: the painting is the page. Its own paper replaces the background colour, the text takes the
+   painting's colours, and a soft veil of paper sits behind the text. Phones get the two scenes as a header and footer. */
+html.wc,html.wc body{background-color:var(--wcbg);color:var(--wcfg)}
+html.wc .frame{opacity:1;filter:none}
+html.wc .frame .pc,html.wc .glow{display:none}
+html.wc .frame{background:var(--wcbg) var(--wcimg) center/cover no-repeat}
+html.wc .read::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 34% 62% at 50% 52%,color-mix(in srgb,var(--wcbg) 78%,transparent) 0%,color-mix(in srgb,var(--wcbg) 40%,transparent) 60%,transparent 100%)}
+html.wc .read{isolation:isolate}
+html.wc .col{max-width:min(34em,52vw);padding:12vh 0 16vh}
+@media (max-aspect-ratio:1/1){
+  html.wc .frame{background:var(--wcbg)}
+  html.wc .frame::before,html.wc .frame::after{content:"";position:absolute;left:0;right:0;background-repeat:no-repeat;background-size:cover}
+  html.wc .frame::before{top:0;height:25vh;background-image:var(--wctop);background-position:center 40%;-webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+  html.wc .frame::after{bottom:0;height:24vh;background-image:var(--wcfoot);background-position:left 65%;-webkit-mask:linear-gradient(transparent,#000 45%);mask:linear-gradient(transparent,#000 45%)}
+  html.wc .read::before{display:none}
+  html.wc .col{max-width:90vw;padding:21vh 0 26vh}
+  /* the text fades out before it reaches the painted header and footer */
+  html.wc .read{-webkit-mask:linear-gradient(transparent 12vh,#000 21vh,#000 71vh,transparent 77vh);mask:linear-gradient(transparent 12vh,#000 21vh,#000 71vh,transparent 77vh)}
+}
 .tag{position:fixed;left:12px;top:10px;z-index:5;font:600 11px/1.6 system-ui;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85}
 </style>
 </head>
@@ -137,7 +157,7 @@ html.dark .frame{filter:drop-shadow(0 1.4px 0 rgb(0 0 0 / .65))}
   <button data-p="Night">Night</button><button data-p="Midnight">Midnight</button><button data-p="Oxblood">Oxblood</button>
   <label title="Your own background and text colours">Own <input type="color" id="cBg" value="#f2e5c9"><input type="color" id="cFg" value="#3a2e1d"></label>
   <span class="sep"></span>
-  <label title="Which story theme">Theme <select id="theme"><optgroup label="From one landscape drawing (new style)"><option value="moor">Moorland: Wuthering Heights, Jane Eyre</option><option value="jungle">Jungle: Kipling, adventure, nature</option><option value="sea">Sea: Moby-Dick, sea stories</option><option value="pirate">Pirates: Treasure Island, swashbucklers</option><option value="river">River: Huckleberry Finn, Tom Sawyer</option><option value="western">Western: cowboys, outlaws, frontier towns</option><option value="plains">Plains: frontier and Native American stories</option><option value="quixote">La Mancha: Don Quixote</option><option value="nursery">Nursery: picture books, bedtime stories</option><option value="alice">Wonderland: Alice, Through the Looking-Glass</option><option value="fantasy">Fantasy: myths, legends, quests</option><option value="witch">Witchcraft: magic, spells, school stories</option><option value="haunt">Gothic: ghost stories, haunted houses</option></optgroup><optgroup label="History"><option value="rome">Ancient Rome: history, the classical world</option><option value="greece">Ancient Greece: history, myth, philosophy</option></optgroup><optgroup label="Modern"><option value="deco">Art Deco conservatory: 1920s–30s, romance, travel</option><option value="boudoir">Boudoir: romance, 1920s–50s glamour</option><option value="spy">Espionage: spies, Cold War thrillers</option><option value="noir">Noir: crime, detective stories</option><option value="harbour">Harbour noir: coastal mysteries</option><option value="jazz">Jazz Age: Gatsby, 1920s–40s</option><option value="scifi">Science fiction: space, the future</option><option value="flight">Flight: aviation, travel, adventure</option><option value="cyber">Cyberpunk: androids, neon futures</option><option value="tokyo">Neon city: cyberpunk, modern thrillers</option></optgroup><optgroup label="Earlier drawings"><option value="gothic">Gothic, full scene: Frankenstein, Dracula</option></optgroup></select></label>
+  <label title="Which story theme">Theme <select id="theme"><optgroup label="From one landscape drawing (new style)"><option value="moor">Moorland: Wuthering Heights, Jane Eyre</option><option value="jungle">Jungle: Kipling, adventure, nature</option><option value="sea">Sea: Moby-Dick, sea stories</option><option value="pirate">Pirates: Treasure Island, swashbucklers</option><option value="river">River: Huckleberry Finn, Tom Sawyer</option><option value="western">Western: cowboys, outlaws, frontier towns</option><option value="plains">Plains: frontier and Native American stories</option><option value="quixote">La Mancha: Don Quixote</option><option value="nursery">Nursery: picture books, bedtime stories</option><option value="alice">Wonderland: Alice, Through the Looking-Glass</option><option value="fantasy">Fantasy: myths, legends, quests</option><option value="witch">Witchcraft: magic, spells, school stories</option><option value="haunt">Gothic: ghost stories, haunted houses</option></optgroup><optgroup label="History"><option value="rome">Ancient Rome: history, the classical world</option><option value="greece">Ancient Greece: history, myth, philosophy</option></optgroup><optgroup label="Modern"><option value="deco">Art Deco conservatory: 1920s–30s, romance, travel</option><option value="boudoir">Boudoir: romance, 1920s–50s glamour</option><option value="spy">Espionage: spies, Cold War thrillers</option><option value="noir">Noir: crime, detective stories</option><option value="harbour">Harbour noir: coastal mysteries</option><option value="jazz">Jazz Age: Gatsby, 1920s–40s</option><option value="scifi">Science fiction: space, the future</option><option value="flight">Flight: aviation, travel, adventure</option><option value="cyber">Cyberpunk: androids, neon futures</option><option value="tokyo">Neon city: cyberpunk, modern thrillers</option></optgroup><optgroup label="Watercolour (painted pages)"><option value="london">London by night: mysteries, detectives</option></optgroup><optgroup label="Earlier drawings"><option value="gothic">Gothic, full scene: Frankenstein, Dracula</option></optgroup></select></label>
   <label title="Pencil sketch on light pages, engraving on dark pages">Drawing <select id="draw"><option value="auto">Automatic</option><option value="light">For light pages</option><option value="dark">For dark pages</option></select></label>
   <label title="How the drawing looks on dark pages">Dark finish <select id="finish"><option value="gold">Gold foil</option><option value="silver">Silver foil</option><option value="ink">Soft ink</option></select></label>
   <label title="The colour of the candle and moonlight">Light <input type="color" id="cGlow" value="#ffcf7a"></label>
@@ -233,8 +253,14 @@ function phoneScenes(){ const m = $('#pscenes').value, th = $('#theme').value;
   if(m === 'alt' && CYC[th]){ const cycle = ['d1', 'ct', 'd2', 'cb'].filter(v => CYC[th][v]); return cycle[chapter % cycle.length]; }
   if(m !== 'alt' && m !== 'swap') return m;
   const cycle = MID[th] ? ['top', 'bottom', 'centre'] : ['top', 'bottom']; return cycle[chapter % cycle.length]; }
+// watercolour themes: a day painting and a night painting, each with its paper and text colours, and phone crops
+const WC = {london:{light:{bg:'#fdf1e6', fg:'#2f2a35'}, dark:{bg:'#0a2342', fg:'#e6e1d4'}}};
 function frame(){
   const tone = $('#draw').value === 'auto' ? (isDark ? 'dark' : 'light') : $('#draw').value, theme = $('#theme').value;
+  document.documentElement.classList.toggle('wc', !!WC[theme]);
+  if(WC[theme]){ const c = WC[theme][tone], u = n => `url(story/wc/${theme}${n}-${tone}.webp)`;
+    R.setProperty('--wcbg', c.bg); R.setProperty('--wcfg', c.fg); R.setProperty('--wcimg', u('')); R.setProperty('--wctop', u('-top')); R.setProperty('--wcfoot', u('-foot'));
+    document.documentElement.classList.remove('page', 'port'); return; }
   // phones and tablets held upright get the portrait drawing when the theme has one; slim themes use the page layout everywhere
   const ps = portMQ.matches ? phoneScenes() : 'top', useFoot = FOOT[theme] && ps === 'bottom', useMid = MID[theme] && ps === 'centre';
   const f = CYC[theme]?.[ps] ? FRAMES[`${theme}-${ps}-${tone}`] : useMid ? FRAMES[`${theme}-mid-${tone}`] : useFoot ? FRAMES[`${theme}-foot-${tone}`] : LAND[theme] ? FRAMES[`${theme}-${portMQ.matches ? 'slim' : 'land'}-${tone}`]

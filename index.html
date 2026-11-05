@@ -1542,6 +1542,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <div class="pluscol plus"><span class="lbl">Plus</span>
         <ul><li>Google Drive sync across all your devices</li><li>Recognise text in scanned PDFs</li><li>Download PDFs with your highlights</li><li>Export all your notes</li><li>Genre cover designs: horror, fantasy, 1960s science fiction, romance and children’s classics</li><li>Story mode: illustrated themes for your books <span class="soon">coming soon</span></li></ul></div>
     </div>
+    <p class="hint"><a id="plusMore" href="plus.html" target="_blank" rel="noopener">See everything Plus does</a>: sync across your phone, tablet and computer, Story mode and tools for study.</p>
     <p class="hint"><strong>A$15, one payment, no subscription.</strong> 30-day no-questions <a href="https://velvetscroll.net/refunds.html" target="_blank" rel="noopener">refund</a>. One licence key unlocks Plus on the website and in the Chrome, Firefox and Edge extensions, on all your devices. Checking the key happens on your device, and nothing about it is sent anywhere.</p>
     <div id="plusOff">
       <div class="row"><button class="btn primary" id="plusBuy" disabled>Buy Plus: coming soon</button></div>
@@ -3413,6 +3414,7 @@ if(!IS_EXT && !IN_CLAUDE && 'serviceWorker' in navigator && (location.protocol =
   addEventListener('resize', later);
   if(btns) new MutationObserver(later).observe(btns, {subtree:true, attributes:true, attributeFilter:['hidden']});
   document.fonts?.ready.then(later); later(); }
+if(IS_EXT) $('#plusMore').href = 'https://velvetscroll.net/plus.html';
 addEventListener('beforeinstallprompt', e => { if(IS_EXT) return; e.preventDefault(); installEvt = e; $('#installBtn').hidden = isStandalone(); });
 addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').hidden = true; toast('Velvet Scroll is installed. You’ll find it with your other apps.', 5000); });
 $('#installBtn').onclick = async () => { if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt = null; $('#installBtn').hidden = true; };
@@ -6653,7 +6655,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 2140e2f</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 29bcd8d</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

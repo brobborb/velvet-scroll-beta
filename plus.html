@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Velvet Scroll Plus</title>
+<meta name="description" content="Velvet Scroll Plus: your reading places, shelves, highlights and notes in step on your phone, tablet and computer, through your own Google Drive. Your books stay on your devices. A$15 once.">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Young+Serif&display=swap">
+<style>
+/* Layout: one readable column on the library's cloth-green ground; a wide band for the video and screenshots. */
+:root{--bg:#eef2f0;--surface:#ffffff;--fg:#16201c;--muted:#56655f;--line:#d3ddd8;--accent:#2c6a57;--accent-fg:#ffffff;--accent-soft:#dbe9e3;--gold:#b0892f;
+  --f-display:"Young Serif",Georgia,serif;--f-ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;--accent-fg:#0b1a15;--accent-soft:#1e3a31;--gold:#d8b45a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101715;--surface:#172220;--fg:#e4ece9;--muted:#93a59e;--line:#2a3833;--accent:#6dbea2;--accent-fg:#0b1a15;--accent-soft:#1e3a31;--gold:#d8b45a;color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 var(--f-ui)}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+header.top{border-bottom:1px solid var(--line);background:var(--surface)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font:400 22px/1 var(--f-display)}
+.brand img{width:32px;height:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:10px 18px;font:700 15px/1.2 var(--f-ui);text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn svg{width:18px;height:18px;flex:none}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px 44px;align-items:center;padding-block:48px 40px}
+.kicker{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 14px;font:400 clamp(34px,5vw,52px)/1.08 var(--f-display);text-wrap:balance}
+.lede{margin:0 0 22px;color:var(--muted);max-width:44ch}
+.ctas{display:flex;flex-wrap:wrap;gap:10px}
+.small{font-size:14px;color:var(--muted);margin:14px 0 0}
+.video video{display:block;width:100%;aspect-ratio:16/9;border-radius:14px;background:#121a19;box-shadow:0 18px 44px -20px rgb(0 0 0 / .5)}
+section{padding-block:30px}
+h2{margin:0 0 6px;font:400 28px/1.2 var(--f-display);text-wrap:balance}
+.sub{margin:0 0 22px;color:var(--muted);max-width:60ch}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.feature{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.feature h3{margin:0 0 6px;font:700 17px/1.3 var(--f-ui)}
+.feature p{margin:0;color:var(--muted);font-size:15.5px}
+.shots{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,560px);gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory;scroll-padding-inline:18px}
+.shots figure{margin:0;scroll-snap-align:start}
+.shots img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+.shots figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 24px;padding:0;margin:0;list-style:none}
+.who li{border-top:2px solid var(--gold);padding-top:10px}
+.who strong{display:block}
+.who span{color:var(--muted);font-size:15.5px}
+.private{background:var(--accent-soft);border-radius:16px;padding:24px 26px}
+.private ul{margin:10px 0 0;padding-left:20px}
+.private li{margin-bottom:6px}
+.tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:6px}
+.tier{border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:var(--surface)}
+.tier.plus{border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.tier h3{margin:0 0 2px;font:400 22px/1.2 var(--f-display)}
+.tier .price{margin:0 0 10px;color:var(--muted);font-size:15px}
+.tier ul{margin:0;padding-left:20px}
+.tier li{margin-bottom:6px}
+.tier .soon{font-size:13px;color:var(--muted)}
+.promise{margin:18px 0 0;padding:16px 20px;border-left:3px solid var(--gold);background:var(--surface);border-radius:0 12px 12px 0;color:var(--fg);max-width:70ch}
+@media (max-width:720px){ .tiers{grid-template-columns:minmax(0,1fr)} }
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--accent);font-weight:400;font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:8px 0 0;color:var(--muted);max-width:68ch}
+.why{max-width:760px;margin:0 auto;text-align:center;padding-block:20px 34px}
+.why h2{margin-bottom:16px}
+.why p{margin:0 0 16px;font:400 clamp(19px,2.2vw,22px)/1.6 var(--f-display);color:var(--fg);text-wrap:pretty}
+.why p.last{font:400 17px/1.6 var(--f-ui);color:var(--muted)}
+.why .orn{display:block;width:120px;height:1px;margin:0 auto 26px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+/* Story mode: a band set apart from the page, text beside two phones, then a strip of wide screenshots */
+.story{background:var(--surface);border-block:1px solid var(--line);padding-block:44px 34px;margin-block:20px}
+.story-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px 44px;align-items:center}
+.story h2{font-size:clamp(28px,3.6vw,38px);margin-bottom:12px}
+.story .lede{max-width:52ch}
+.story-points{list-style:none;padding:0;margin:0 0 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 26px}
+.story-points li{border-top:2px solid var(--gold);padding-top:10px}
+.story-points strong{display:block}
+.story-points span{color:var(--muted);font-size:15.5px}
+.story .phones{margin:0}
+.story .phones img{display:block;width:100%;max-width:520px;height:auto;margin-inline:auto}
+.story .shots{margin-top:30px}
+@media (max-width:820px){ .story-grid{grid-template-columns:minmax(0,1fr)} .story .phones{order:-1} .story .phones img{max-width:380px} }
+@media (max-width:520px){ .story-points{grid-template-columns:minmax(0,1fr)} }
+footer.foot{border-top:1px solid var(--line);margin-top:30px}
+footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;font-size:14.5px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){ .hero{grid-template-columns:minmax(0,1fr);padding-block:30px} .video{order:-1} }
+@media (prefers-reduced-motion: reduce){ .shots{scroll-behavior:auto} }
+
+/* Plus page */
+.phero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px 44px;align-items:center;padding-block:48px 30px}
+.phero .price-tag{display:inline-block;margin:0 0 14px;padding:4px 12px;border-radius:999px;background:var(--accent-soft);color:var(--fg);font-weight:700;font-size:14px}
+.btn.soon{opacity:.75;cursor:default}
+.devices{width:100%;height:auto;display:block}
+.devices .ln{stroke:var(--line);stroke-width:2;fill:var(--surface)}
+.devices .scr{fill:var(--bg)}
+.devices .txt{stroke:var(--muted);stroke-width:3;stroke-linecap:round;opacity:.55}
+.devices .bar{fill:var(--line)}
+.devices .fill{fill:var(--accent)}
+.devices .path{stroke:var(--gold);stroke-width:2.2;fill:none;stroke-dasharray:3 7;stroke-linecap:round}
+.devices .cloud{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.devices text{fill:var(--fg);font:700 15px var(--f-ui)}
+.devices text.s{fill:var(--muted);font:400 13px var(--f-ui)}
+.devices .cov{fill:var(--gold);opacity:.85}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:st;margin:6px 0 0;padding:0;list-style:none}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px 20px;counter-increment:st}
+.steps li::before{content:counter(st);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:700;margin-bottom:10px}
+.steps h3{margin:0 0 6px;font:700 17px/1.3 var(--f-ui)}
+.steps p{margin:0;color:var(--muted);font-size:15.5px}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;margin-top:12px}
+.twocol h3{margin:0 0 4px;font:700 16px/1.3 var(--f-ui)}
+.twocol p{margin:0;color:var(--muted);font-size:15.5px}
+.ticks{list-style:none;padding:0;margin:10px 0 0}
+.ticks li{padding-left:28px;position:relative;margin-bottom:7px}
+.ticks li::before{content:"";position:absolute;left:4px;top:.45em;width:12px;height:7px;border-left:2.5px solid var(--accent);border-bottom:2.5px solid var(--accent);transform:rotate(-45deg)}
+.ticks.no li::before{width:12px;height:0;border-left:0;border-bottom:2.5px solid var(--muted);transform:none;top:.7em}
+.everywhere{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.everywhere span{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14.5px}
+.pricecard{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 36px;border:2px solid var(--accent);border-radius:18px;padding:26px 28px;background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.pricecard .big{font:400 44px/1 var(--f-display);margin:4px 0 6px}
+@media (max-width:820px){ .phero,.pricecard{grid-template-columns:minmax(0,1fr)} .steps,.twocol{grid-template-columns:minmax(0,1fr)} .phero .vis{order:-1} }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="./"><img src="icon.png" alt="">Velvet Scroll</a>
+  <span class="ctas"><a class="btn" href="about.html">About</a><a class="btn primary" href="./">Open Velvet Scroll</a></span>
+</div></header>
+<main>
+<div class="wrap phero">
+  <div>
+    <p class="kicker">Velvet Scroll Plus</p>
+    <h1>Your reading, on every device</h1>
+    <p class="lede">Start a chapter at your desk, carry on in bed, finish it on the bus. Plus keeps your place, shelves, highlights and notes in step on your phone, tablet and computer, and your books never leave your own devices.</p>
+    <p class="price-tag">A$15 once · no subscription</p>
+    <div class="ctas"><span class="btn primary soon" aria-disabled="true">Coming soon</span><a class="btn" href="#sync">How sync works</a></div>
+    <p class="small">One key unlocks Plus on the website, the installed app and the Chrome, Firefox and Edge extensions. 30-day no-questions <a href="refunds.html">refund</a>.</p>
+  </div>
+  <div class="vis"><svg class="devices" viewBox="0 0 760 466" role="img" aria-labelledby="dvT"><title id="dvT">A phone, a tablet and a computer, each open at the same place in the same book, kept in step through one small file in your own Google Drive</title><path class="cloud" d="M296 140h168a42 42 0 0 0 4-84 54 54 0 0 0-98-22 44 44 0 0 0-72 34 40 40 0 0 0-2 72z"/><text x="382" y="110" text-anchor="middle">Your Google Drive</text><text class="s" x="382" y="166" text-anchor="middle">one small sync file</text><path class="path" d="M126 196C150 150 220 128 290 118"/><path class="path" d="M385 244V180"/><path class="path" d="M640 256C620 170 540 128 472 118"/><rect class="ln" x="72" y="204" width="108" height="196" rx="18"/><rect class="scr" x="80" y="216" width="92" height="172" rx="5"/><rect class="cov" x="92" y="228" width="14" height="20" rx="2"/><line class="txt" x1="114" y1="238" x2="137" y2="238"/><line class="txt" x1="92" y1="264" x2="160" y2="264"/><line class="txt" x1="92" y1="279" x2="148" y2="279"/><line class="txt" x1="92" y1="294" x2="136" y2="294"/><line class="txt" x1="92" y1="309" x2="160" y2="309"/><line class="txt" x1="92" y1="324" x2="148" y2="324"/><line class="txt" x1="92" y1="339" x2="136" y2="339"/><rect class="bar" x="92" y="370" width="68" height="6" rx="3"/><rect class="fill" x="92" y="370" width="44" height="6" rx="3"/><text x="126" y="432" text-anchor="middle">Phone</text><text class="s" x="126" y="452" text-anchor="middle">on the bus</text><rect class="ln" x="288" y="252" width="194" height="148" rx="14"/><rect class="scr" x="298" y="262" width="174" height="128" rx="5"/><rect class="cov" x="310" y="274" width="14" height="20" rx="2"/><line class="txt" x1="332" y1="284" x2="406" y2="284"/><line class="txt" x1="310" y1="310" x2="460" y2="310"/><line class="txt" x1="310" y1="325" x2="448" y2="325"/><line class="txt" x1="310" y1="340" x2="436" y2="340"/><rect class="bar" x="310" y="372" width="150" height="6" rx="3"/><rect class="fill" x="310" y="372" width="96" height="6" rx="3"/><text x="385" y="432" text-anchor="middle">Tablet</text><text class="s" x="385" y="452" text-anchor="middle">in bed</text><rect class="ln" x="544" y="264" width="194" height="124" rx="8"/><rect class="scr" x="552" y="272" width="178" height="108" rx="5"/><rect class="cov" x="564" y="284" width="14" height="20" rx="2"/><line class="txt" x1="586" y1="294" x2="662" y2="294"/><line class="txt" x1="564" y1="320" x2="718" y2="320"/><line class="txt" x1="564" y1="335" x2="706" y2="335"/><rect class="bar" x="564" y="362" width="154" height="6" rx="3"/><rect class="fill" x="564" y="362" width="99" height="6" rx="3"/><rect class="ln" x="520" y="388" width="242" height="12" rx="6"/><text x="641" y="432" text-anchor="middle">Computer</text><text class="s" x="641" y="452" text-anchor="middle">at your desk</text></svg></div>
+</div>
+
+<section class="wrap" id="sync" aria-labelledby="syH">
+  <h2 id="syH">Pick up where you left off, anywhere</h2>
+  <p class="sub">Set it up once. After that you don’t have to think about it.</p>
+  <ol class="steps">
+    <li><h3>Connect once</h3><p>In Backup, choose Connect Google Drive and sign in on each device. Velvet Scroll can only see the one file it creates there.</p></li>
+    <li><h3>It keeps itself in step</h3><p>Your changes are saved when you open Velvet Scroll, while you read and when you put it down. Or tap Sync now whenever you like.</p></li>
+    <li><h3>Open your book</h3><p>On your phone, tablet or computer, the book opens at your page, with your highlights and notes where you left them.</p></li>
+  </ol>
+  <div class="everywhere" aria-label="Where it works"><span>Phones</span><span>Tablets</span><span>Computers</span><span>Website</span><span>Installed app</span><span>Chrome</span><span>Firefox</span><span>Edge</span></div>
+</section>
+
+<section class="wrap" aria-labelledby="ybH">
+  <div class="private">
+    <h2 id="ybH">Your books stay on your devices</h2>
+    <p>Sync carries your reading life, not your library files. The books themselves are never uploaded, to Google or to us.</p>
+    <div class="twocol">
+      <div><h3>What syncs</h3><ul class="ticks"><li>Your place in every book</li><li>Shelves and reading status</li><li>Book details and author bios</li><li>Highlights and notes</li><li>Display, appearance and accessibility settings</li></ul></div>
+      <div><h3>What doesn’t</h3><ul class="ticks no"><li>The books themselves: copy them to each device once with a backup file</li><li>Anything to a Velvet Scroll server: the sync file lives in your own Google Drive</li><li>Advertising, tracking or an account with us</li></ul></div>
+    </div>
+    <p class="small">Prefer not to use Google? Backups and sync codes stay free, and move your places between devices by hand. See the <a href="privacy.html">privacy policy</a>.</p>
+  </div>
+</section>
+
+<section class="story" id="story" aria-labelledby="stH">
+  <div class="wrap story-grid">
+    <div>
+      <p class="kicker">Atmosphere</p>
+      <h2 id="stH">Story mode: a style for every kind of story</h2>
+      <p class="lede">Hand-drawn illustrations frame the page in the spirit of the kind of book you’re reading: windswept moors for a gothic romance, a moonlit manor for a ghost story, a treasure map for a tale of pirates, rockets and moons for science fiction.</p>
+      <ul class="story-points">
+        <li><strong>More than 20 themes</strong><span>Classics, the sea and adventure, fantasy, gothic, ancient history, Westerns, science fiction, noir, the Jazz Age and more.</span></li>
+        <li><strong>Drawn for day and night</strong><span>Engravings on Paper and Sepia, and moonlit, lamplit versions for dark pages, finished like gold or silver foil.</span></li>
+        <li><strong>Made for phones too</strong><span>On a phone the scenes take turns, a different corner or ornament each chapter, so the words always have room.</span></li>
+        <li><strong>Matched to the genre</strong><span>Each book gets a theme suggested from its genre, and you can choose any other, or none.</span></li>
+        <li><strong>Watercolour pages</strong><span>Painted scenes that become the page itself, by day and by moonlight.</span></li>
+        <li><strong>Your own picture</strong><span>Use any photo or painting as your page, kept only on your device.</span></li>
+      </ul>
+      <div class="ctas">
+        <a class="btn primary" href="story-preview.html">Try the preview</a>
+        <a class="btn" href="#price">Price</a>
+      </div>
+      <p class="small">The preview shows the themes on a sample page. Change the background, the theme and the drawing there, and on a phone press Next chapter to see the scenes change.</p>
+    </div>
+    <figure class="phones"><img src="media/story-phones.webp" width="1000" height="1000" alt="Two phones in Story mode: Moby-Dick on a sepia page with a lantern and spyglass above, and Alice in Wonderland on a dark page with the White Rabbit in gold" loading="lazy"></figure>
+  </div>
+  <div class="wrap shots" tabindex="0" aria-label="Story mode themes">
+    <figure><img src="media/story-moor.webp" width="1280" height="800" alt="Wuthering Heights on sepia, framed by a windswept tree, a moorland farmhouse and heather" loading="lazy"><figcaption>Moorland, for gothic romance</figcaption></figure>
+    <figure><img src="media/story-alice.webp" width="1280" height="800" alt="Alice in Wonderland on white paper, with the Cheshire Cat, the White Rabbit, Alice and a teapot in the corners" loading="lazy"><figcaption>Wonderland</figcaption></figure>
+    <figure><img src="media/story-haunt.webp" width="1280" height="800" alt="Frankenstein on a midnight-blue page, with a raven, a full moon, a manor house and a candle drawn in silver" loading="lazy"><figcaption>Gothic, at midnight</figcaption></figure>
+    <figure><img src="media/story-scifi.webp" width="1280" height="800" alt="The War of the Worlds on a black page, with the moon, a rocket, an astronaut and a lunar lander in silver" loading="lazy"><figcaption>Science fiction, at night</figcaption></figure>
+    <figure><img src="media/story-pirate.webp" width="1280" height="800" alt="Treasure Island on sepia, with a pirate flag, a palm island, a treasure chest and a map" loading="lazy"><figcaption>Pirates, for adventures at sea</figcaption></figure>
+  </div>
+</section>
+
+<section class="wrap" id="more" aria-labelledby="moH">
+  <h2 id="moH">Tools for study</h2>
+  <p class="sub">For course readings, research and anyone who keeps notes.</p>
+  <div class="features">
+    <div class="feature"><h3>Read scanned PDFs</h3><p>Recognise the text in scanned PDFs on your own device, so they can be read aloud, searched and highlighted.</p></div>
+    <div class="feature"><h3>PDFs with your highlights</h3><p>Download a PDF with your highlights marked in it, ready to print or share with a study group.</p></div>
+    <div class="feature"><h3>Export all your notes</h3><p>Every highlight and note from every book in one file, for essays, revision and reading journals.</p></div>
+    <div class="feature"><h3>Genre cover designs</h3><p>Books without a cover get one in the spirit of their genre: horror, fantasy, 1960s science fiction, romance and children’s classics.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="price" aria-labelledby="prH">
+  <div class="pricecard">
+    <div>
+      <h2 id="prH">One payment, yours to keep</h2>
+      <p class="big">A$15</p>
+      <p class="small" style="margin-top:0">Prices are in Australian dollars; you’ll see your own currency and any tax at checkout.</p>
+      <ul class="ticks"><li>No subscription, no renewals</li><li>All your devices, the website, the app and the extensions</li><li>Every Plus feature, including new Story themes as they arrive</li><li>30-day no-questions <a href="refunds.html">refund</a></li></ul>
+      <div class="ctas" style="margin-top:14px"><span class="btn primary soon" aria-disabled="true">Coming soon</span></div>
+    </div>
+    <div>
+      <h3 style="margin:0 0 6px;font:400 22px/1.2 var(--f-display)">Still free for everyone</h3>
+      <p class="small" style="margin-top:0">Plus is the extras. The reader stays complete without it.</p>
+      <ul class="ticks"><li>Auto-scrolling, Page sweep and page turning</li><li>The reading guide, magnifier and full screen</li><li>Read aloud, including the natural voices</li><li>Every display and accessibility setting</li><li>Your library, shelves, covers and author bios</li><li>Search, highlights and notes</li><li>Backups and sync codes</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" aria-labelledby="qH">
+  <h2 id="qH">Questions</h2>
+  <details><summary>Are my books uploaded anywhere?</summary><p>No. Your books stay in the browser on each of your devices. Sync only carries small things like your page, shelves, highlights and notes, in one file in your own Google Drive.</p></details>
+  <details><summary>Do I need a Google account?</summary><p>For automatic sync, yes, because the sync file lives in your Google Drive. Without one, the free backups and sync codes still move your places between devices by hand.</p></details>
+  <details><summary>What happens when I’m offline?</summary><p>Everything keeps working. Your changes are saved on your device and sync the next time you’re online.</p></details>
+  <details><summary>Is it a subscription?</summary><p>No. Plus is a single payment of A$15. Keep it as long as you like, with any new Plus features included.</p></details>
+  <details><summary>Can I get my money back?</summary><p>Yes. Ask within 30 days for a full refund, no questions asked. See the <a href="refunds.html">refund policy</a>.</p></details>
+</section>
+</main>
+<footer class="foot"><div class="wrap">
+  <a href="./">Open Velvet Scroll</a>
+  <a href="about.html">About</a>
+  <a href="plus.html">Plus</a>
+  <a href="https://chromewebstore.google.com/detail/lcddfbbfeahgjlilbmclahmfgolpoknf" target="_blank" rel="noopener">Chrome Web Store</a>
+  <a href="https://addons.mozilla.org/firefox/addon/velvet-scroll/" target="_blank" rel="noopener">Firefox Add-ons</a>
+  <a href="https://microsoftedge.microsoft.com/addons/detail/abkbeknhfpdjhdimaebgabkcmdinojmg" target="_blank" rel="noopener">Edge Add-ons</a>
+  <a href="privacy.html">Privacy</a>
+  <a href="licences.html">Licences</a>
+  <a href="terms.html">Terms</a>
+  <a href="refunds.html">Refunds</a>
+  <a href="https://github.com/brobborb/velvet-scroll/issues" target="_blank" rel="noopener">Support</a>
+</div></footer>
+</body>
+</html>

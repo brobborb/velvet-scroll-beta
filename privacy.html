@@ -19,13 +19,15 @@ a{color:var(--accent)}
 .meta{color:var(--muted);margin-bottom:24px}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
 </style>
+<!-- Cloudflare Web Analytics: counts visits without cookies; the website only, never the extensions -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c1d290f229f04dec889cd976f282d1b8"}'></script>
 </head>
 <body>
 <main>
 <h1>Privacy</h1>
-<p class="meta">Velvet Scroll website and browser extension · Updated 28 October 2026</p>
+<p class="meta">Velvet Scroll website and browser extension · Updated 6 November 2026</p>
 
-<div class="box"><p><strong>In short:</strong> your books, reading positions and settings stay in your own browser. Velvet Scroll has no accounts, no analytics, no advertising and no server that receives your library. The only information it sends anywhere is a book's title and author, and only when you ask it to look up a book's details.</p></div>
+<div class="box"><p><strong>In short:</strong> your books, reading positions and settings stay in your own browser. Velvet Scroll has no accounts, no advertising and no server that receives your library. The website counts visits anonymously, without cookies (see <a href="#website">The website</a>); the extensions don’t. The only information it sends anywhere is a book's title and author, and only when you ask it to look up a book's details.</p></div>
 
 <h2>What stays on your device</h2>
 <p>The books you add, their covers, your reading positions, shelves, book details and display settings are stored in your browser's own storage on your device. They are not uploaded to velvetscroll.net or anywhere else. Clearing your browser's site data, or removing the extension, deletes them.</p>
@@ -69,8 +71,9 @@ a{color:var(--accent)}
 <h2>Backups</h2>
 <p>A backup is a file saved to your own device. Velvet Scroll doesn't send it anywhere. If you choose a password, the backup is encrypted with AES-256 before it's saved.</p>
 
-<h2>The website</h2>
+<h2 id="website">The website</h2>
 <p>velvetscroll.net is hosted by GitHub Pages. Like any web host, GitHub may record technical information such as IP addresses when pages are loaded. The website also loads fonts from Google Fonts, code libraries from cdnjs (Cloudflare), and, when you open a PDF, the PDF library's standard font and character-map files from jsDelivr (cdn.jsdelivr.net). These services receive the same kind of technical request information; none of them receive your books. The extension includes its fonts and libraries, so it doesn't contact these services.</p>
+<p>To see how many people visit, the website uses Cloudflare Web Analytics. When a page loads, it records the page’s address, the page you came from, your country, and the type of browser and device. It uses no cookies, doesn’t identify you and doesn’t follow you across other websites. It never sees your books or anything you read in Velvet Scroll. The extensions don’t include it. Cloudflare handles this data under its own <a href="https://www.cloudflare.com/privacypolicy/">privacy policy</a>.</p>
 
 <h2>Velvet Scroll Plus</h2>
 <p>Velvet Scroll Plus is an optional one-time purchase. Its licence key is kept in your browser on your device and checked there, using a signature built into Velvet Scroll. Checking the key doesn't contact any server, and nothing about you or your library is sent anywhere when you use it. The key contains only the name it was issued to, the date and a random reference number.</p>

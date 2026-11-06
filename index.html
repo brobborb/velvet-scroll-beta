@@ -425,7 +425,11 @@ main.wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
 #plusOff[hidden],#plusOnBox[hidden],#plusKeyBox[hidden]{display:none}
 .pluskeybox{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .plustag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--accent);color:var(--accent-fg);vertical-align:middle}
+/* once Plus is unlocked: the label goes and the star is filled in the accent colour */
 #plusOpen.on{color:var(--accent)}
+#plusOpen.on svg{fill:currentColor}
+#plusOpen.on #plusLbl{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#plusOpen.on{padding:9px}
 @media (max-width:620px){ .plusgrid{grid-template-columns:minmax(0,1fr)} }
 .bkwhich{display:flex;flex-wrap:wrap;gap:4px 20px}
 /* Backup window: one column on small screens; on wide screens three columns (save | restore and syncing | sync codes),
@@ -3479,7 +3483,8 @@ async function plusVerify(key){
 function plusShow(){
   $('#plusOff').hidden = !!PLUS; $('#plusOnBox').hidden = !PLUS;
   $('#plusWho').textContent = PLUS ? `Licensed to ${PLUS.n}${PLUS.d ? ', ' + new Date(PLUS.d).toLocaleDateString([], {day:'numeric', month:'long', year:'numeric'}) : ''}.` : '';
-  $('#plusOpen').classList.toggle('on', !!PLUS); $('#plusLbl').textContent = PLUS ? 'Plus ✓' : 'Plus';
+  $('#plusOpen').classList.toggle('on', !!PLUS); $('#plusLbl').textContent = PLUS ? 'Plus, unlocked' : 'Plus';
+  $('#plusOpen').title = PLUS ? 'Velvet Scroll Plus is unlocked. Thank you!' : 'Velvet Scroll Plus: a one-time purchase for extra features';
   for(const id of PLUS_ITEMS){ const b = document.getElementById(id); if(!b) continue; let t = b.querySelector('.plustag');
     if(!PLUS && !t){ t = el('span', {class:'plustag', text:'Plus'}); b.append(t); } else if(PLUS && t) t.remove(); }
 }
@@ -6755,7 +6760,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 7e15a3b</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · dacf617</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

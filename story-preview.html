@@ -271,8 +271,8 @@ Object.assign(LAND, {
   harbour:{light:{W:2560, H:1440, lw:536, rx:2030, tx:564, tw:1433, th:196, by:1248, bh:192}, dark:{W:2560, H:1440, lw:473, rx:2061, tx:610, tw:1342, th:167, by:1258, bh:182}},
   jazz:{light:{W:2560, H:1440, lw:467, rx:2085, tx:651, tw:1251, th:146, by:1255, bh:185}, dark:{W:2560, H:1440, lw:453, rx:2100, tx:757, tw:1045, th:148, by:1248, bh:192}},
   tokyo:{light:{W:2560, H:1440, lw:476, rx:2048, tx:646, tw:1279, th:142, by:1276, bh:164}, dark:{W:2560, H:1440, lw:501, rx:2050, tx:628, tw:1306, th:160, by:1263, bh:177}},
-  samurai:{W:2560, H:1440, lw:831, rx:1770, tx:758, tw:1044, th:125, by:1314, bh:126},
-  viking:{W:2560, H:1440, lw:838, rx:1780, tx:758, tw:1044, th:125, by:1314, bh:126}});
+  samurai:{W:2560, H:1440, lw:831, rx:1770, tx:1280, tw:0, th:125, by:1314, bh:126},
+  viking:{W:2560, H:1440, lw:838, rx:1780, tx:1280, tw:0, th:125, by:1314, bh:126}});
 Object.assign(SLIM, {samurai:430, viking:430, spy:420, western:420, plains:420, cyber:420, scifi:420, witch:310, pirate:394, haunt:386, jungle:430, nursery:420, boudoir:420, deco:430, greece:408, rome:430, harbour:430, jazz:430, tokyo:430});
 for(const k of ['samurai', 'viking', 'spy', 'western', 'plains', 'cyber', 'scifi', 'witch', 'pirate', 'haunt', 'harbour', 'jazz', 'tokyo', 'rome', 'greece', 'deco', 'boudoir', 'nursery', 'jungle']) for(const tone of ['light', 'dark'])
   FRAMES[`${k}-slim-${tone}`] = {img:`story/${k}-slim-${tone}.webp`, W:1440, H:2560, page:true, th:SLIM[k], bh:200, tt:SLIM[k] - 20, tb:170, moonGlow:0};

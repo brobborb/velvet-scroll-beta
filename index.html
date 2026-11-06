@@ -3951,10 +3951,7 @@ function decodeText(u8, declared){
    DOCX is opened; ODT and Markdown are converted here. */
 const escHtml = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function docPage(title, author, body){
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${escHtml(title || '')}</title>${author ? `<meta name="author" content="${escHtml(author)}">` : ''}</head><body>${body}<div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 6ea3bcd</div>
-<script>document.title = 'BETA – ' + document.title;</script>
-</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${escHtml(title || '')}</title>${author ? `<meta name="author" content="${escHtml(author)}">` : ''}<\/head><body>${body}<\/body><\/html>`;   // written <\/ so no tool mistakes it for the page's own tags
 }
 function docZip(html, imgs){ const z = new JSZip(); z.file('book.html', html); for(const [p, d] of imgs) z.file(p, d); return z; }
 let mammothP = null;
@@ -7617,5 +7614,8 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 })();
 </script>
+<div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 6ea3bcd</div>
+<script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

@@ -765,9 +765,9 @@ html.ax-hc .rail,html.ax-hc .rail-show{border:2px solid var(--rfg)}
 .ribup{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:5;width:58px;height:30px;display:grid;place-items:center;border-radius:999px;border:1px solid color-mix(in srgb,var(--rfg) 22%,transparent);background:color-mix(in srgb,var(--rbg) 82%,var(--rfg));color:var(--rfg);opacity:.75;box-shadow:0 2px 10px rgb(0 0 0 / .2);cursor:pointer}
 .ribup:hover,.ribup:focus-visible{opacity:1}
 /* hidden bars slide out of the way and stop taking space */
-.reader.min .r-bottom,.reader.immersive .r-bottom{position:absolute;left:0;right:0;bottom:0;z-index:5;transform:translateY(105%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
-.reader.immersive .r-top{position:absolute;left:0;right:0;top:0;z-index:5;transform:translateY(-105%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
-.reader.immersive.show-top .r-top,.reader.immersive.show-bottom .r-bottom{transform:none;visibility:visible;transition:transform .25s ease}
+.reader.min .r-bottom,.reader.immersive .r-bottom{position:absolute;left:0;right:0;bottom:0;z-index:5;transform:translateY(105%);visibility:hidden;transition:transform .18s ease,visibility 0s .18s}
+.reader.immersive .r-top{position:absolute;left:0;right:0;top:0;z-index:5;transform:translateY(-105%);visibility:hidden;transition:transform .18s ease,visibility 0s .18s}
+.reader.immersive.show-top .r-top,.reader.immersive.show-bottom .r-bottom{transform:none;visibility:visible;transition:transform .18s ease}
 .reader.immersive .chrome{opacity:1!important;box-shadow:0 0 24px rgb(0 0 0 / .18)}
 .reader.playing .chrome{opacity:.16}
 .reader.playing .chrome:hover,.reader.playing .chrome:focus-within{opacity:1}
@@ -6013,7 +6013,7 @@ let drag = null, suppressClick = false, fling = 0;
 function setHand(on){ S.hand = on; applySettings(); }
 /* ---------- Full screen and hiding the controls ---------- */
 const touchUI = () => matchMedia('(hover: none), (pointer: coarse)').matches;
-let immersive = false, realFs = false, hoverT = 0, fsTipShown = false;
+let immersive = false, realFs = false, hoverT = 0, fsTipShown = false, fsArmed = false;
 function setBars(top, bottom){ R.classList.toggle('show-top', top); R.classList.toggle('show-bottom', bottom); }
 function setMin(min){
   R.classList.toggle('min', min); $('#ribUp').hidden = !min;
@@ -6029,7 +6029,8 @@ async function setImmersive(on){
     realFs = false;
     try{ const el = document.documentElement; if(!document.fullscreenElement && el.requestFullscreen){ await el.requestFullscreen({navigationUI:'hide'}); realFs = true; } }catch(e){}
     if(touchUI()) setMin(true);
-    else { setBars(true, true); clearTimeout(hoverT); hoverT = setTimeout(() => { if(immersive) setBars(false, false); }, 1600); }
+    // the pointer is still on the Full screen button: the bars go after a moment, and only come back once it has left the edges
+    else { fsArmed = false; setBars(true, true); clearTimeout(hoverT); hoverT = setTimeout(() => { if(immersive) setBars(false, false); }, 800); }
     if(!fsTipShown){ fsTipShown = true;
       toast(touchUI() ? 'Tap the arrow at the bottom to show the controls.' : 'Move the pointer to the top or bottom edge to show the controls. Press F to leave full screen.', 4500); }
   } else {
@@ -6050,10 +6051,11 @@ R.addEventListener('mousemove', e => {
   const panel = !$('#tocPanel').hidden || !$('#setPanel').hidden;
   const wantTop = e.clientY < (R.classList.contains('show-top') ? topH + 24 : 64) || panel;
   const wantBot = e.clientY > h - (R.classList.contains('show-bottom') ? botH + 24 : 84);
+  if(!fsArmed){ if(e.clientY > 90 && e.clientY < h - 100) fsArmed = true; else if(!panel) return; }
   if(wantTop || wantBot){ clearTimeout(hoverT); setBars(wantTop, wantBot); }
-  else { clearTimeout(hoverT); hoverT = setTimeout(() => { if(immersive && !touchUI()) setBars(!$('#tocPanel').hidden || !$('#setPanel').hidden, false); }, 450); }
+  else { clearTimeout(hoverT); hoverT = setTimeout(() => { if(immersive && !touchUI()) setBars(!$('#tocPanel').hidden || !$('#setPanel').hidden, false); }, 200); }
 });
-document.addEventListener('mouseleave', () => { if(immersive && !touchUI()){ clearTimeout(hoverT); hoverT = setTimeout(() => setBars(false, false), 300); } });
+document.addEventListener('mouseleave', () => { if(immersive && !touchUI()){ clearTimeout(hoverT); hoverT = setTimeout(() => setBars(false, false), 150); } });
 R.addEventListener('focusin', e => { if(immersive && !touchUI() && e.target.closest('.chrome')){ const top = !!e.target.closest('.r-top'); setBars(top || R.classList.contains('show-top'), !top || R.classList.contains('show-bottom')); } });
 // the reading area changes size when bars hide or show: keep the reader's place
 let stageRO = 0;
@@ -6760,7 +6762,7 @@ setupDonate();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · dacf617</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 2723ef8</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

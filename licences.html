@@ -59,6 +59,12 @@ a{color:var(--accent)}
 <li>Velvet Scroll shortens both into its own compact files (source/tools/make_dictionary.py), which are downloaded from velvetscroll.net only when you choose to download the dictionary.</li>
 </ul>
 
+<h2 id="translation">Translating books (optional, experimental)</h2>
+<ul>
+<li><strong>Bergamot translator</strong>, Mozilla’s translation engine behind Firefox Translations (<a href="https://github.com/mozilla/translations">github.com/mozilla/translations</a>, release v0.6.0), compiled to WebAssembly. Mozilla Public License 2.0 (<a href="LICENSE-MPL-2.0.txt">full text</a>); its source code is available at that address. The WebAssembly build used is the unmodified one published in the npm package @bandf/i18n 1.1.2 (MIT). The engine includes Marian NMT and intgemm (MIT), SentencePiece (Apache 2.0), ssplit-cpp (MIT) and protobuf-lite (BSD 3-clause).</li>
+<li><strong>Translation models</strong> from Mozilla’s Firefox Translations model registry (<a href="https://mozilla.github.io/translations/model-registry/">mozilla.github.io/translations/model-registry</a>), distributed by Mozilla under the Mozilla Public License 2.0. Velvet Scroll serves unmodified copies from velvetscroll.net, downloaded only when you turn on Translate.</li>
+</ul>
+
 <h2>Reading and library</h2>
 <ul>
 <li><strong>PDF.js</strong> 3.11.174 (Mozilla), Apache License 2.0: <a href="https://github.com/mozilla/pdf.js">github.com/mozilla/pdf.js</a></li>

@@ -1,0 +1,46 @@
+{
+ "note": "Translation models from Mozilla's model registry (Firefox Translations), MPL 2.0. The files are fetched into this folder by .github/workflows/translation-models.yml and checked against these SHA-256 hashes (of the unzipped files).",
+ "registry": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
+ "directions": {
+  "en-es": {
+   "source": "en",
+   "target": "es",
+   "architecture": "base-memory",
+   "releaseStatus": "Release",
+   "metrics": {
+    "bleu": 27.5229,
+    "chrf": 56.144,
+    "chrfpp": 53.8766,
+    "comet22": 0.854,
+    "llm-ref": 4.474,
+    "metricx24-qe": 2.0431,
+    "metricx24": 2.0918,
+    "spbleu": 32.5027
+   },
+   "tier": "basic",
+   "files": {
+    "lex": {
+     "name": "lex.50.50.enes.s2t.bin",
+     "path": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/lex.50.50.enes.s2t.bin.gz",
+     "size": 4198436,
+     "compressedSize": 2265250,
+     "sha256": "7d51237c0a07027dcd61643cfbbb0f8c48597d19907ef53d2cae9d6bec2cf25c"
+    },
+    "model": {
+     "name": "model.enes.intgemm.alphas.bin",
+     "path": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/model.enes.intgemm.alphas.bin.gz",
+     "size": 31561787,
+     "compressedSize": 22698792,
+     "sha256": "3b1c399511c01c84c36fae5c0524df44096288efdc8236e182b5c97d7ad2244c"
+    },
+    "vocab": {
+     "name": "vocab.enes.spm",
+     "path": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/vocab.enes.spm.gz",
+     "size": 816054,
+     "compressedSize": 409312,
+     "sha256": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad"
+    }
+   }
+  }
+ }
+}

@@ -2757,6 +2757,7 @@ async function fetchCover(url){
 // look up books without asking, applying only matches where the title and author both agree
 async function autoLookup(list, onEach){
   let upd = 0, check = 0, offline = false, i = 0;
+  list = list.filter(b => !DOC_FMTS.has(b.fmt));   // your own documents: there's no published edition to find
   for(const b of list){
     onEach && onEach(++i, list.length);
     const q = {title:b.title, author:b.author || '', isbn: isbnValid(b.isbn || '') ? isbnTo13(b.isbn) : ''};
@@ -4309,6 +4310,54 @@ function fmtFromSniff(kind, name){
   { const d = /\.(docx|odt|md|markdown)$/i.exec(name || ''); if(kind === 'htmlzip' && d) return {markdown:'md'}[d[1].toLowerCase()] || d[1].toLowerCase(); }
   return {epub:'epub', pdf:'pdf', txt:'txt', html:'html', htmlzip:'html', fb2:'fb2', cbz:'comic'}[kind] || '';
 }
+/* a cover for a document: its first page in miniature (title, headings and opening text on white paper), with a small
+   label saying what kind of document it is */
+const DOC_FMTS = new Set(['docx', 'odt', 'md']);
+async function docCover(html, fmt){
+  const W = 600, H = 900, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+  c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
+  const d = new DOMParser().parseFromString(html, 'text/html'), M = 54, maxW = W - 2 * M; let y = M + 6;
+  const blocks = [...d.body.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre,td')].filter(e => !e.querySelector('p,li,h1,h2,h3,h4,td'))
+    .map(e => ({t:e.tagName, s:e.textContent.replace(/\s+/g, ' ').trim()})).filter(b => b.s);
+  if(!blocks.length) blocks.push({t:'H1', s:d.title || 'Document'});
+  const wrap = (text, font, size, lh, colour, indent) => {
+    c.font = font; c.fillStyle = colour; let line = '';
+    for(const w of text.split(' ')){
+      const t = line ? line + ' ' + w : w;
+      if(c.measureText(t).width > maxW - indent && line){ if(y + size > H - M) return false; c.fillText(line, M + indent, y + size); y += lh; line = w; }
+      else line = t;
+    }
+    if(line){ if(y + size > H - M) return false; c.fillText(line, M + indent, y + size); y += lh; }
+    return true;
+  };
+  for(const b of blocks){
+    const head = /^H\d$/.test(b.t), lvl = head ? +b.t[1] : 0, size = head ? [0, 42, 32, 26, 23][lvl] : 20;
+    const font = head ? `700 ${size}px Georgia, "Times New Roman", serif` : `${size}px Georgia, "Times New Roman", serif`;
+    if(head && y > M + 10) y += size * 0.6;
+    if(!wrap(b.t === 'LI' ? '•  ' + b.s : b.s, font, size, Math.round(size * 1.45), head ? '#1a1a1a' : '#444444', b.t === 'LI' ? 14 : b.t === 'BLOCKQUOTE' ? 20 : 0)) break;
+    y += head ? size * 0.35 : 8;
+    if(y > H - M) break;
+  }
+  // fade the last lines out, as if the page carries on
+  const g = c.createLinearGradient(0, H - 190, 0, H - 40); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, '#ffffff'); c.fillStyle = g; c.fillRect(0, H - 190, W, 150);
+  const [label, col] = {docx:['DOCX', '#2b579a'], odt:['ODT', '#1f7a5c'], md:['MD', '#3d3d3d']}[fmt] || ['DOC', '#3d3d3d'];
+  c.font = '700 30px system-ui, -apple-system, "Segoe UI", sans-serif'; const lw = c.measureText(label).width + 36;
+  c.fillStyle = col; c.beginPath(); c.roundRect(W - M - lw, H - 34 - 52, lw, 52, 10); c.fill();
+  c.fillStyle = '#ffffff'; c.textBaseline = 'middle'; c.fillText(label, W - M - lw + 18, H - 34 - 26);
+  c.strokeStyle = '#d9d9d9'; c.lineWidth = 2; c.strokeRect(1, 1, W - 2, H - 2);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.86)); return blob.arrayBuffer();
+}
+// documents added before they had preview covers: make one once
+let docCoversChecked = false;
+async function backfillDocCovers(){
+  if(docCoversChecked) return; docCoversChecked = true; let changed = false;
+  for(const b of books.filter(b => DOC_FMTS.has(b.fmt) && !b.coverBuf && b.coverSrc !== 'classic')){
+    try{ const buf = await dbGetFile(b.id); if(!buf) continue; const sn = await sniff(buf, b.file); if(!sn.zip) continue;
+      b.coverBuf = await docCover(await sn.zip.file('book.html').async('string'), b.fmt); b.coverType = 'image/jpeg'; b.coverSrc = 'page';
+      await rq(DB.db.transaction('meta','readwrite').objectStore('meta').put(b)); changed = true; }catch(e){}
+  }
+  if(changed) render();
+}
 // books added as .zip files before formats were recorded: look inside once to see what they are
 let fmtChecked = false;
 async function backfillFormats(){
@@ -4535,10 +4584,12 @@ async function addFiles(files, opts){
       const title = ep.title || f.name.replace(/(\.(fb2|txt|x?html?|kepub|md|docx|odt))?\.[a-z0-9]+$/i,'').replace(/[_-]+/g,' ').trim();
       if(books.some(b=>b.title===title && b.author===ep.author)){ dup++; continue; }
       const m = {id:uid(), title, author:ep.author, year:ep.year || null, isbn:ep.isbn || '', added:Date.now(), upd:Date.now(), shelf:'', file:f.name, size:buf.byteLength, fp: await fingerprint(buf), desc: cleanDesc(ep.desc)}; if(opts && opts.source) m.source = opts.source;
-      try{ const fm = fmtFromSniff((await sniff(buf, f.name)).kind, f.name); if(fm) m.fmt = fm; }catch(e){}
+      let sn = null; try{ sn = await sniff(buf, f.name); const fm = fmtFromSniff(sn.kind, f.name); if(fm) m.fmt = fm; }catch(e){}
+      // documents (Word, LibreOffice, Markdown): a preview of the first page as the cover, so they're easy to tell apart
+      if(DOC_FMTS.has(m.fmt) && sn && sn.zip && !ep.coverBuf){ try{ const c = await docCover(await sn.zip.file('book.html').async('string'), m.fmt); m.coverBuf = c; m.coverType = 'image/jpeg'; m.coverSrc = 'page'; }catch(e){} }
       if(m.fp && books.some(b => b.fp === m.fp)){ dup++; continue; }
       if(ep.coverBuf){ m.coverBuf = ep.coverBuf; m.coverType = ep.coverType; m.coverSrc = PDF.isPdf(new Uint8Array(buf)) ? 'page' : 'own'; }
-      await dbPutFile(m.id, buf); await dbPutMeta(m); books.push(m); added++; fresh.push(m);
+      await dbPutFile(m.id, buf); await dbPutMeta(m); books.push(m); added++; if(!DOC_FMTS.has(m.fmt)) fresh.push(m);   // documents aren't published books: nothing to look up
     }catch(e){ bad.push(f.name + (e.message==='drm' ? ' (DRM-protected)' : e.message==='backup' ? ' (that’s a Velvet Scroll backup: restore it with Backup)' : e.message==='password' ? ' (password-protected)' : e.message==='nopdf' ? ' (the PDF reader couldn’t load; check your connection)' : '')); }
   }
   render();
@@ -7626,13 +7677,13 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
   syncCodeFromAddress();
   try{ navigator.storage?.persist?.(); }catch(e){}
   render();
-  backfillFormats();
+  backfillFormats().then(backfillDocCovers);
   if(!ok){ $('#notice').hidden=false; }
 })();
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 499bb11</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 81f237f</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

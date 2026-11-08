@@ -551,16 +551,21 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
   #dlg .dfields,#dlg .ddb{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
   /* PC screens: the window takes most of the height, so author bios and search results fit without scroll bars */
   #dlg .sheet{height:min(1060px,100%)} #dlg .dbody{flex:1 1 auto}
+  /* pairs of short rows side by side, so everything (Story mode included) fits without scrolling */
+  #dlg .dline{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:9px 16px}
+  #dlg .dline > .dgenre{flex:1.3 1 340px;flex-wrap:nowrap} #dlg .dline > .dgenre .dgl{flex:1;min-width:0} #dlg .dline > .dgenre select{width:100%}
+  #dlg .dline > .drow2{flex:1 1 260px}
+  #dlg .dline2{align-items:center} #dlg .dline2 > .dstory{flex:1 1 260px}
   #dlg .ddb .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}   /* search results side by side, half the height */
   #dlg .ddb .results li{grid-template-columns:30px minmax(0,1fr) auto;gap:9px;padding:5px 8px} #dlg .ddb .results .rt{width:30px}
   #dlg .ddb .results strong{font-size:14px;line-height:1.25} #dlg .ddb .results .meta{font-size:12px;line-height:1.3} #dlg .ddb .results .btn{padding:5px 12px;min-height:0}
   #dlg .dcov{border-top:1px solid var(--line);padding-top:12px}
   .dcovrow{flex-direction:row;align-items:flex-start;gap:24px}
-  #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:86px;overflow-x:auto;padding-bottom:4px}
-  .dcovside{flex:0 0 min(440px,36%)}
+  #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(54px,86px);overflow-x:auto;padding-bottom:4px}   /* tiles shrink so every design shows without scrolling */
+  .dcovside{flex:0 0 min(400px,32%)}
   .dprev .seg{flex-direction:row}
 }
-@media (min-width:1000px) and (max-height:740px){ #dlg .dcov .covers{grid-auto-columns:66px} #dlg .sheet{gap:8px;padding-top:12px} #dlg .dfields{gap:6px} #dlg .dbody{row-gap:10px}
+@media (min-width:1000px) and (max-height:740px){ #dlg .dcov .covers{grid-auto-columns:minmax(52px,66px)} #dlg .sheet{gap:8px;padding-top:12px} #dlg .dfields{gap:6px} #dlg .dbody{row-gap:10px}
   #dlg .dcov{padding-top:8px} #dlg #dCoverHint{display:none} #dlg .sh-foot{padding:8px 20px 10px} #dlg .dfields input{padding:5px 10px} #dlg #dModesHint{display:none} #dlg .dfields{gap:5px} .dgenre .dkind button{height:28px} }
 @media (max-width:640px){
   #dlg.modal{padding:0}
@@ -573,6 +578,7 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
 .dfields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:700}
 .dfields input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--fg);font-size:15px;font-weight:400;min-width:0}
 .dgenre{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dline{display:flex;flex-direction:column;gap:9px;min-width:0}
 .dgenre .dkind button{width:auto;padding:0 12px;height:30px;font-size:13.5px}
 .dgenre .dgl{flex:1 1 180px;min-width:0}
 .dgenre select{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--fg);font:400 14.5px var(--f-ui)}
@@ -1556,6 +1562,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
         <label for="dTitle">Title<input id="dTitle" autocomplete="off"></label>
         <label for="dAuthor">Author<input id="dAuthor" autocomplete="off"></label>
         <div class="dbio" id="dBio" aria-live="polite" hidden></div>
+        <div class="dline">
         <div class="dgenre">
           <div class="modeseg dkind" role="group" aria-label="Fiction or non-fiction"><button type="button" id="dFic" aria-pressed="false">Fiction</button><button type="button" id="dNon" aria-pressed="false">Non-fiction</button></div>
           <label for="dGenre" class="dgl"><span class="vh">Genre</span><select id="dGenre"></select></label>
@@ -1564,15 +1571,18 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
           <label for="dYear">First published<input id="dYear" inputmode="numeric" placeholder="e.g. 1890" autocomplete="off"></label>
           <label for="dIsbn">ISBN<input id="dIsbn" placeholder="e.g. 978-0-14-118776-1" autocomplete="off" spellcheck="false" aria-describedby="dIsbnMsg"></label>
         </div>
+        </div>
         <p class="hint isbnmsg" id="dIsbnMsg" aria-live="polite"></p>
+        <div class="dline dline2">
         <div class="dmodes"><span class="dml" id="dModesL">Show in</span>
           <div class="modeseg" role="group" aria-labelledby="dModesL">
             <button type="button" id="dStudy" aria-pressed="true" title="Show this book in Study mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg><span>Study</span></button>
             <button type="button" id="dRelax" aria-pressed="true" title="Show this book in Relaxed mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg><span>Relaxed</span></button>
           </div>
         </div>
-        <p class="hint" id="dModesHint" aria-live="polite"></p>
         <div class="dstory" id="dStoryRow"><label for="dStory">Story mode</label><select id="dStory"></select></div>
+        </div>
+        <p class="hint" id="dModesHint" aria-live="polite"></p>
       </div>
 
     <div class="grp dcov">
@@ -3063,7 +3073,7 @@ const modeKey = () => S.mode === 'relax' ? 'r' : 's';
 const inMode = b => !b.vis || b.vis === modeKey();
 function dModesSet(v){ $('#dStudy').setAttribute('aria-pressed', String(v !== 'r')); $('#dRelax').setAttribute('aria-pressed', String(v !== 's')); dModesHint(); }
 function dModes(){ const st = $('#dStudy').getAttribute('aria-pressed') === 'true', rl = $('#dRelax').getAttribute('aria-pressed') === 'true'; return st && rl ? '' : st ? 's' : 'r'; }
-function dModesHint(){ const v = dModes(); $('#dModesHint').textContent = !v ? 'Shown in the library in both modes.' : `Shown only in ${v === 's' ? 'Study' : 'Relaxed'} mode.`; }
+function dModesHint(){ const v = dModes(); $('#dModesHint').textContent = !v ? '' : `Shown only in ${v === 's' ? 'Study' : 'Relaxed'} mode.`; }
 [['#dStudy', '#dRelax'], ['#dRelax', '#dStudy']].forEach(([a, o]) => $(a).onclick = () => {
   const on = $(a).getAttribute('aria-pressed') === 'true';
   if(on && $(o).getAttribute('aria-pressed') !== 'true'){ $(o).setAttribute('aria-pressed', 'true'); }   // turning off the only one: show it in the other mode instead
@@ -7901,7 +7911,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · f2a09be</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 469a138</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

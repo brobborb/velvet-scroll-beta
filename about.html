@@ -50,6 +50,12 @@ h2{margin:0 0 6px;font:400 28px/1.2 var(--f-display);text-wrap:balance}
 .feature{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
 .feature h3{margin:0 0 6px;font:700 17px/1.3 var(--f-ui)}
 .feature p{margin:0;color:var(--muted);font-size:15.5px}
+.links{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.links li{display:flex;flex-direction:column;gap:1px}
+.links a,.links strong{font-weight:700;font-size:15.5px}
+.links span{color:var(--muted);font-size:14.5px;line-height:1.4}
+.finds{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.sub.small{font-size:14.5px;margin-top:16px}
 .shots{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,560px);gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory;scroll-padding-inline:18px}
 .shots figure{margin:0;scroll-snap-align:start}
 .shots img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
@@ -172,6 +178,39 @@ footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;fo
   </ul>
 </section>
 
+<section class="wrap" id="find-books" aria-labelledby="bH">
+  <h2 id="bH">Where to find books</h2>
+  <p class="sub">Velvet Scroll opens any book without DRM (copy protection). There are hundreds of thousands of free classics, and plenty of authors and shops that sell books DRM-free. Thank you to the volunteers and authors who make them available.</p>
+  <div class="features finds">
+    <div class="feature"><h3>Free classics (public domain)</h3>
+      <ul class="links">
+        <li><a href="https://www.gutenberg.org/" target="_blank" rel="noopener">Project Gutenberg</a><span>Over 75,000 free ebooks, the first and largest library of its kind.</span></li>
+        <li><a href="https://standardebooks.org/" target="_blank" rel="noopener">Standard Ebooks</a><span>Carefully proofread, beautifully formatted editions of the classics.</span></li>
+        <li><a href="https://gutenberg.net.au/" target="_blank" rel="noopener">Project Gutenberg Australia</a><span>Books that are free here under Australian copyright, including Australian authors.</span></li>
+        <li><a href="https://www.fadedpage.com/" target="_blank" rel="noopener">Faded Page</a><span>A Canadian library with many 20th-century books.</span></li>
+        <li><a href="https://wikisource.org/" target="_blank" rel="noopener">Wikisource</a><span>Texts in many languages, downloadable as EPUB.</span></li>
+        <li><a href="https://archive.org/details/texts" target="_blank" rel="noopener">Internet Archive</a><span>Millions of scanned books. Choose ones marked as free downloads; borrowed books are locked.</span></li>
+      </ul></div>
+    <div class="feature"><h3>DRM-free books to buy</h3>
+      <ul class="links">
+        <li><a href="https://www.baen.com/" target="_blank" rel="noopener">Baen Ebooks</a><span>Science fiction and fantasy, all DRM-free.</span></li>
+        <li><a href="https://www.smashwords.com/" target="_blank" rel="noopener">Smashwords</a><span>Independent authors in every genre, DRM-free.</span></li>
+        <li><a href="https://www.storybundle.com/" target="_blank" rel="noopener">StoryBundle</a><span>Themed bundles of indie books at a price you choose.</span></li>
+        <li><a href="https://leanpub.com/" target="_blank" rel="noopener">Leanpub</a><span>Non-fiction and technical books, often updated as they’re written.</span></li>
+        <li><a href="https://itch.io/books" target="_blank" rel="noopener">itch.io</a><span>Comics, zines and stories from independent creators.</span></li>
+        <li><strong>Your favourite authors</strong><span>Many sell DRM-free EPUBs on their own websites or newsletters. Buying direct often supports them the most.</span></li>
+      </ul></div>
+    <div class="feature"><h3>Papers, stories and more</h3>
+      <ul class="links">
+        <li><a href="https://arxiv.org/" target="_blank" rel="noopener">arXiv</a><span>Free research papers in science and maths.</span></li>
+        <li><a href="https://archiveofourown.org/" target="_blank" rel="noopener">Archive of Our Own</a><span>Fan fiction, downloadable as EPUB.</span></li>
+        <li><strong>Web articles</strong><span>With the Velvet Scroll browser extension, save any article to read later.</span></li>
+        <li><strong>Your own documents</strong><span>Word, LibreOffice and Markdown files open too.</span></li>
+      </ul></div>
+  </div>
+  <p class="sub small"><strong>Tip:</strong> you don’t have to download first. Copy a book’s link from Project Gutenberg or arXiv, then choose <em>Add books → From a web address</em> in Velvet Scroll. Public domain differs between countries: in Australia, works by authors who died before 1955 are generally free to use, but a book that’s free in one country may not be in another. Books from Kindle, Apple Books and library apps such as Libby are copy-protected, so they can’t be opened.</p>
+</section>
+
 <section class="wrap" aria-labelledby="pH">
   <div class="private">
     <h2 id="pH">Private by design</h2>
@@ -221,6 +260,7 @@ footer.foot .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;padding-block:22px;fo
   <details><summary>What do I get with Velvet Scroll Plus?</summary><p>Google Drive sync between your devices, text recognition for scanned PDFs, PDFs saved with your highlights, exporting your notes, genre cover designs for books without a cover, and soon Story mode's illustrated themes. It's a single payment rather than a subscription, and one licence key works on the website and in all the browser extensions.</p></details>
   <details><summary>Will free features ever move to Plus?</summary><p>No. Features that are free stay free. Plus only adds new things on top.</p></details>
   <details><summary>Where are my books kept?</summary><p>In your own browser's storage, on your own device. They aren't sent to Velvet Scroll or anyone else. Use Backup to keep a copy or move your library to another computer.</p></details>
+  <details><summary>Where can I get books to read?</summary><p>Free classics from Project Gutenberg, Standard Ebooks and other public-domain libraries, and DRM-free books from independent shops and authors. See <a href="#find-books">Where to find books</a> above.</p></details>
   <details><summary>Can it open Kindle or other store-bought books?</summary><p>Only books without DRM. Velvet Scroll doesn't remove copy protection, so books bought from stores that use it, including the Kindle store, can't be opened. Free books from Project Gutenberg, Standard Ebooks and many small publishers work well.</p></details>
   <details><summary>Does it work on my phone or tablet?</summary><p>Yes. Open velvetscroll.net in your phone's browser. On Android, the Firefox extension works too.</p></details>
   <details><summary>Can I install it like an app?</summary><p>Yes. In Chrome or Edge on a computer, choose <em>Install app</em> at the top of the library, or the install icon in the address bar. On Android, open the browser menu and choose <em>Install app</em> or <em>Add to Home screen</em>. On an iPhone or iPad, tap Safari's Share button and choose <em>Add to Home Screen</em>. Once installed, Velvet Scroll opens in its own window and works offline. On a computer, the installed app can also open book files straight from your folders. On iPhone and iPad, the Home Screen app keeps its own library, separate from Safari's, so add your books there or restore a backup.</p></details>

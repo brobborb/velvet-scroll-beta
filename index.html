@@ -3281,11 +3281,22 @@ function bookUrl(u){   // a book's page to its file, and the other sites its dow
   return {href:u.href, also:[]};
 }
 const BOOK_EXT = /\.(epub|kepub|pdf|mobi|azw3?|prc|fb2|fbz|cbz|docx|odt|md|txt)$/i;
+/* Free libraries such as Project Gutenberg and arXiv don't let other websites download their files, so on the website
+   their downloads go through a small Worker of ours (source/worker/velvet-scroll-fetch.js) that only fetches from
+   these libraries. The extensions download directly. Empty until the Worker is set up. */
+const FETCHER = '';
+const FREE_LIBS = /(^|\.)(gutenberg\.org|gutenberg\.net\.au|standardebooks\.org|arxiv\.org|fadedpage\.com|wikisource\.org|ws-export\.wmcloud\.org|archive\.org)$/;
+const freeLib = href => { try{ return FREE_LIBS.test(new URL(href).hostname); }catch(e){ return false; } };
+async function urlFetch(href, signal){
+  if(!IS_EXT && FETCHER && freeLib(href)) return fetch(FETCHER + '/?url=' + encodeURIComponent(href), {credentials:'omit', signal});
+  return fetch(href, {credentials:'omit', signal});
+}
+const finalUrl = (r, href) => r.headers.get('X-Final-URL') || r.url || href;
 function urlFileName(r, href, u8){
   const cd = r.headers.get('content-disposition') || '';
   let name = (/filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i.exec(cd) || [])[1] || (/filename\s*=\s*"?([^";]+)"?/i.exec(cd) || [])[1] || '';
   try{ name = decodeURIComponent(name.trim()); }catch(e){}
-  if(!name){ try{ name = decodeURIComponent(new URL(r.url || href).pathname.split('/').filter(Boolean).pop() || ''); }catch(e){} }
+  if(!name){ try{ name = decodeURIComponent(new URL(finalUrl(r, href)).pathname.split('/').filter(Boolean).pop() || ''); }catch(e){} }
   name = (name || 'download').replace(/[\\/:*?"<>|]+/g, ' ').trim();
   if(!BOOK_EXT.test(name)){   // no telling extension: go by the content
     const head = String.fromCharCode(...u8.subarray(0, 64)), at60 = String.fromCharCode(...u8.subarray(60, 68)), type = r.headers.get('content-type') || '';
@@ -3322,14 +3333,14 @@ async function urlAdd(raw, from){
   const ctl = urlCtl = new AbortController(); $('#urlGo').disabled = true; prog.hidden = false; prog.removeAttribute('value');
   st.textContent = 'Connecting to ' + target.hostname + '…';
   try{
-    const r = await fetch(bu.href, {credentials:'omit', signal:ctl.signal});
+    const r = await urlFetch(bu.href, ctl.signal);
     if(!r.ok){ st.textContent = r.status === 404 ? 'Nothing was found at that address (error 404). Check the link.' : r.status === 401 || r.status === 403 ? 'That site wants you to sign in or doesn’t allow this download. Download the file in your browser, then use Add books.' : `The site answered with an error (${r.status}). Try again later, or download the file and use Add books.`; return; }
     const total = +r.headers.get('content-length') || 0;
     if(total > URL_MAX){ st.textContent = 'That file is too large to add (over 500 MB).'; return; }
     const type = r.headers.get('content-type') || '';
     if(/text\/html|application\/xhtml/i.test(type)){
       // a web page: look for links to book files on it
-      const html = decodeText(new Uint8Array(await r.arrayBuffer())), doc = new DOMParser().parseFromString(html, 'text/html'), links = bookLinks(doc, r.url || bu.href);
+      const html = decodeText(new Uint8Array(await r.arrayBuffer())), doc = new DOMParser().parseFromString(html, 'text/html'), links = bookLinks(doc, finalUrl(r, bu.href));
       if(links.length){
         st.textContent = links.length === 1 ? 'That’s a web page with a book file on it:' : 'That’s a web page with these book files on it. Choose one:';
         act.replaceChildren(...links.map(l => el('button', {class:'btn', text:`Add ${l.kind.toUpperCase()}: ${l.label}`, onclick:() => urlAdd(l.href, u.href)})));
@@ -3355,6 +3366,8 @@ async function urlAdd(raw, from){
   }catch(e){
     if(ctl.signal.aborted) return;
     st.textContent = IS_EXT ? 'Couldn’t download from that address. Check your connection and the link, then try again.'
+      : freeLib(bu.href) && FETCHER ? 'Couldn’t download that book just now. Check your connection and try again in a moment, or download the file in your browser and use Add books.'
+      : freeLib(bu.href) ? 'This library doesn’t let other websites download its books yet. Download the file in your browser (choose EPUB) and use Add books, or use the Velvet Scroll browser extension, which can add it straight from the link.'
       : 'That site doesn’t let other websites download its files, or couldn’t be reached. Download the file in your browser and use Add books, or use the Velvet Scroll browser extension, which can download from any site you allow.';
   } finally { if(urlCtl === ctl) urlCtl = null; $('#urlGo').disabled = false; prog.hidden = true; }
 }
@@ -7911,7 +7924,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · b9a0bcb</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · c09363f</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

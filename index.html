@@ -3283,8 +3283,8 @@ function bookUrl(u){   // a book's page to its file, and the other sites its dow
 const BOOK_EXT = /\.(epub|kepub|pdf|mobi|azw3?|prc|fb2|fbz|cbz|docx|odt|md|txt)$/i;
 /* Free libraries such as Project Gutenberg and arXiv don't let other websites download their files, so on the website
    their downloads go through a small Worker of ours (source/worker/velvet-scroll-fetch.js) that only fetches from
-   these libraries. The extensions download directly. Empty until the Worker is set up. */
-const FETCHER = '';
+   these libraries. The extensions download directly. */
+const FETCHER = 'https://velvet-scroll-fetch.brobborb06.workers.dev';
 const FREE_LIBS = /(^|\.)(gutenberg\.org|gutenberg\.net\.au|standardebooks\.org|arxiv\.org|fadedpage\.com|wikisource\.org|ws-export\.wmcloud\.org|archive\.org)$/;
 const freeLib = href => { try{ return FREE_LIBS.test(new URL(href).hostname); }catch(e){ return false; } };
 async function urlFetch(href, signal){
@@ -7924,7 +7924,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · c09363f</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · a8e1ab2</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

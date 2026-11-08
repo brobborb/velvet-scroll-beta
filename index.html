@@ -545,10 +545,14 @@ html.ax-hc .dbio{border:2px solid var(--fg)}
 #dlg .dplusnote{color:var(--fg)}
 .ctile .plustag{margin-left:4px;padding:0 5px;font-size:9px}
 @media (min-width:1000px) and (min-height:560px){
-  #dlg .sheet{width:min(1240px,100%);overflow:hidden}
+  #dlg .sheet{width:min(1440px,100%);overflow:hidden}
   #dlg .dbody{flex:0 1 auto;min-height:0;overflow:hidden;grid-template-columns:clamp(170px,16vw,210px) minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;
     grid-template-areas:"prev fields db" "cov cov cov";gap:16px 26px;align-items:stretch}
   #dlg .dfields,#dlg .ddb{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+  /* PC screens: the window takes most of the height, so author bios and search results fit without scroll bars */
+  #dlg .sheet{height:min(1060px,100%)} #dlg .dbody{flex:1 1 auto}
+  #dlg .ddb .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}   /* search results side by side, half the height */
+  #dlg .ddb .results li{grid-template-columns:34px minmax(0,1fr) auto;gap:10px;padding:6px 8px} #dlg .ddb .results .rt{width:34px}
   #dlg .dcov{border-top:1px solid var(--line);padding-top:12px}
   .dcovrow{flex-direction:row;align-items:flex-start;gap:24px}
   #dlg .dcov .covers{flex:1;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:86px;overflow-x:auto;padding-bottom:4px}
@@ -7896,7 +7900,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 47a9dd4</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 93c5af5</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

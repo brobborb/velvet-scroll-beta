@@ -108,6 +108,11 @@ button,input,select{font:inherit;color:inherit}
 header.top.hcompact .hquiet .qbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 header.top.hcompact .hquiet .qbtn{padding:9px}
 @media (max-width:860px){ .hquiet .qbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} .hquiet .qbtn{padding:9px} .resume .more{display:none} }
+/* phones: the tool icons and Add books share one row under the name; if they still don't fit (when Install or Find details
+   appear, or with large text), Add books shows just its + (the fit check below adds .hadd-icon) */
+@media (max-width:560px){ .top .hdrbtns{flex-wrap:nowrap;width:100%;justify-content:space-between;gap:6px} header.top .hquiet .qbtn,header.top.hcompact .hquiet .qbtn{padding:7px 5px}
+  .top .addsplit{flex:none} .top .addsplit .addmain{padding:9px 9px 9px 12px;gap:6px} .top .addsplit .addmore{padding:9px 9px 9px 7px}
+  header.top.hadd-icon .addlbl{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} header.top.hadd-icon .addsplit .addmain{padding:9px 9px 9px 12px} header.top.hwrap .hdrbtns{flex-wrap:wrap} }
 @media (max-width:560px){ .top .wrap{padding-block:16px 14px} .brand h1{font-size:27px} .brand p{font-size:14px} .resume{gap:12px;margin-top:14px} .resume .cover{width:44px} .resume .rt{font-size:16px} .resume > .btn{padding:8px 14px} }
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:700;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -1204,7 +1209,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <button id="plusOpen" class="qbtn" title="Velvet Scroll Plus: a one-time purchase for extra features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span id="plusLbl">Plus</span></button>
     </nav>
     <div class="addsplit">
-      <label class="btn primary addmain" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add books</label>
+      <label class="btn primary addmain" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="addlbl">Add books</span></label>
       <button class="btn primary addmore" id="addMore" aria-haspopup="menu" aria-expanded="false" aria-controls="addMenu" title="More ways to add" aria-label="More ways to add books"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
       <div id="addMenu" class="addmenu" role="menu" hidden>
         <button role="menuitem" id="addFilesItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>Choose files on this device…</button>
@@ -3303,6 +3308,7 @@ let urlCtl = null;
 function closeUrlNow(){ $('#urlDlg').hidden = true; if(urlCtl){ urlCtl.abort(); urlCtl = null; } }
 /* the Add books menu */
 function addMenu(open){ const m = $('#addMenu'), b = $('#addMore'); if(open === undefined) open = m.hidden; m.hidden = !open; b.setAttribute('aria-expanded', String(open));
+  m.style.right = ''; if(open){ const r = m.getBoundingClientRect(); if(r.left < 8) m.style.right = (r.left - 8) + 'px'; }
   if(open) m.querySelector('button:not([hidden])').focus(); }
 $('#addMore').onclick = e => { e.stopPropagation(); addMenu(); };
 document.addEventListener('pointerdown', e => { if(!$('#addMenu').hidden && !e.target.closest('#addMenu, #addMore')) addMenu(false); });
@@ -3815,8 +3821,10 @@ if(!IS_EXT && !IN_CLAUDE && 'serviceWorker' in navigator && (location.protocol =
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 // keep the library header on one row: drop the small buttons' labels when they would wrap below the name
 { const top = $('header.top'), brand = top?.querySelector('.brand'), btns = top?.querySelector('.hdrbtns');
-  const fit = () => { if(!top || !brand || !btns) return; top.classList.remove('hcompact');
-    if(btns.getBoundingClientRect().top >= brand.getBoundingClientRect().bottom - 4) top.classList.add('hcompact'); };
+  const fit = () => { if(!top || !brand || !btns) return; top.classList.remove('hcompact', 'hadd-icon', 'hwrap');
+    if(btns.getBoundingClientRect().top >= brand.getBoundingClientRect().bottom - 4) top.classList.add('hcompact');
+    if(btns.scrollWidth > btns.clientWidth + 1) top.classList.add('hadd-icon');
+    if(btns.scrollWidth > btns.clientWidth + 1) top.classList.add('hwrap'); };   // still too wide (very large text): let it wrap
   let raf = 0; const later = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
   addEventListener('resize', later);
   if(btns) new MutationObserver(later).observe(btns, {subtree:true, attributes:true, attributeFilter:['hidden']});
@@ -8030,7 +8038,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · f3c8a51</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 7c751ac</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

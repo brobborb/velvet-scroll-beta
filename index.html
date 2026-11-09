@@ -4674,13 +4674,13 @@ function render(){
   const reading = books.filter(b=>{ const s=status(b); return s==='reading' && inMode(b); }).sort((a,b)=>(progress[b.id]?.t||0)-(progress[a.id]?.t||0)), lastB = reading[0];
   const cb = $('#cont'); cb.hidden = !lastB;
   if(lastB){ const pc = Math.round(progress[lastB.id].p*100), when = progress[lastB.id].t ? ago(progress[lastB.id].t) : '';
-    cb.replaceChildren(
+    cb.replaceChildren(...[   // (filtered: replaceChildren would show a missing part as the word "null")
       el('button', {class:'cover', 'aria-label':`Continue ${lastB.title}`, onclick:() => openBook(lastB)}, coverEl(lastB)),
       el('div', {class:'rinfo'}, el('span', {class:'rk', text:'Continue reading'}), el('span', {class:'rt', text:lastB.title, title:lastB.title}),
         lastB.author ? el('span', {class:'ra', text:lastB.author}) : null,
         el('div', {class:'rp'}, el('div', {class:'prog'}, Object.assign(el('span'), {style:`width:${pc}%`})), el('span', {text:`${pc}%` + (when ? ` · ${when}` : '')}))),
       reading.length > 1 ? el('div', {class:'more', 'aria-label':'Also reading'}, ...reading.slice(1, 4).map(b => el('button', {text:b.title, title:`Continue ${b.title} (${Math.round(progress[b.id].p*100)}%)`, onclick:() => openBook(b)}))) : null,
-      el('button', {class:'btn primary', text:'Continue', onclick:() => openBook(lastB)})); }
+      el('button', {class:'btn primary', text:'Continue', onclick:() => openBook(lastB)})].filter(Boolean)); }
 }
 // who a book is by; a saved article also names its website (once, if the author is the site)
 function byLine(b){ if(b.kind !== 'article') return b.author || '';
@@ -8062,7 +8062,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 43beb77</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 4ecd944</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

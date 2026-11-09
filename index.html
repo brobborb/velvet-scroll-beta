@@ -3334,6 +3334,11 @@ function bookUrl(u){   // a book's page to its file, and the other sites its dow
   const h = u.hostname.replace(/^www\./, ''), p = u.pathname; let m;
   if(h === 'gutenberg.org' && (m = /^\/ebooks\/(\d+)\/?$/.exec(p))) return {href:`https://www.gutenberg.org/ebooks/${m[1]}.epub3.images`, also:[]};
   if(h === 'e-book.au' && (m = /^\/books\/([a-z0-9-]+)\/?$/.exec(p))) return {href:`https://e-book.au/epub/${m[1]}.epub`, also:[]};
+  // open-access research: an article's page to its PDF (OAPEN and Zenodo pages list their files, so those pages work as they are)
+  if(h === 'journals.plos.org' && (m = /^\/([a-z]+)\/article$/.exec(p)) && u.searchParams.get('id')) return {href:`https://journals.plos.org/${m[1]}/article/file?id=${encodeURIComponent(u.searchParams.get('id'))}&type=printable`, also:[]};
+  if(h === 'europepmc.org' && (m = /\/(PMC\d+)\/?$/i.exec(p))) return {href:`https://europepmc.org/articles/${m[1].toUpperCase()}?pdf=render`, also:[]};
+  if((h === 'hal.science' || h.endsWith('.hal.science') || h === 'hal.archives-ouvertes.fr') && (m = /^\/([a-z]+-\d{8}(?:v\d+)?)\/?$/.exec(p))) return {href:`https://${u.hostname}/${m[1]}/document`, also:['https://hal.science/*', 'https://*.hal.science/*']};
+  if(h === 'osf.io' && (m = /^\/(?:preprints\/[a-z]+\/)?([a-z0-9]{5})(?:_v\d+)?(?:\/v\d+)?\/?$/.exec(p))) return {href:`https://osf.io/${m[1]}/download`, also:['https://*.osf.io/*']};
   if(h === 'arxiv.org' && (m = /^\/(?:abs|pdf)\/(.+?)(?:\.pdf)?\/?$/.exec(p))) return {href:`https://arxiv.org/pdf/${m[1]}`, also:[]};
   if(h === 'github.com' && (m = /^\/([^/]+)\/([^/]+)\/(?:blob|raw)\/(.+)$/.exec(p))) return {href:`https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}`, also:['https://raw.githubusercontent.com/*']};
   if(/(^|\.)dropbox\.com$/.test(h)){ const v = new URL(u.href); v.searchParams.set('dl', '1'); return {href:v.href, also:['https://*.dropboxusercontent.com/*']}; }
@@ -3346,7 +3351,7 @@ const BOOK_EXT = /\.(epub|kepub|pdf|mobi|azw3?|prc|fb2|fbz|cbz|docx|odt|md|txt)$
    their downloads go through a small Worker of ours (source/worker/velvet-scroll-fetch.js) that only fetches from
    these libraries. The extensions download directly. */
 const FETCHER = 'https://velvet-scroll-fetch.brobborb06.workers.dev';
-const FREE_LIBS = /(^|\.)(gutenberg\.org|gutenberg\.net\.au|e-book\.au|arxiv\.org|fadedpage\.com|wikisource\.org|ws-export\.wmcloud\.org|archive\.org)$/;
+const FREE_LIBS = /(^|\.)(gutenberg\.org|gutenberg\.net\.au|e-book\.au|oapen\.org|zenodo\.org|europepmc\.org|plos\.org|hal\.science|archives-ouvertes\.fr|osf\.io|arxiv\.org|fadedpage\.com|wikisource\.org|ws-export\.wmcloud\.org|archive\.org)$/;
 const freeLib = href => { try{ return FREE_LIBS.test(new URL(href).hostname); }catch(e){ return false; } };
 async function urlFetch(href, signal){
   if(!IS_EXT && FETCHER && freeLib(href)) return fetch(FETCHER + '/?url=' + encodeURIComponent(href), {credentials:'omit', signal});
@@ -8057,7 +8062,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · b0042cc</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 43beb77</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

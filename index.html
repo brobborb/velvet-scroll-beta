@@ -63,10 +63,8 @@ button,input,select{font:inherit;color:inherit}
 .qbtn:hover,.qbtn[aria-expanded="true"]{background:var(--accent-soft);color:var(--fg)}
 .qbtn[hidden]{display:none}
 .addsplit{position:relative;display:inline-flex}
-.addsplit .addmain{border-radius:999px 0 0 999px;padding-right:14px}
+.addsplit .addmain{border-radius:999px;padding-right:16px}   /* one button: it opens Choose files / From a web address */
 .addsplit .addmain svg{width:18px;height:18px}
-.addsplit .addmore{border-radius:0 999px 999px 0;padding:9px 11px 9px 9px;border-left:1px solid color-mix(in srgb,var(--accent-fg) 30%,transparent)}
-.addsplit .addmore svg{width:17px;height:17px}
 .addmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:40;min-width:250px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 40px rgb(0 0 0 / .22);padding:6px;display:flex;flex-direction:column}
 .addmenu[hidden]{display:none}
 .addmenu button{white-space:nowrap;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px;color:var(--fg)}
@@ -111,8 +109,8 @@ header.top.hcompact .hquiet .qbtn{padding:9px}
 /* phones: the tool icons and Add books share one row under the name; if they still don't fit (when Install or Find details
    appear, or with large text), Add books shows just its + (the fit check below adds .hadd-icon) */
 @media (max-width:560px){ .top .hdrbtns{flex-wrap:nowrap;width:100%;justify-content:space-between;gap:6px} header.top .hquiet .qbtn,header.top.hcompact .hquiet .qbtn{padding:7px 5px}
-  .top .addsplit{flex:none} .top .addsplit .addmain{padding:9px 9px 9px 12px;gap:6px} .top .addsplit .addmore{padding:9px 9px 9px 7px}
-  header.top.hadd-icon .addlbl{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} header.top.hadd-icon .addsplit .addmain{padding:9px 9px 9px 12px} header.top.hwrap .hdrbtns{flex-wrap:wrap} }
+  .top .addsplit{flex:none} .top .addsplit .addmain{padding:9px 14px 9px 12px;gap:6px}
+  header.top.hadd-icon .addlbl{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} header.top.hadd-icon .addsplit .addmain{padding:9px 10px} header.top.hwrap .hdrbtns{flex-wrap:wrap} }
 @media (max-width:560px){ .top .wrap{padding-block:16px 14px} .brand h1{font-size:27px} .brand p{font-size:14px} .resume{gap:12px;margin-top:14px} .resume .cover{width:44px} .resume .rt{font-size:16px} .resume > .btn{padding:8px 14px} }
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:700;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -1229,8 +1227,7 @@ html.ax-still *,html.ax-still *::before,html.ax-still *::after{transition:none!i
       <button id="plusOpen" class="qbtn" title="Velvet Scroll Plus: a one-time purchase for extra features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg><span id="plusLbl">Plus</span></button>
     </nav>
     <div class="addsplit">
-      <label class="btn primary addmain" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="addlbl">Add books</span></label>
-      <button class="btn primary addmore" id="addMore" aria-haspopup="menu" aria-expanded="false" aria-controls="addMenu" title="More ways to add" aria-label="More ways to add books"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <button class="btn primary addmain" id="addMore" aria-haspopup="menu" aria-expanded="false" aria-controls="addMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="addlbl">Add books</span></button>
       <div id="addMenu" class="addmenu" role="menu" hidden>
         <button role="menuitem" id="addFilesItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>Choose files on this device…</button>
         <button role="menuitem" id="urlOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>From a web address…</button>
@@ -8358,7 +8355,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 30ad401</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · fc00033</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

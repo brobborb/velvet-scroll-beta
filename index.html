@@ -3968,7 +3968,7 @@ async function squeeze(u8, inflate){
 async function makeSyncCode(pw){
   for(const b of books) await ensureFp(b);
   const {hz, ttsVoice, ...settings} = S;   // the refresh rate and voice belong to each device
-  const data = {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, m:pdfModes,
+  const data = {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, sts:setTs, m:pdfModes,
     b: books.filter(b => !b.sample && b.fp).map(b => { const pr = progress[b.id] || {};
       return [b.fp, (b.title || '').slice(0, 90), (b.author || '').slice(0, 60), b.year || 0, b.isbn || '', b.shelf || '', b.upd || b.added || 0, +(pr.p || 0).toFixed(5), pr.t || 0, pr.pg || 0, pr.mode || '', b.vis || '', b.story || '']; })};
   const json = new TextEncoder().encode(JSON.stringify(data));
@@ -3991,7 +3991,7 @@ function syncMatch(fp, title, author, isbn){
   return books.find(x => x.fp === fp) || (isbn && books.find(x => !x.sample && x.isbn && x.isbn === isbn))
     || books.find(x => !x.sample && syncNm(x.title) === syncNm(title) && syncNm(x.author) === syncNm(author)) || null;
 }
-async function applySyncCode(data, useSettings){
+async function applySyncCode(data, useSettings, merge = false){
   for(const b of books) await ensureFp(b);
   let places = 0, details = 0; const missing = [];
   for(const [fp, title, author, year, isbn, shelf, upd, p, pt, pg, mode, vis, story] of data.b){
@@ -4006,7 +4006,9 @@ async function applySyncCode(data, useSettings){
   if(data.m) for(const [k, v] of Object.entries(data.m)) if(!pdfModes[k]) pdfModes[k] = v;
   LS.set('pdfmode', pdfModes);
   let settings = false;
-  if(useSettings && data.s){ const keep = {hz:S.hz, ttsVoice:S.ttsVoice}; Object.assign(S, data.s, keep); applySettings(); settings = true; }
+  if(useSettings && data.s){
+    if(merge) settings = mergeSettings(data.s, data.sts, data.st);
+    else { const keep = {hz:S.hz, ttsVoice:S.ttsVoice}; Object.assign(S, data.s, keep); applySettings(); settings = true; } }
   render();
   return {places, details, missing, settings};
 }
@@ -4076,7 +4078,7 @@ function syncBook(b){
   syncQ.set('b:' + b.fp, {title:b.title, author:b.author || '', year:b.year || null, isbn:b.isbn || '', shelf:b.shelf || '', vis:b.vis || '', st:b.story || '', upd:b.upd || b.added || 0, p:pr.p || 0, pt:pr.t || 0, pg:pr.pg || null, mode:pr.mode || null});
   if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000);   // at most every 15 seconds while reading
 }
-function syncSettings(){ gdMark(); if(!syncOn) return; const {hz, ...rest} = S; syncQ.set('settings', {t:LS.get('settingsT', Date.now()), s:rest}); if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000); }
+function syncSettings(){ gdMark(); if(!syncOn) return; const {hz, ...rest} = S; syncQ.set('settings', {t:LS.get('settingsT', Date.now()), s:rest, ts:setTs}); if(!syncTimer) syncTimer = setTimeout(syncFlush, 15000); }
 async function syncFlush(){
   clearTimeout(syncTimer); syncTimer = 0;
   if(!syncOn || !syncQ.size) return;
@@ -4098,7 +4100,7 @@ async function syncPull(){
     if(v.pt && (!lp || v.pt > (lp.t || 0)) && !(cur && cur.id === b.id)){ setProgressRec(b.id, {p:v.p, t:v.pt, pg:v.pg || undefined, mode:v.mode || undefined}); changed = true; }
   }
   const st = all.settings;
-  if(st && st.s && st.t > LS.get('settingsT', 0)){ Object.assign(S, st.s); LS.set('settings', S); LS.set('settingsT', st.t); applySettings(false); }
+  if(st && st.s) mergeSettings(st.s, st.ts, st.t);
   $('#syncMissing').hidden = !missing.length;
   $('#syncList').replaceChildren(...missing.slice(0, 50).map(v => el('li', {text: v.title + (v.author ? ' · ' + v.author : '')})));
   if(changed && R.hidden) render();
@@ -4304,25 +4306,24 @@ async function gdData(){
   for(const b of books) await ensureFp(b);
   const {hz, ttsVoice, ...settings} = S, n = {};
   for(const b of books) if(!b.sample && b.fp && notesAll[b.id] && notesAll[b.id].length) n[b.fp] = notesAll[b.id];
-  return {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, m:pdfModes, n, au:authorsAll,
+  return {app:'VS', v:1, t:Date.now(), st:LS.get('settingsT', 0), s:settings, sts:setTs, m:pdfModes, n, au:authorsAll,
     b: books.filter(b => !b.sample && b.fp).map(b => { const pr = progress[b.id] || {};
       return [b.fp, (b.title || '').slice(0, 200), (b.author || '').slice(0, 120), b.year || 0, b.isbn || '', b.shelf || '', b.upd || b.added || 0, +(pr.p || 0).toFixed(5), pr.t || 0, pr.pg || 0, pr.mode || '', b.vis || '', b.story || '']; })};
 }
 async function gdMerge(remote){
-  const st = LS.get('settingsT', 0), useSettings = !!remote.s && (remote.st || 0) > st;
+  const useSettings = !!remote.s;
   // the book that's open here is skipped by applySyncCode; if another device read further since, move there (unless it's playing)
   let jump = null;
   if(cur && !cur.sample && cur.fp && !R.hidden){
     const e = remote.b.filter(x => syncMatch(x[0], x[1], x[2], x[4]) === cur).sort((a, b) => (b[8] || 0) - (a[8] || 0))[0], lp = progress[cur.id] || {};
     if(e && e[8] > (lp.t || 0) + 5000 && Math.abs((e[7] || 0) - (lp.p || 0)) > 0.002) jump = e;
   }
-  const r = await applySyncCode(remote, useSettings);
+  const r = await applySyncCode(remote, useSettings, true);
   if(jump && !playing && ready){
     setProgressRec(cur.id, {p:jump[7], t:jump[8], pg:jump[9] || undefined, mode:jump[10] || undefined});
     if(pdfDoc && jump[9] && jump[10] && jump[10] !== pdfMode) goTo('sec0-pg' + jump[9]); else setFrac(jump[7]);
     toast('Moved to where you left off on another device.'); r.places++;
   }
-  if(useSettings){ LS.set('settings', S); LS.set('settingsT', remote.st); }
   let notes = 0;
   for(const [fp, list] of Object.entries(remote.n || {})){
     const b = books.find(x => x.fp === fp); if(!b) continue;
@@ -5126,9 +5127,39 @@ const FONTS = [
 const GMODES = [['band','Band'],['under','Underline'],['spot','Spotlight'],['off','Off']];
 const HOME_DEFAULT = {mode:'system', accent:null, bg:null};
 const AX_DEFAULT = {contrast:'auto', cvd:'none', large:false, easy:false, motion:'auto', keys:true, prevFont:''};
-const S = Object.assign({ttsVoice:'', ttsRate:1, ttsHl:true, lensShape:'circle', lensSize:240, lensZoom:2, home:{...HOME_DEFAULT}, size:22, lh:1.6, width:62, font:'Literata', bg:'#fbfaf7', fg:'#1d1c1a', bright:100, gmode:'band', gpos:32, gh:1, guide:'#e0a72e', lpm:20, pgw:90, tint:true, hand:false, smooth:true, hz:'auto', style:'cinema', book:true, ax:{...AX_DEFAULT}}, LS.get('settings', {}));
+const S_DEFAULTS = {ttsVoice:'', ttsRate:1, ttsHl:true, lensShape:'circle', lensSize:240, lensZoom:2, home:{...HOME_DEFAULT}, size:22, lh:1.6, width:62, font:'Literata', bg:'#fbfaf7', fg:'#1d1c1a', bright:100, gmode:'band', gpos:32, gh:1, guide:'#e0a72e', lpm:20, pgw:90, tint:true, hand:false, smooth:true, hz:'auto', style:'cinema', book:true, ax:{...AX_DEFAULT}};
+const S = Object.assign(JSON.parse(JSON.stringify(S_DEFAULTS)), LS.get('settings', {}));
 // the reading guide follows the accent colour unless a guide colour was chosen (older settings with a changed colour keep it)
 if(S.guideAuto === undefined) S.guideAuto = S.guide === '#e0a72e';
+/* Each setting remembers when it was last changed here, so syncing between devices takes the newer value of each setting
+   on its own: changing the scroll speed on a phone no longer brings the phone's colours to the computer. Settings left at
+   their defaults have no time, so they never overwrite a choice made on another device. Grouped settings (home colours,
+   accessibility, Story mode) are tracked part by part, e.g. 'home.accent'. */
+const S_PATHS = o => { const out = {}; for(const [k, v] of Object.entries(o || {})){ if(v && typeof v === 'object' && !Array.isArray(v)) for(const [k2, v2] of Object.entries(v)) out[k + '.' + k2] = JSON.stringify(v2); else out[k] = JSON.stringify(v); } return out; };
+const S_DEF = S_PATHS(S_DEFAULTS), S_LOCAL = new Set(['hz', 'ttsVoice']);   // the refresh rate and voice belong to each device
+let setFlat = S_PATHS(S), setTs = LS.get('settingsTs', null);
+if(!setTs){ setTs = {}; const t0 = LS.get('settingsT', 0); for(const [k, v] of Object.entries(setFlat)) if(v !== S_DEF[k]) setTs[k] = t0; LS.set('settingsTs', setTs); }
+function stampSettings(){
+  const f = S_PATHS(S), now = Date.now();
+  for(const k of new Set([...Object.keys(f), ...Object.keys(setFlat)])) if(f[k] !== setFlat[k] && !(setFlat[k] === undefined && f[k] === S_DEF[k])) setTs[k] = now;
+  setFlat = f; LS.set('settingsTs', setTs);
+}
+// another device's settings: take each one that was changed there more recently than here. Returns true if any changed.
+function mergeSettings(rs, rts, rt){
+  if(!rs) return false; const rf = S_PATHS(rs); let changed = false;
+  for(const k of new Set([...Object.keys(rf), ...Object.keys(rts || {})])){
+    const top = k.split('.')[0]; if(S_LOCAL.has(top)) continue;
+    // from a device that hasn't been updated yet (one time for all its settings): never let its defaults replace a choice
+    const t = rts ? (rts[k] || 0) : (rf[k] !== undefined && rf[k] !== S_DEF[k] ? rt || 0 : 0);
+    if(!(t > (setTs[k] || 0)) || rf[k] === setFlat[k]) continue;
+    const [a, b] = k.split('.'), v = rf[k] === undefined ? undefined : JSON.parse(rf[k]);
+    if(b !== undefined){ const o = {...(S[a] && typeof S[a] === 'object' ? S[a] : {})}; if(v === undefined) delete o[b]; else o[b] = v; S[a] = o; }
+    else if(v === undefined) delete S[a]; else S[a] = v;
+    setTs[k] = t; changed = true;
+  }
+  if(changed){ setFlat = S_PATHS(S); LS.set('settingsTs', setTs); LS.set('settings', S); LS.set('settingsT', Math.max(LS.get('settingsT', 0), rt || 0)); applySettings(false); }
+  return changed;
+}
 const R = $('#reader'), stage = $('#stage'), scroller = $('#scroller'), page = $('#page'), guide = $('#guide');
 const swNext = $('#sweepNext'), swClip = swNext.firstElementChild, swContent = swClip.firstElementChild, swLine = $('#sweepLine'), swMark = swLine.firstElementChild, swCover = $('#sweepCover'), swFoot = $('#sweepFoot'), swHead = $('#sweepHead');
 let sw = null, swMO = null;   // the page sweep in progress
@@ -5711,7 +5742,7 @@ function applySettings(save=true){
   if(sw && !playing && sw.sig !== sweepSig()) sweepEnd();
   document.querySelectorAll('.rng input[type=range]').forEach(r => r._nudgeSync && r._nudgeSync());
   storyFrame(); storyUI();
-  if(save){ LS.set('settings', S); LS.set('settingsT', Date.now()); syncSettings(); }
+  if(save){ stampSettings(); LS.set('settings', S); LS.set('settingsT', Date.now()); syncSettings(); }
   updateStatus();
 }
 function isDark(hex){ const m = /^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m) return false; const n = parseInt(m[1],16); return (0.299*(n>>16) + 0.587*((n>>8)&255) + 0.114*(n&255)) < 110; }
@@ -8355,7 +8386,7 @@ $('#apLang').onchange = e => { S.lang = e.target.value; applySettings(); const n
 })();
 </script>
 <div id="betaTag" style="position:fixed;left:50%;transform:translateX(-50%);bottom:4px;z-index:2147483647;pointer-events:none;
-font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · fc00033</div>
+font:600 11px/1.6 system-ui,sans-serif;letter-spacing:.06em;padding:0 9px;border-radius:9px;background:#c2410c;color:#fff;opacity:.85">BETA · 3a83eb7</div>
 <script>document.title = 'BETA – ' + document.title;</script>
 </body>
 </html>

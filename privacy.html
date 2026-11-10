@@ -50,6 +50,7 @@ if(t.fixed)set(t.fixed);else if(t.light&&t.dark){var mq=matchMedia('(prefers-col
 <li>Open Library (Internet Archive): openlibrary.org, covers.openlibrary.org</li>
 <li>Wikidata and Wikimedia Commons: wikidata.org, commons.wikimedia.org, upload.wikimedia.org</li>
 <li>Project Gutenberg, through the Gutendex search service: gutendex.com, gutenberg.org</li>
+<li>Crossref, for a journal article's or book's DOI (only the DOI is sent): api.crossref.org</li>
 </ul>
 <p>No other information about you or your library is sent. In the extension, your browser asks your permission before it contacts these sites, and you can withdraw it at any time in your browser's extension settings. On the website, Velvet Scroll asks you once before the first lookup; to withdraw it, clear this site's data in your browser. Once allowed, books you add are looked up automatically, applying details only where the title and author both match. Those services handle requests under their own privacy policies.</p>
 <p>On the website, browsers only let a page read another site's data if that site allows it. For the databases and cover images that don't, the request passes through Velvet Scroll's download service at fetch.velvetscroll.net (a Cloudflare Worker), which fetches it and passes it straight back. It doesn't store or log what passes through. Cloudflare handles the connection under <a href="https://www.cloudflare.com/privacypolicy/">its own privacy policy</a>.</p>

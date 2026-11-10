@@ -37,24 +37,25 @@ if(t.fixed)set(t.fixed);else if(t.light&&t.dark){var mq=matchMedia('(prefers-col
 <body>
 <main>
 <h1>Privacy</h1>
-<p class="meta">Velvet Scroll website and browser extension · Updated 6 November 2026</p>
+<p class="meta">Velvet Scroll website and browser extension · Updated 10 November 2026</p>
 
 <div class="box"><p><strong>In short:</strong> your books, reading positions and settings stay in your own browser. Velvet Scroll has no accounts, no advertising and no server that receives your library. The website counts visits anonymously, without cookies (see <a href="#website">The website</a>); the extensions don’t. The only information it sends anywhere is a book's title and author, and only when you ask it to look up a book's details.</p></div>
 
 <h2>What stays on your device</h2>
 <p>The books you add, their covers, your reading positions, shelves, book details and display settings are stored in your browser's own storage on your device. They are not uploaded to velvetscroll.net or anywhere else. Clearing your browser's site data, or removing the extension, deletes them.</p>
 
-<h2>Looking up book details (extension only)</h2>
+<h2>Looking up book details</h2>
 <p>When you use <em>Find details</em>, or search from a book's <em>Details</em> window, Velvet Scroll sends that book's title and author to these public book databases, and downloads cover images from them:</p>
 <ul>
 <li>Open Library (Internet Archive): openlibrary.org, covers.openlibrary.org</li>
 <li>Wikidata and Wikimedia Commons: wikidata.org, commons.wikimedia.org, upload.wikimedia.org</li>
 <li>Project Gutenberg, through the Gutendex search service: gutendex.com, gutenberg.org</li>
 </ul>
-<p>No other information about you or your library is sent. Your browser asks your permission before the extension contacts these sites, and you can withdraw it at any time in your browser's extension settings. Those services handle requests under their own privacy policies.</p>
+<p>No other information about you or your library is sent. In the extension, your browser asks your permission before it contacts these sites, and you can withdraw it at any time in your browser's extension settings. On the website, Velvet Scroll asks you once before the first lookup; to withdraw it, clear this site's data in your browser. Once allowed, books you add are looked up automatically, applying details only where the title and author both match. Those services handle requests under their own privacy policies.</p>
+<p>On the website, browsers only let a page read another site's data if that site allows it. For the databases and cover images that don't, the request passes through Velvet Scroll's download service at fetch.velvetscroll.net (a Cloudflare Worker), which fetches it and passes it straight back. It doesn't store or log what passes through. Cloudflare handles the connection under <a href="https://www.cloudflare.com/privacypolicy/">its own privacy policy</a>.</p>
 
 <h2>Adding books from a web address</h2>
-<p>If you use <em>Add from URL</em>, Velvet Scroll downloads the file from the address you enter, straight from your browser, like any other download. That site receives the request, including your IP address, under its own privacy policy. Nothing else is sent. The extension asks your permission before it contacts a site.</p>
+<p>If you use <em>Add from URL</em>, Velvet Scroll downloads the file from the address you enter, straight from your browser, like any other download. That site receives the request, including your IP address, under its own privacy policy. Nothing else is sent. The extension asks your permission before it contacts a site. On the website, books from the free libraries that don't let other websites download their files (such as Project Gutenberg and arXiv) come through fetch.velvetscroll.net, described above, which passes the file straight back without storing it.</p>
 
 <h2>Author bios</h2>
 <p>The <em>Details</em> window can show a short bio of a book's author. To find it, Velvet Scroll sends the author's name, and nothing else, to Wikidata (wikidata.org) and Wikipedia (wikipedia.org), the first time you open the details of a book by that author, or when you choose <em>Look up on Wikipedia</em>. In the browser extension this happens only after your browser has asked your permission. The bio is then kept on your device, shared by all that author's books, and included in your backups and Google Drive sync. You can edit or remove it, or write your own. Text from Wikipedia is available under the Creative Commons Attribution-ShareAlike licence and is shown with a link to its article.</p>
